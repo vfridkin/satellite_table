@@ -10,7 +10,12 @@
 #  "Y88888P"  8888888 Y8P 888   T88b
 
 fluidPage(
-
-
-
+  includeCSS("www/style.css")
+  , header_element(
+    title = "Satellites"
+    , subtitle = glue("UCS Satellite Database vers {ac$source_version}")
+    , sublink = ac$source_link
+  )
+  , image_element("satellite.png", "Satellite")
 )
+

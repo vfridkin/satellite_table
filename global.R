@@ -13,5 +13,15 @@
 library(shiny)
 library(reactable)
 library(data.table)
+library(glue)
+library(yaml)
+library(janitor)
+library(stringr)
+
+# Load files
+source("R/common.R")
+
+# Load app config
+ac <- load_config()
 
 

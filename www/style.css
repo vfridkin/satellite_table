@@ -1,0 +1,126 @@
+/* Constants */
+
+:root {
+  --main-bg-colour: black;
+  --text-grad_colour: #38495a;
+}
+
+/* Animations */
+
+
+@keyframes animStar {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-2000px);
+  }
+}
+
+@keyframes moveInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-10rem); }
+  80% {
+    opacity: 0.9;
+    transform: translateX(1rem); }
+  100% {
+    opacity: 1;
+    transform: translateX(0); } }
+
+@keyframes moveInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(10rem); }
+  80% {
+    opacity: 0.9;
+    transform: translateX(-1rem); }
+  100% {
+    opacity: 1;
+    transform: translateX(0); } }
+
+/* Styles */
+
+ * {
+   background-color: var(--main-bg-colour)
+ }
+
+html {
+  font-size: 62.5%; }
+
+body {
+  font-family: "Lato", Arial, Verdana, sans-serif;
+  font-weight: 400;
+  line-height: 1.7;
+  box-sizing: border-box;
+}
+
+.header__text-box {
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.heading-primary {
+  color: #fff;
+  text-transform: uppercase;
+  backface-visibility: hidden;
+  margin-bottom: 6rem;
+}
+.heading-primary--main {
+  display: block;
+  font-size: 6rem;
+  font-weight: 400;
+  margin-right: -3rem;
+  letter-spacing: 3rem;
+  animation-name: moveInLeft;
+  animation-duration: 2s;
+  animation-timing-function: ease-in-out;
+  background: -webkit-linear-gradient(white, var(--text-grad_colour));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.heading-primary--sub {
+  color: var(--text-grad_colour);
+  display: block;
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin-right: -0.6rem;
+  letter-spacing: 0.6rem;
+  animation-name: moveInRight;
+  animation-duration: 2s;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes flyIn {
+    from {
+        opacity:0;
+        left: 0%;
+        top: 60%;
+        transform: translate(-50%, -50%) scale(0) rotate(40deg);
+    }
+    to {
+        opacity:1;
+        left: 50%;
+        top: 60%;
+        transform: translate(-50%, -50%) scale(0.7) rotate(0deg);
+    }
+}
+
+
+.body__image-box {
+}
+
+.body__image {
+  display: block;
+  position: absolute;
+  z-index: 1000;
+  background-color: transparent;
+  animation: flyIn 2s;
+  left: 50%;
+  top: 60%;
+  transform: translate(-50%, -50%) scale(0.7) rotate(0deg);
+}
+
