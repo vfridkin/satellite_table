@@ -17,5 +17,6 @@ fluidPage(
     , sublink = ac$source_link
   )
   , image_element("satellite.png", "Satellite")
+  , button_element("Launch table")
 )
 

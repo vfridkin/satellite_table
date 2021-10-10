@@ -7,6 +7,32 @@
 
 /* Animations */
 
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes flyIn {
+    from {
+        opacity:0;
+        left: 0%;
+        top: 60%;
+        transform: translate(-50%, -50%) scale(0) rotate(40deg);
+    }
+    to {
+        opacity:1;
+        left: 50%;
+        top: 60%;
+        transform: translate(-50%, -50%) scale(0.7) rotate(0deg);
+    }
+}
 
 @keyframes animStar {
   from {
@@ -94,33 +120,56 @@ body {
   animation-timing-function: ease-in-out;
 }
 
-@keyframes flyIn {
-    from {
-        opacity:0;
-        left: 0%;
-        top: 60%;
-        transform: translate(-50%, -50%) scale(0) rotate(40deg);
-    }
-    to {
-        opacity:1;
-        left: 50%;
-        top: 60%;
-        transform: translate(-50%, -50%) scale(0.7) rotate(0deg);
-    }
-}
-
-
-.body__image-box {
-}
-
 .body__image {
   display: block;
   position: absolute;
-  z-index: 1000;
+  z-index: 10;
   background-color: transparent;
-  animation: flyIn 2s;
+  animation: flyIn 5s;
   left: 50%;
   top: 60%;
   transform: translate(-50%, -50%) scale(0.7) rotate(0deg);
 }
+
+.body__btn-box {
+  display: block;
+  position: absolute;
+  z-index: 9;
+  left: 50%;
+  top: 85%;
+  transform: translate(-50%, -50%);
+  animation: fadeIn 6s;
+}
+
+.btn:link,
+.btn:visited {
+  text-transform: uppercase;
+  text-decoration: none;
+  background-color: var(--text-grad_colour);
+  color: white;
+  padding: 1.5rem 4rem;
+  display: inline-block;
+  border-radius: 10rem;
+  position: relative;
+  font-size: 1.6rem;
+  transition: all 0.4s;
+}
+
+.btn:hover {
+  transform: translateY(-0.3rem);
+  box-shadow: 0 1rem 2rem rgba(70, 102, 255, 0.5);
+}
+.btn:hover::after {
+  transition: all 0.4s;
+  transform: scaleX(1.4) scaleY(1.6);
+  opacity: 0;
+}
+
+.btn:active {
+  transform: translateY(0.1rem);
+  box-shadow: 0 0.5rem 1rem rgba(70, 102, 255, 0.5);
+}
+
+
+
 

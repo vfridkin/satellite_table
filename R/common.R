@@ -6,8 +6,47 @@ sar <- function(){
 }
 
 load_config <- function(){
-  read_yaml("config/config.yaml")
+
+  config <- read_yaml("config/config.yaml")
+
+  field_df <- fread("config/fields.csv")
+  field <- field_df %>% {set_names(purrr::transpose(.), .$name)}
+
+  config %>%
+    list_modify(
+      field = fields
+      , field_df = field_df
+    )
 }
+
+get_data <- function(){
+  df <- fread("data/UCS-Satellite-Database-1-1-2021.txt") %>%
+    janitor::remove_empty(which = "cols") %>%
+    replace_col_names() %>%
+    janitor::clean_names()
+
+  value_fields <- ac$field_df[group_as == "value"]$name
+  date_fields <- ac$field_df[group_as == "date"]$name
+
+  value_fields %>%
+    walk(
+      ~{
+        df[[.x]] <<- df[[.x]] %>%
+        str_replace_all(",", "") %>%
+        as.numeric()
+      }
+    )
+  date_fields %>%
+    walk(
+      ~{
+        df[[.x]] <<- df[[.x]] %>%
+          as.Date(format = "%m/%d/%Y")
+        }
+    )
+
+  df
+}
+
 
 # Col name of form V123 replace with preceding name
 replace_col_names <- function(df){

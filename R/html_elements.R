@@ -33,4 +33,15 @@ image_element <- function(file, alt){
   )
 }
 
+button_element <- function(label){
+  div(
+    class = "body__btn-box"
+    , a(
+      href="#"
+      , class = "btn btn--animated"
+      , label
+    )
+  )
+
+}
 

@@ -11,9 +11,6 @@
 
 function(input, output, session){
 
-  data <- fread("data/UCS-Satellite-Database-1-1-2021.txt") %>%
-    janitor::remove_empty(which = "cols") %>%
-    replace_col_names() %>%
-    janitor::clean_names()
+  data <- get_data()
 
 }

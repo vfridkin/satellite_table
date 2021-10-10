@@ -17,6 +17,7 @@ library(glue)
 library(yaml)
 library(janitor)
 library(stringr)
+library(purrr)
 
 # Load files
 source("R/common.R")
