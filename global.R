@@ -11,7 +11,7 @@
 
 # Load packages
 library(shiny)
-library(readlx)
+library(readxl)
 library(reactable)
 library(data.table)
 library(glue)

@@ -45,8 +45,12 @@ ui <- fluidPage(
 
 server <- function(input, output, session){
 
+  init <- list(
+    slider_field = ac$field$date_of_launch
+    , field = ac$field
+  )
   data <- get_data()
-  statistic_table_server("example", data)
+  statistic_table_server("example", init, data)
 
 }
 

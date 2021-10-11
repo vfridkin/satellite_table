@@ -3,7 +3,7 @@ statistic_table_ui <- function(id, field_df){
 
   ns <- NS(id)
 
-  choices <- c("group", "value") %>%
+  choices <- c("group", "value", "date") %>%
     {set_names(
       map(.,
           function(var){
@@ -12,6 +12,9 @@ statistic_table_ui <- function(id, field_df){
           }
       ),.
     )}
+
+  # Allow dates to be selected as values
+  choices_value <- c(choices$date, choices$value)
 
   div(
     class = "statistic_countainer"
@@ -28,10 +31,20 @@ statistic_table_ui <- function(id, field_df){
       , selectizeInput(
         inputId = ns("value_select")
         , label = div(icon("ruler-vertical"), "Values")
-        , choices = choices$value
+        , choices = choices_value
         , selected = ""
         , multiple = TRUE
         , options = list(plugins = list('drag_drop'))
+      )
+      , sliderInput(
+        inputId = ns("value_slider")
+        , label = "Loading..."
+        , min = 1
+        , max = 10
+        , value = 5
+        , ticks = FALSE
+        , sep = ""
+        , animate = TRUE
       )
     )
     , div(
@@ -43,7 +56,7 @@ statistic_table_ui <- function(id, field_df){
   )
 }
 
-statistic_table_server <- function(id, data){
+statistic_table_server <- function(id, init, data){
   moduleServer(
     id
     , function(input, output, session){
@@ -51,11 +64,13 @@ statistic_table_server <- function(id, data){
       m <- reactiveValues(
         run_once = FALSE
         , last_group_select = NULL
+        , slider_field = NULL
       )
 
       observe({
         if(m$run_once) return()
           m$last_group_select <- input$group_select
+          m$slider_field <- init$slider_field$name
         m$run_once <- TRUE
       })
 
@@ -91,6 +106,37 @@ statistic_table_server <- function(id, data){
 
         df %>% setorder(-count)
       })
+
+      observeEvent(
+        m$slider_field
+        , {
+
+          # Get range
+          slider_range <- data[[m$slider_field]] %>% range(na.rm = TRUE)
+          slider_label <- init$field[[m$slider_field]]$display_name |>
+            paste("(range)")
+
+          range_class <- slider_range[1] %>% class()
+
+          if(range_class == "Date"){
+            slider_range <- slider_range %>%
+              format("%Y") %>%
+              as.integer()
+          }
+
+
+          # update slider
+          updateSliderInput(
+            session = session
+            , inputId = "value_slider"
+            , label = slider_label
+            , value = slider_range[2]
+            , min = slider_range[1]
+            , max = slider_range[2]
+          )
+
+        }
+      )
 
 
       output$statistic_rt <- renderReactable({

@@ -1,31 +1,31 @@
-name,display_name,group_as,is_split_column,aggregation
-name_of_satellite_alternate_names,"Name of Satellite, Alternate Names",identifier,0,count
-current_official_name_of_satellite,Current Official Name of Satellite,identifier,0,count
-country_org_of_un_registry,Country/Org of UN Registry,group,0,count
-country_of_operator_owner,Country of Operator/Owner,group,0,count
-operator_owner,Operator/Owner,group,0,count
-users,Users,group,0,count
-purpose,Purpose,group,0,count
-detailed_purpose,Detailed Purpose,group,0,count
-class_of_orbit,Class of Orbit,group,0,count
-type_of_orbit,Type of Orbit,group,0,count
-longitude_of_geo_degrees,Longitude of GEO (degrees),value,0,"count, mean"
-perigee_km,Perigee (km),value,0,"count, mean"
-apogee_km,Apogee (km),value,0,"count, mean"
-eccentricity,Eccentricity,value,0,"count, mean"
-inclination_degrees,Inclination (degrees),value,0,"count, mean"
-period_minutes,Period (minutes),value,0,"count, mean"
-launch_mass_kg,Launch Mass (kg.),value,0,"count, mean"
-dry_mass_kg,Dry Mass (kg.),value,0,"count, mean"
-power_watts,Power (watts),value,0,"count, mean"
-date_of_launch,Date of Launch,date,0,"count, mean"
-expected_lifetime_yrs,Expected Lifetime (yrs.),value,0,"count, mean"
-contractor,Contractor,group,0,count
-country_of_contractor,Country of Contractor,group,0,count
-launch_site,Launch Site,group,0,count
-launch_vehicle,Launch Vehicle,group,0,count
-cospar_number,COSPAR Number,identifier,0,count
-norad_number,NORAD Number,identifier,0,count
-comments,Comments,description,1,count
-source_used_for_orbital_data,Source Used for Orbital Data,description,0,count
-source,Source,description,1,count
+name,display_name,group_as,is_split_column
+name_of_satellite_alternate_names,"Name of Satellite, Alternate Names",identifier,0
+current_official_name_of_satellite,Current Official Name of Satellite,identifier,0
+country_org_of_un_registry,Country/Org of UN Registry,group,0
+country_of_operator_owner,Country of Operator/Owner,group,0
+operator_owner,Operator/Owner,group,0
+users,Users,group,0
+purpose,Purpose,group,0
+detailed_purpose,Detailed Purpose,group,0
+class_of_orbit,Class of Orbit,group,0
+type_of_orbit,Type of Orbit,group,0
+longitude_of_geo_degrees,Longitude of GEO (degrees),value,0
+perigee_km,Perigee (km),value,0
+apogee_km,Apogee (km),value,0
+eccentricity,Eccentricity,value,0
+inclination_degrees,Inclination (degrees),value,0
+period_minutes,Period (minutes),value,0
+launch_mass_kg,Launch Mass (kg.),value,0
+dry_mass_kg,Dry Mass (kg.),value,0
+power_watts,Power (watts),value,0
+date_of_launch,Date of Launch,date,0
+expected_lifetime_yrs,Expected Lifetime (yrs.),value,0
+contractor,Contractor,group,0
+country_of_contractor,Country of Contractor,group,0
+launch_site,Launch Site,group,0
+launch_vehicle,Launch Vehicle,group,0
+cospar_number,COSPAR Number,identifier,0
+norad_number,NORAD Number,identifier,0
+comments,Comments,description,1
+source_used_for_orbital_data,Source Used for Orbital Data,description,0
+source,Source,description,1
