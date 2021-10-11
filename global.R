@@ -11,6 +11,7 @@
 
 # Load packages
 library(shiny)
+library(readlx)
 library(reactable)
 library(data.table)
 library(glue)
@@ -18,9 +19,11 @@ library(yaml)
 library(janitor)
 library(stringr)
 library(purrr)
+library(magrittr)
+library(sparkline)
 
 # Load files
-source("R/common.R")
+list.files("R", full.names = TRUE) |> walk(source)
 
 # Load app config
 ac <- load_config()

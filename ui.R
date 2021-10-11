@@ -16,7 +16,7 @@ fluidPage(
     , subtitle = glue("UCS Satellite Database vers {ac$source_version}")
     , sublink = ac$source_link
   )
-  , image_element("satellite.png", "Satellite")
+  , image_element("satellite2.png", "Satellite")
   , button_element("Launch table")
 )
 

@@ -1,44 +1,53 @@
 # Example of table
 
-source('global.R')
+# Playground
+if(FALSE){
+  data <- get_data()
 
-data <- get_data()
+  group_fields <- ac$field_df[group_as == "group"]$name
+  value_fields <- ac$field_df[group_as == "value"]$name
 
-group_fields <- ac$field_df[group_as == "group"]$name
-value_fields <- ac$field_df[group_as == "value"]$name
+  # Count single field
+  g1 <- group_fields[1]
+  rt_g1 <- data[, .(count = .N), by = c(g1)] %>% setorder(-count)
 
-# Count single field
-g1 <- group_fields[1]
-rt_g1 <- data[, .(count = .N), by = c(g1)] %>% setorder(-count)
+  # Count all fields
+  gAll <- group_fields
+  rt_gAll <- data[, .(count = .N), by = gAll] %>% setorder(-count)
 
-reactable(rt_g1)
+  # Mean single field
+  v1 <- value_fields[1]
+  exp1 <- glue("mean({v1}, na.rm = TRUE)")
+  new_names <- c(g1, "count", v1)
 
-# Count all fields
-gAll <- group_fields
-rt_gAll <- data[, .(count = .N), by = gAll] %>% setorder(-count)
+  rt_g1_v1 <- data[, .(count = .N, eval(parse(text = exp1))), by = c(g1)] %>%
+    setorder(-count) %>%
+    set_names(new_names)
 
-reactable(rt_gAll)
+  reactable(rt_g1_v1)
 
-# Mean single field
-v1 <- value_fields[1]
-exp1 <- glue("mean({v1}, na.rm = TRUE)")
-new_names <- c(g1, "count", v1)
+  # One group field, Mean all value field
+  g1 <- group_fields[1]
+  vAll <- value_fields
+  fn <- function(x) mean(x, na.rm = TRUE)
 
-rt_g1_v1 <- data[, .(count = .N, eval(parse(text = exp1))), by = c(g1)] %>%
-  setorder(-count) %>%
-  set_names(new_names)
+  rt_g1_Count <- data[, .(count = .N), by = c(g1)]
+  rt_g1_vAll <- data[, lapply(.SD, fn), by = c(g1), .SDcols = vAll][, ..vAll]
 
-reactable(rt_g1_v1)
+  rt_cbind <-  rt_g1_Count %>% cbind(rt_g1_vAll) %>% setorder(-count)
+}
 
-# One group field, Mean all value field
-g1 <- group_fields[1]
-vAll <- value_fields
-fn <- function(x) mean(x, na.rm = TRUE)
+ui <- fluidPage(
 
-rt_g1_Count <- data[, .(count = .N), by = c(g1)]
-rt_g1_vAll <- data[, lapply(.SD, fn), by = c(g1), .SDcols = vAll][, ..vAll]
+  statistic_table_ui("example", ac$field_df)
 
-rt_cbind <-  rt_g1_Count %>% cbind(rt_g1_vAll) %>% setorder(-count)
+)
 
-reactable(rt_cbind)
+server <- function(input, output, session){
+
+  data <- get_data()
+  statistic_table_server("example", data)
+
+}
+
 

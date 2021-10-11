@@ -14,13 +14,13 @@ load_config <- function(){
 
   config %>%
     list_modify(
-      field = fields
+      field = field
       , field_df = field_df
     )
 }
 
 get_data <- function(){
-  df <- fread("data/UCS-Satellite-Database-1-1-2021.txt") %>%
+  df <- fread("data/UCS-Satellite-Database-1-1-2021.txt", colClasses = "character") %>%
     janitor::remove_empty(which = "cols") %>%
     replace_col_names() %>%
     janitor::clean_names()
