@@ -3,7 +3,8 @@ statistic_table_ui <- function(id, field_df){
 
   ns <- NS(id)
 
-  choices <- c("group", "value", "date") %>%
+  # Set up choices for selectize inputs ----------------------------------------
+  choices <- c("factor", "value", "date") %>%
     {set_names(
       map(.,
           function(var){
@@ -16,6 +17,7 @@ statistic_table_ui <- function(id, field_df){
   # Allow dates to be selected as values
   choices_value <- c(choices$date, choices$value)
 
+  # Main UI --------------------------------------------------------------------
   div(
     class = "statistic_container"
     , div(
@@ -24,10 +26,10 @@ statistic_table_ui <- function(id, field_df){
         column(
           width = 6
           , selectizeInput(
-            inputId = ns("group_select")
-            , label = div(icon("table"), "Rows")
-            , choices = choices$group
-            , selected = choices$group[1]
+            inputId = ns("factor_select")
+            , label = div(icon("table"), "Factors")
+            , choices = choices$factor
+            , selected = choices$factor[1]
             , multiple = TRUE
             , width = '100%'
             , options = list(plugins = list('drag_drop'))
@@ -89,52 +91,71 @@ statistic_table_server <- function(id, init, data){
     id
     , function(input, output, session){
 
+      # Local constants --------------------------------------------------------
+      k <- list(
+        column_definitions = get_column_definitions()
+      )
+
+      # Local reactive values --------------------------------------------------
       m <- reactiveValues(
         run_once = FALSE
-        , last_group_select = NULL
+        , last_factor_select = NULL
         , slider_field = NULL
       )
 
+      # Initiatlise ------------------------------------------------------------
       observe({
         if(m$run_once) return()
-        m$last_group_select <- input$group_select
+        m$last_factor_select <- input$factor_select
         m$slider_field <- init$slider_field$name
         m$run_once <- TRUE
       })
 
-      rt_data <- reactive({
+      # Reactable data ---------------------------------------------------------
+      rt_container <- reactive({
 
-        group_select <- input$group_select
+        factor_select <- input$factor_select
         value_select <- input$value_select
 
         # Ensure group selection always has one element
-        if(is.null(group_select)){
+        if(is.null(factor_select)){
           updateSelectizeInput(
             session
-            , inputId = "group_select"
-            , selected = m$last_group_select
+            , inputId = "factor_select"
+            , selected = m$last_factor_select
           )
           return()
         }
 
-        m$last_group_select <- input$group_select
+        m$last_factor_select <- input$factor_select
 
-        df <- data[, .(count = .N), by = c(group_select)]
+        df <- data[, .(count = .N), by = c(factor_select)]
 
         is_value_selected <- !is.null(value_select)
         if(is_value_selected){
           fn <- function(x) mean(x, na.rm = TRUE)
           df_val <- data[, lapply(.SD, fn)
-                         , by = c(group_select)
+                         , by = c(factor_select)
                          , .SDcols = value_select
           ][, ..value_select]
 
           df <- df %>% cbind(df_val)
         }
 
-        df %>% setorder(-count)
+        # Order by decreasing count
+        df <- df %>% setorder(-count)
+
+        # Get column definition
+        col_def <- k$column_definitions[names(df)]
+
+        list(
+          data = df
+          , columns = col_def
+        )
+
       })
 
+      # Change slider values ---------------------------------------------------
       observeEvent(
         m$slider_field
         , {
@@ -166,16 +187,17 @@ statistic_table_server <- function(id, init, data){
         }
       )
 
-
+      # Reactable --------------------------------------------------------------
       output$statistic_rt <- renderReactable({
 
-        df <- rt_data()
+        rt <- rt_container()
         validate(
-          need(df, "Loading...")
+          need(rt, "Loading...")
         )
 
         reactable(
-          df
+          rt$data
+          , columns = rt$columns
         )
 
       })
