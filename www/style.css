@@ -19,6 +19,20 @@
   }
 }
 
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.fade-away {
+  animation: fadeOut 3s;
+  opacity: 0;
+}
+
 @keyframes flyIn {
     from {
         opacity:0;
@@ -33,6 +47,36 @@
         transform: translate(-50%, -50%) scale(0.7) rotate(0deg);
     }
 }
+
+@keyframes raiseUp {
+  from {
+    left: 50%;
+    top: 20%;
+    transform: translate(-50%, -50%);
+  }
+  to {
+    left: 50%;
+    top: 6%;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+}
+
+
+@keyframes flyUp {
+    from {
+        left: 50%;
+        top: 60%;
+        transform: translate(-50%, -50%) scale(0.7) rotate(0deg);
+    }
+    to {
+      left: 2%;
+      top: 7%;
+      transform: translate(-50%, -50%) scale(0.3) rotate(-70deg);
+    }
+}
+
+
+
 
 @keyframes animStar {
   from {
@@ -89,6 +133,13 @@ body {
   text-align: center;
 }
 
+.header-up {
+  animation: raiseUp 3s;
+  left: 50%;
+  top: 6%;
+  transform: translate(-50%, -50%) scale(0.5);
+}
+
 .heading-primary {
   color: #fff;
   text-transform: uppercase;
@@ -131,6 +182,14 @@ body {
   transform: translate(-50%, -50%) scale(0.7) rotate(0deg);
 }
 
+.image-up {
+  animation: flyUp 3s;
+  animation-timing-function: cubic-bezier(0,0,0.5,2,5);
+  left: 2%;
+  top: 7%;
+  transform: translate(-50%, -50%) scale(0.3) rotate(-70deg);
+}
+
 .body__btn-box {
   display: block;
   position: absolute;
@@ -170,6 +229,23 @@ body {
   box-shadow: 0 0.5rem 1rem rgba(70, 102, 255, 0.5);
 }
 
+.statistic_container {
+  opacity: 0;
+  top: 10%;
+  display: inline-block;
+  position: absolute;
+  padding: 2.5vw;
+  width: 95vw;
+}
 
+.fade-in {
+  animation: fadeIn 3s;
+  opacity: 1;
+  color: white;
+}
 
+.selectize-input {
+  background: transparent;
+  border-color: var(--text-grad_colour);
+}
 

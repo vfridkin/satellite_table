@@ -11,12 +11,16 @@
 
 fluidPage(
   includeCSS("www/style.css")
+  , includeScript("www/script.js")
   , header_element(
     title = "Satellites"
     , subtitle = glue("UCS Satellite Database vers {ac$source_version}")
     , sublink = ac$source_link
   )
   , image_element("satellite2.png", "Satellite")
-  , button_element("Launch table")
+  , button_element("Launch")
+  , statistic_table_ui("example", ac$field_df)
+
+
 )
 

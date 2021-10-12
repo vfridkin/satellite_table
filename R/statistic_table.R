@@ -17,34 +17,62 @@ statistic_table_ui <- function(id, field_df){
   choices_value <- c(choices$date, choices$value)
 
   div(
-    class = "statistic_countainer"
+    class = "statistic_container"
     , div(
       class = "statistic__select-box"
-      , selectizeInput(
-        inputId = ns("group_select")
-        , label = div(icon("table"), "Rows")
-        , choices = choices$group
-        , selected = choices$group[1]
-        , multiple = TRUE
-        , options = list(plugins = list('drag_drop'))
+      , fluidRow(
+        column(
+          width = 6
+          , selectizeInput(
+            inputId = ns("group_select")
+            , label = div(icon("table"), "Rows")
+            , choices = choices$group
+            , selected = choices$group[1]
+            , multiple = TRUE
+            , width = '100%'
+            , options = list(plugins = list('drag_drop'))
+          )
+        )
+        , column(
+          width = 6
+          , selectizeInput(
+            inputId = ns("value_select")
+            , label = div(icon("ruler-vertical"), "Values")
+            , choices = choices_value
+            , selected = ""
+            , multiple = TRUE
+            , width = '100%'
+            , options = list(plugins = list('drag_drop'))
+          )
+        )
       )
-      , selectizeInput(
-        inputId = ns("value_select")
-        , label = div(icon("ruler-vertical"), "Values")
-        , choices = choices_value
-        , selected = ""
-        , multiple = TRUE
-        , options = list(plugins = list('drag_drop'))
-      )
-      , sliderInput(
-        inputId = ns("value_slider")
-        , label = "Loading..."
-        , min = 1
-        , max = 10
-        , value = 5
-        , ticks = FALSE
-        , sep = ""
-        , animate = TRUE
+      , fluidRow(
+        column(
+          width = 6
+          , sliderInput(
+            inputId = ns("value_slider")
+            , label = "Loading..."
+            , min = 1
+            , max = 10
+            , value = 5
+            , ticks = FALSE
+            , sep = ""
+            , animate = TRUE
+            , width = '100%'
+          )
+        )
+        , column(
+          width = 6
+          , checkboxGroupButtons(
+            inputId = ns("value_statistic")
+            , label = "Statistic"
+            , choices = c("min", "mean", "max", "sd")
+            , justified = TRUE
+            , checkIcon = list(
+              yes = icon("ok", lib = "glyphicon")
+            )
+          )
+        )
       )
     )
     , div(
@@ -69,8 +97,8 @@ statistic_table_server <- function(id, init, data){
 
       observe({
         if(m$run_once) return()
-          m$last_group_select <- input$group_select
-          m$slider_field <- init$slider_field$name
+        m$last_group_select <- input$group_select
+        m$slider_field <- init$slider_field$name
         m$run_once <- TRUE
       })
 
