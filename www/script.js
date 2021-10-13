@@ -9,6 +9,8 @@ $(function(){
         // $('#launch_button').addClass('fade-away');
         $('#launch_button').fadeOut(2000);
         $('.statistic_container').addClass('fade-in');
+        $('.body__help-box').addClass('fade-in');
+        $('.body__help-image').addClass('btn');
       }
     );
 

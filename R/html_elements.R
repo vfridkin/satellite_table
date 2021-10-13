@@ -43,6 +43,18 @@ button_element <- function(label){
       , label
     )
   )
-
 }
+
+help_element <- function(file, alt){
+  div(
+    class = "body__help-box"
+    , img(
+      class = "body__help-image"
+      , src = file
+      , alt = alt
+    )
+  )
+}
+
+
 

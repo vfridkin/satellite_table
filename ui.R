@@ -19,6 +19,7 @@ fluidPage(
   )
   , image_element("satellite2.png", "Satellite")
   , button_element("Launch")
+  , help_element("moon_helper.png", "Moon helper")
   , statistic_table_ui("example", ac$field_df)
 
 
