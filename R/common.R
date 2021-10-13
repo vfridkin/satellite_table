@@ -79,6 +79,7 @@ get_column_definitions <- function(){
         if(!is.na(display_decimals)){
           col_def <- colDef(
             name = display_name
+            , filterable = FALSE
             , format = colFormat(separators = TRUE, digits = display_decimals)
           )
         }

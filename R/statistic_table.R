@@ -4,6 +4,7 @@ statistic_table_ui <- function(id, field_df){
   ns <- NS(id)
 
   # Set up choices for selectize inputs ----------------------------------------
+  field_df <- field_df[order(display_name),]
   choices <- c("factor", "value", "date") %>%
     {set_names(
       map(.,
@@ -15,7 +16,7 @@ statistic_table_ui <- function(id, field_df){
     )}
 
   # Allow dates to be selected as values
-  choices_value <- c(choices$date, choices$value)
+  choices_value <- c(choices$value, choices$date) %>% sort()
 
   # Main UI --------------------------------------------------------------------
   div(
@@ -27,7 +28,7 @@ statistic_table_ui <- function(id, field_df){
           width = 6
           , selectizeInput(
             inputId = ns("factor_select")
-            , label = div(icon("table"), "Factors")
+            , label = div(icon("filter"), "Factors")
             , choices = choices$factor
             , selected = choices$factor[1]
             , multiple = TRUE
@@ -39,7 +40,7 @@ statistic_table_ui <- function(id, field_df){
           width = 6
           , selectizeInput(
             inputId = ns("value_select")
-            , label = div(icon("ruler-vertical"), "Values")
+            , label = div(icon("sort-amount-down"), "Values")
             , choices = choices_value
             , selected = ""
             , multiple = TRUE
@@ -53,7 +54,7 @@ statistic_table_ui <- function(id, field_df){
           width = 6
           , sliderInput(
             inputId = ns("value_slider")
-            , label = "Loading..."
+            , label = div(icon("long-arrow-alt-right"), "Loading...")
             , min = 1
             , max = 10
             , value = 5
@@ -65,14 +66,15 @@ statistic_table_ui <- function(id, field_df){
         )
         , column(
           width = 6
-          , checkboxGroupButtons(
+          , awesomeRadio(
             inputId = ns("value_statistic")
-            , label = "Statistic"
-            , choices = c("min", "mean", "max", "sd")
-            , justified = TRUE
-            , checkIcon = list(
-              yes = icon("ok", lib = "glyphicon")
+            , label = div(span(style = "font-size: 1.7rem;", HTML("&Sigma;")), "Statistic")
+            , choices = c("min", "mean", "max", "sd") %>% set_names(
+              c("Minimum", "Average", "Maximum", "Standard deviation")
             )
+            , selected = "mean"
+            , inline = TRUE
+            , status = "primary"
           )
         )
       )
@@ -101,6 +103,9 @@ statistic_table_server <- function(id, init, data){
         run_once = FALSE
         , last_factor_select = NULL
         , slider_field = NULL
+        , slider_is_range = NULL
+        , filter_factors = NULL
+        , filter_values = NULL
       )
 
       # Initiatlise ------------------------------------------------------------
@@ -108,6 +113,9 @@ statistic_table_server <- function(id, init, data){
         if(m$run_once) return()
         m$last_factor_select <- input$factor_select
         m$slider_field <- init$slider_field$name
+        m$slider_is_range <- FALSE
+        m$factor_filter <- list()
+        m$value_filter <- list()
         m$run_once <- TRUE
       })
 
@@ -116,6 +124,18 @@ statistic_table_server <- function(id, init, data){
 
         factor_select <- input$factor_select
         value_select <- input$value_select
+
+        factor_filter <- m$factor_filter
+        value_filter <- m$value_filter
+
+        statistic_function <- function(x){
+          fn <- input$value_statistic
+          res <- do.call(input$value_statistic, list(x, na.rm = TRUE))
+          if(fn == "sd" && class(x) == "Date"){
+            res <- res %>% format(big.mark = ",", digits = 0) %>% paste("days")
+          }
+          res
+        }
 
         # Ensure group selection always has one element
         if(is.null(factor_select)){
@@ -129,33 +149,57 @@ statistic_table_server <- function(id, init, data){
 
         m$last_factor_select <- input$factor_select
 
-        df <- data[, .(count = .N), by = c(factor_select)]
+        # Make a copy of the data so that original is not edited
+        df <- data %>% copy()
+
+        # Apply value filters
+        if(length(value_filter) > 0){
+
+          comparison <- if(m$slider_is_range) "%between%" else "<="
+
+          filter_col <- m$slider_field
+          group_as <- ac$field[[filter_col]]$group_as
+
+          if(group_as == "date"){
+            df$year <- df[[filter_col]] %>% format("%Y") %>% as.numeric()
+            filter_col <- "year"
+          }
+
+          filter_expression <- parse(
+            text = glue("{filter_col} {comparison} {value_filter}")
+          )
+
+          df <- df[!is.na(df[[filter_col]])]
+          df <- df[eval(filter_expression)]
+        }
+
+        # Get count
+        df_result <- df[, .(count = .N), by = c(factor_select)]
 
         is_value_selected <- !is.null(value_select)
         if(is_value_selected){
-          fn <- function(x) mean(x, na.rm = TRUE)
-          df_val <- data[, lapply(.SD, fn)
+          df_val <- df[, lapply(.SD, statistic_function)
                          , by = c(factor_select)
                          , .SDcols = value_select
           ][, ..value_select]
 
-          df <- df %>% cbind(df_val)
+          df_result <- df_result %>% cbind(df_val)
         }
 
         # Order by decreasing count
-        df <- df %>% setorder(-count)
+        df_result <- df_result %>% setorder(-count)
 
         # Get column definition
-        col_def <- k$column_definitions[names(df)]
+        col_def <- k$column_definitions[names(df_result)]
 
         list(
-          data = df
+          data = df_result
           , columns = col_def
         )
 
       })
 
-      # Change slider values ---------------------------------------------------
+      # Change slider definition -----------------------------------------------
       observeEvent(
         m$slider_field
         , {
@@ -170,9 +214,8 @@ statistic_table_server <- function(id, init, data){
           if(range_class == "Date"){
             slider_range <- slider_range %>%
               format("%Y") %>%
-              as.integer()
+              as.numeric()
           }
-
 
           # update slider
           updateSliderInput(
@@ -187,6 +230,19 @@ statistic_table_server <- function(id, init, data){
         }
       )
 
+      # Change slider values ---------------------------------------------------
+      observeEvent(
+        input$value_slider
+        , {
+
+          slider <- input$value_slider
+          m$value_filter <- list(slider) %>%
+            set_names(m$slider_field)
+
+        }, ignoreInit = TRUE
+      )
+
+
       # Reactable --------------------------------------------------------------
       output$statistic_rt <- renderReactable({
 
@@ -198,6 +254,8 @@ statistic_table_server <- function(id, init, data){
         reactable(
           rt$data
           , columns = rt$columns
+          , striped = TRUE
+          , minRows = 10
         )
 
       })

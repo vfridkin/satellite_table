@@ -169,6 +169,7 @@ body {
   width: 110px;
   height: 100px;
   transform: scale(0.8);
+  transition: all 0.8s;
 }
 
 .image-up {
