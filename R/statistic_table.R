@@ -27,8 +27,8 @@ statistic_table_ui <- function(id, field_df){
         column(
           width = 6
           , selectizeInput(
-            inputId = ns("factor_select")
-            , label = div(icon("filter"), "Factors")
+            inputId = ns("factor_col_select")
+            , label = div(icon("columns"), "Factors")
             , choices = choices$factor
             , selected = choices$factor[1]
             , multiple = TRUE
@@ -40,7 +40,7 @@ statistic_table_ui <- function(id, field_df){
           width = 6
           , selectizeInput(
             inputId = ns("value_select")
-            , label = div(icon("sort-amount-down"), "Values")
+            , label = div(icon("columns"), "Values")
             , choices = choices_value
             , selected = ""
             , multiple = TRUE
@@ -52,9 +52,20 @@ statistic_table_ui <- function(id, field_df){
       , fluidRow(
         column(
           width = 6
+          , selectizeInput(
+            inputId = ns("factor_filter_select")
+            , label = div(icon("filter"), "Factors")
+            , choices = ""
+            , selected = ""
+            , multiple = TRUE
+            , width = '100%'
+          )
+        )
+        , column(
+          width = 6
           , sliderInput(
             inputId = ns("value_slider")
-            , label = div(icon("long-arrow-alt-right"), "Loading...")
+            , label = div(icon("filter"), "Loading...")
             , min = 1
             , max = 10
             , value = 5
@@ -64,13 +75,25 @@ statistic_table_ui <- function(id, field_df){
             , width = '100%'
           )
         )
+      )
+      , fluidRow(
+        column(
+          width = 6
+          , radioGroupButtons(
+            inputId = ns("table_view")
+            , label = NULL
+            , choices = c("summary", "details") %>%
+              set_names(c("Summary", "Details"))
+            , justified = TRUE
+          )
+        )
         , column(
           width = 6
           , div(
-            style = "display: inline-block;"
+            style = "display: inline-block; margin-top: 5px;"
             , awesomeRadio(
               inputId = ns("value_statistic")
-              , label = div(span(style = "font-size: 1.7rem;", HTML("&Sigma;")), "Statistic")
+              , label = NULL
               , choices = c("min", "mean", "max", "sd") %>% set_names(
                 c("Minimum", "Average", "Maximum", "Standard deviation")
               )
@@ -81,7 +104,7 @@ statistic_table_ui <- function(id, field_df){
           )
           , div(
             style = "display: inline-block;
-              right: 0; position: absolute; padding: 20px;"
+              right: 0; position: absolute; padding-right: 20px; top: 5px;"
             , icon("ellipsis-v")
           )
         )
@@ -89,8 +112,13 @@ statistic_table_ui <- function(id, field_df){
     )
     , div(
       class = "statistic__table-box"
-      , reactableOutput(
-        outputId = ns("statistic_rt")
+      , fluidRow(
+        column(
+          width = 12
+          , reactableOutput(
+            outputId = ns("statistic_rt")
+          )
+        )
       )
     )
   )
@@ -101,6 +129,8 @@ statistic_table_server <- function(id, init, data){
     id
     , function(input, output, session){
 
+      ns <- session$ns
+
       # Local constants --------------------------------------------------------
       k <- list(
         column_definitions = get_column_definitions()
@@ -109,8 +139,9 @@ statistic_table_server <- function(id, init, data){
       # Local reactive values --------------------------------------------------
       m <- reactiveValues(
         run_once = FALSE
-        , last_factor_select = NULL
+        , last_factor_col_select = NULL
         , slider_field = NULL
+        , updated_value_slider_label = NULL
         , slider_is_range = NULL
         , filter_factors = NULL
         , filter_values = NULL
@@ -119,18 +150,19 @@ statistic_table_server <- function(id, init, data){
       # Initiatlise ------------------------------------------------------------
       observe({
         if(m$run_once) return()
-        m$last_factor_select <- input$factor_select
+        m$last_factor_col_select <- input$factor_col_select
         m$slider_field <- init$slider_field$name
         m$slider_is_range <- FALSE
         m$factor_filter <- list()
         m$value_filter <- list()
         m$run_once <- TRUE
+
       })
 
       # Reactable data ---------------------------------------------------------
       rt_container <- reactive({
 
-        factor_select <- input$factor_select
+        factor_col_select <- input$factor_col_select
         value_select <- input$value_select
 
         factor_filter <- m$factor_filter
@@ -146,16 +178,16 @@ statistic_table_server <- function(id, init, data){
         }
 
         # Ensure group selection always has one element
-        if(is.null(factor_select)){
+        if(is.null(factor_col_select)){
           updateSelectizeInput(
             session
-            , inputId = "factor_select"
-            , selected = m$last_factor_select
+            , inputId = "factor_col_select"
+            , selected = m$last_factor_col_select
           )
           return()
         }
 
-        m$last_factor_select <- input$factor_select
+        m$last_factor_col_select <- input$factor_col_select
 
         # Make a copy of the data so that original is not edited
         df <- data %>% copy()
@@ -182,12 +214,12 @@ statistic_table_server <- function(id, init, data){
         }
 
         # Get count
-        df_result <- df[, .(count = .N), by = c(factor_select)]
+        df_result <- df[, .(count = .N), by = c(factor_col_select)]
 
         is_value_selected <- !is.null(value_select)
         if(is_value_selected){
           df_val <- df[, lapply(.SD, statistic_function)
-                         , by = c(factor_select)
+                         , by = c(factor_col_select)
                          , .SDcols = value_select
           ][, ..value_select]
 
@@ -214,7 +246,7 @@ statistic_table_server <- function(id, init, data){
 
           # Get range
           slider_range <- data[[m$slider_field]] %>% range(na.rm = TRUE)
-          slider_label <- init$field[[m$slider_field]]$display_name |>
+          slider_label <- init$field[[m$slider_field]]$display_name %>%
             paste("(range)")
 
           range_class <- slider_range[1] %>% class()
@@ -234,7 +266,6 @@ statistic_table_server <- function(id, init, data){
             , min = slider_range[1]
             , max = slider_range[2]
           )
-
         }
       )
 
@@ -246,6 +277,18 @@ statistic_table_server <- function(id, init, data){
           slider <- input$value_slider
           m$value_filter <- list(slider) %>%
             set_names(m$slider_field)
+
+          # Update label with filter icon - terrible workaround!
+          slider_label <- init$field[[m$slider_field]]$display_name %>%
+            paste("(range)")
+
+          session$sendCustomMessage(
+            'change-slider-label'
+            , list(
+              id = ns("value_slider")
+              , label = slider_label
+            )
+          )
 
         }, ignoreInit = TRUE
       )

@@ -16,5 +16,5 @@ function(input, output, session){
     , field = ac$field
   )
   data <- get_data()
-  statistic_table_server("example", init, data)
+  statistic_table_server("main", init, data)
 }
