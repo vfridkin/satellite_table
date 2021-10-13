@@ -73,17 +73,21 @@ get_column_definitions <- function(){
   df[, .(display_name, display_decimals)] %>%
     pmap(
       function(display_name, display_decimals){
-        col_def <- colDef(
-          name = display_name
-        )
-        if(!is.na(display_decimals)){
-          col_def <- colDef(
-            name = display_name
-            , filterable = FALSE
-            , format = colFormat(separators = TRUE, digits = display_decimals)
-          )
+
+        this_format <- if(is.na(display_decimals)){NULL} else {
+          colFormat(separators = TRUE, digits = display_decimals)
         }
-        col_def
+
+        this_footer <- if(display_name != "Count"){NULL} else {
+          footer = function(values) formatC(sum(values), big.mark = ",", digits = 0)
+        }
+
+        colDef(
+          name = display_name
+          , filterable = FALSE
+          , format = this_format
+          , footer = this_footer
+        )
       }
     ) %>%
     set_names(df$name)

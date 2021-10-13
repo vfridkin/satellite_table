@@ -66,15 +66,23 @@ statistic_table_ui <- function(id, field_df){
         )
         , column(
           width = 6
-          , awesomeRadio(
-            inputId = ns("value_statistic")
-            , label = div(span(style = "font-size: 1.7rem;", HTML("&Sigma;")), "Statistic")
-            , choices = c("min", "mean", "max", "sd") %>% set_names(
-              c("Minimum", "Average", "Maximum", "Standard deviation")
+          , div(
+            style = "display: inline-block;"
+            , awesomeRadio(
+              inputId = ns("value_statistic")
+              , label = div(span(style = "font-size: 1.7rem;", HTML("&Sigma;")), "Statistic")
+              , choices = c("min", "mean", "max", "sd") %>% set_names(
+                c("Minimum", "Average", "Maximum", "Standard deviation")
+              )
+              , selected = "mean"
+              , inline = TRUE
+              , status = "primary"
             )
-            , selected = "mean"
-            , inline = TRUE
-            , status = "primary"
+          )
+          , div(
+            style = "display: inline-block;
+              right: 0; position: absolute; padding: 20px;"
+            , icon("ellipsis-v")
           )
         )
       )
@@ -251,11 +259,18 @@ statistic_table_server <- function(id, init, data){
           need(rt, "Loading...")
         )
 
+        col_def <- rt$columns %>% copy()
+        col_def[1][[1]]$footer <- "Total"
+
         reactable(
           rt$data
-          , columns = rt$columns
+          , columns = col_def
           , striped = TRUE
+          , highlight = TRUE
           , minRows = 10
+          , defaultColDef = colDef(
+            footerStyle = list(fontWeight = "bold")
+            )
         )
 
       })
