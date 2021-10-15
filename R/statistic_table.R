@@ -229,6 +229,9 @@ statistic_table_server <- function(id, init, data){
         # Order by decreasing count
         df_result <- df_result %>% setorder(-count)
 
+        # Add bars
+        df_result$count <- add_bars(df_result$count)
+
         # Get column definition
         col_def <- k$column_definitions[names(df_result)]
 
@@ -303,7 +306,7 @@ statistic_table_server <- function(id, init, data){
         )
 
         col_def <- rt$columns %>% copy()
-        col_def[1][[1]]$footer <- "Total"
+        # col_def[1][[1]]$footer <- "Total"
 
         reactable(
           rt$data
@@ -311,9 +314,9 @@ statistic_table_server <- function(id, init, data){
           , striped = TRUE
           , highlight = TRUE
           , minRows = 10
-          , defaultColDef = colDef(
-            footerStyle = list(fontWeight = "bold")
-            )
+          # , defaultColDef = colDef(
+          #   footerStyle = list(fontWeight = "bold")
+          #   )
         )
 
       })

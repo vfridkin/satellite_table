@@ -10,7 +10,8 @@
 #  "Y88888P"  8888888 Y8P 888   T88b
 
 fluidPage(
-  includeCSS("www/style.css")
+  includeCSS("www/animations.css")
+  , includeCSS("www/style.css")
   , includeScript("www/script.js")
   , header_element(
     title = "Satellites"

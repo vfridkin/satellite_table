@@ -86,7 +86,8 @@ get_column_definitions <- function(){
           name = display_name
           , filterable = FALSE
           , format = this_format
-          , footer = this_footer
+          , html = TRUE
+          # , footer = this_footer
         )
       }
     ) %>%
@@ -106,3 +107,41 @@ replace_col_names <- function(df){
   names(df) <- df_names
   df
 }
+
+# Add cell bars
+add_bars <- function(col){
+
+  bar_html <- function(percent, value, pad_width){
+
+    sort_value <- formatC(col, width = pad_width, format = "d", flag = "0")
+
+    paste0('<div class="rt-td rt-align-right"
+sort-value="', sort_value,'"
+role="cell"
+style="
+flex: 100 0 auto;
+background-image: linear-gradient(to right
+, #ff7a14, #8a3c00 '
+, percent, '%
+, transparent '
+, percent, '%);
+transition: all 1s;
+background-size: 100% 75%;
+border-top: transparent;
+background-repeat: no-repeat;
+background-position: center center;">
+<div class="rt-td-inner" style = "background: transparent">',value ,'</div>
+</div>'
+    ) %>% str_remove_all("\n")
+  }
+
+  max_val <- max(col)
+
+  percent <- (100*col/max_val) %>% round()
+  pad_width <- nchar(col) %>% max()
+
+  bar_html(percent, col, pad_width)
+
+}
+
+

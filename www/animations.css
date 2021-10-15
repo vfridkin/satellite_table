@@ -1,0 +1,77 @@
+/* Animations */
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+@keyframes flyIn {
+  from {
+    opacity:0;
+    left: 0%;
+    top: 60%;
+    transform: translate(-50%, -50%) scale(0) rotate(40deg);
+  }
+  to {
+    opacity:1;
+    left: 50%;
+    top: 60%;
+    transform: translate(-50%, -50%) scale(0.7) rotate(0deg);
+  }
+}
+
+@keyframes raiseUp {
+  from {
+    left: 50%;
+    top: 20%;
+    transform: translate(-50%, -50%);
+  }
+  to {
+    left: 50%;
+    top: 6%;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+}
+
+
+@keyframes flyUp {
+  from {
+    left: 50%;
+    top: 60%;
+    transform: translate(-50%, -50%) scale(0.7) rotate(0deg);
+  }
+  to {
+    left: 2%;
+    top: 7%;
+    transform: translate(-50%, -50%) scale(0.3) rotate(-70deg);
+  }
+}
+
+@keyframes moveInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-10rem); }
+  80% {
+    opacity: 0.9;
+    transform: translateX(1rem); }
+  100% {
+    opacity: 1;
+    transform: translateX(0); } }
+
+@keyframes moveInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(10rem); }
+  80% {
+    opacity: 0.9;
+    transform: translateX(-1rem); }
+  100% {
+    opacity: 1;
+    transform: translateX(0); } }
