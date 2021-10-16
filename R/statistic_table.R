@@ -3,7 +3,7 @@ statistic_table_ui <- function(id, field_df){
 
   ns <- NS(id)
 
-  # Set up choices for selectize inputs ----------------------------------------
+  # Set up choices for selectize inputs -----------------------------------------------------------
   field_df <- field_df[order(display_name),]
   choices <- c("factor", "value", "date") %>%
     {set_names(
@@ -18,7 +18,15 @@ statistic_table_ui <- function(id, field_df){
   # Allow dates to be selected as values
   choices_value <- c(choices$value, choices$date) %>% sort()
 
-  # Main UI --------------------------------------------------------------------
+  # Settings init
+  settings_init <- list(
+    icon = "ellipsis-v"
+    , choices_value = choices_value
+  )
+
+
+
+  # Main UI ---------------------------------------------------------------------------------------
   div(
     class = "statistic_container"
     , div(
@@ -105,7 +113,7 @@ statistic_table_ui <- function(id, field_df){
           , div(
             style = "display: inline-block;
               right: 0; position: absolute; padding-right: 20px; top: 5px;"
-            , icon("ellipsis-v")
+            , table_settings_ui("statistic_table", settings_init)
           )
         )
       )
@@ -131,12 +139,12 @@ statistic_table_server <- function(id, init, data){
 
       ns <- session$ns
 
-      # Local constants --------------------------------------------------------
+      # Local constants ---------------------------------------------------------------------------
       k <- list(
         column_definitions = get_column_definitions()
       )
 
-      # Local reactive values --------------------------------------------------
+      # Local reactive values ---------------------------------------------------------------------
       m <- reactiveValues(
         run_once = FALSE
         , last_factor_col_select = NULL
@@ -147,7 +155,7 @@ statistic_table_server <- function(id, init, data){
         , filter_values = NULL
       )
 
-      # Initiatlise ------------------------------------------------------------
+      # Initialize --------------------------------------------------------------------------------
       observe({
         if(m$run_once) return()
         m$last_factor_col_select <- input$factor_col_select
@@ -159,7 +167,12 @@ statistic_table_server <- function(id, init, data){
 
       })
 
-      # Reactable data ---------------------------------------------------------
+      # Table settings ----------------------------------------------------------------------------
+
+      rt_settings <- table_settings_server("statistic_table")
+
+
+      # Reactable data ----------------------------------------------------------------------------
       rt_container <- reactive({
 
         factor_col_select <- input$factor_col_select
@@ -242,7 +255,7 @@ statistic_table_server <- function(id, init, data){
 
       })
 
-      # Change slider definition -----------------------------------------------
+      # Change slider definition ------------------------------------------------------------------
       observeEvent(
         m$slider_field
         , {
@@ -272,7 +285,7 @@ statistic_table_server <- function(id, init, data){
         }
       )
 
-      # Change slider values ---------------------------------------------------
+      # Change slider values ----------------------------------------------------------------------
       observeEvent(
         input$value_slider
         , {
@@ -297,7 +310,7 @@ statistic_table_server <- function(id, init, data){
       )
 
 
-      # Reactable --------------------------------------------------------------
+      # Reactable ---------------------------------------------------------------------------------
       output$statistic_rt <- renderReactable({
 
         rt <- rt_container()
