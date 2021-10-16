@@ -34,59 +34,6 @@ statistic_table_ui <- function(id, field_df){
       , fluidRow(
         column(
           width = 6
-          , selectizeInput(
-            inputId = ns("factor_col_select")
-            , label = div(icon("columns"), "Factors")
-            , choices = choices$factor
-            , selected = choices$factor[1]
-            , multiple = TRUE
-            , width = '100%'
-            , options = list(plugins = list('drag_drop'))
-          )
-        )
-        , column(
-          width = 6
-          , selectizeInput(
-            inputId = ns("value_select")
-            , label = div(icon("columns"), "Values")
-            , choices = choices_value
-            , selected = ""
-            , multiple = TRUE
-            , width = '100%'
-            , options = list(plugins = list('drag_drop'))
-          )
-        )
-      )
-      , fluidRow(
-        column(
-          width = 6
-          , selectizeInput(
-            inputId = ns("factor_filter_select")
-            , label = div(icon("filter"), "Factors")
-            , choices = ""
-            , selected = ""
-            , multiple = TRUE
-            , width = '100%'
-          )
-        )
-        , column(
-          width = 6
-          , sliderInput(
-            inputId = ns("value_slider")
-            , label = div(icon("filter"), "Loading...")
-            , min = 1
-            , max = 10
-            , value = 5
-            , ticks = FALSE
-            , sep = ""
-            , animate = TRUE
-            , width = '100%'
-          )
-        )
-      )
-      , fluidRow(
-        column(
-          width = 6
           , radioGroupButtons(
             inputId = ns("table_view")
             , label = NULL
@@ -98,22 +45,87 @@ statistic_table_ui <- function(id, field_df){
         , column(
           width = 6
           , div(
-            style = "display: inline-block; margin-top: 5px;"
+            style = "display: inline-block; margin-top: 6px;"
+            , materialSwitch(
+              inputId = ns("view_controls_switch"),
+              label = "View controls",
+              value = FALSE,
+              status = "danger"
+            )
+          )
+          , div(
+            class = "table_controls"
+            , style = "display: inline-block; position: absolute; right: 0;"
+            , table_settings_ui("statistic_table", settings_init)
+          )
+        )
+      )
+      , div(
+        class = "table_controls"
+        , fluidRow(
+          column(
+            width = 6
+            , selectizeInput(
+              inputId = ns("factor_col_select")
+              , label = div(icon("columns"), "Factors")
+              , choices = choices$factor
+              , selected = choices$factor[1]
+              , multiple = TRUE
+              , width = '100%'
+              , options = list(plugins = list('drag_drop'))
+            )
+          )
+          , column(
+            width = 6
+            , selectizeInput(
+              inputId = ns("value_select")
+              , label = div(icon("columns"), "Values")
+              , choices = choices_value
+              , selected = ""
+              , multiple = TRUE
+              , width = '100%'
+              , options = list(plugins = list('drag_drop'))
+            )
+          )
+        )
+        , fluidRow(
+          column(
+            width = 6
+            , selectizeInput(
+              inputId = ns("factor_filter_select")
+              , label = div(icon("filter"), "Factors")
+              , choices = ""
+              , selected = ""
+              , multiple = TRUE
+              , width = '100%'
+            )
+          )
+          , column(
+            width = 3
+            , sliderInput(
+              inputId = ns("value_slider")
+              , label = div(icon("filter"), "Loading...")
+              , min = 1
+              , max = 10
+              , value = 5
+              , ticks = FALSE
+              , sep = ""
+              , animate = TRUE
+              , width = '100%'
+            )
+          )
+          , column(
+            width = 3
             , awesomeRadio(
               inputId = ns("value_statistic")
-              , label = NULL
+              , label = "Summary statistic"
               , choices = c("min", "mean", "max", "sd") %>% set_names(
-                c("Minimum", "Average", "Maximum", "Standard deviation")
+                c("Min", "Avg", "Max", "Std dev")
               )
               , selected = "mean"
               , inline = TRUE
               , status = "primary"
             )
-          )
-          , div(
-            style = "display: inline-block;
-              right: 0; position: absolute; padding-right: 20px; top: 5px;"
-            , table_settings_ui("statistic_table", settings_init)
           )
         )
       )
@@ -232,8 +244,8 @@ statistic_table_server <- function(id, init, data){
         is_value_selected <- !is.null(value_select)
         if(is_value_selected){
           df_val <- df[, lapply(.SD, statistic_function)
-                         , by = c(factor_col_select)
-                         , .SDcols = value_select
+                       , by = c(factor_col_select)
+                       , .SDcols = value_select
           ][, ..value_select]
 
           df_result <- df_result %>% cbind(df_val)
@@ -254,6 +266,16 @@ statistic_table_server <- function(id, init, data){
         )
 
       })
+
+      # View/hide controls ------------------------------------------------------------------------
+
+      observeEvent(
+        input$view_controls_switch
+        , {
+          session$sendCustomMessage("view_controls_switch", input$view_controls_switch)
+        }
+      )
+
 
       # Change slider definition ------------------------------------------------------------------
       observeEvent(

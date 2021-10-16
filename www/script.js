@@ -16,24 +16,26 @@ $(function(){
 
 });
 
-Shiny.addCustomMessageHandler('change-slider-label', function(slider) {
+Shiny.addCustomMessageHandler(
+  'view_controls_switch'
+  , function(visible) {
+      visible
+      ? $('.table_controls').show(500)
+      : $('.table_controls').hide(500)
+})
 
-  const label_id = `${slider.id}-label`;
-  const el = document.getElementById(label_id);
-  el.innerHTML = `
-    <div>
-      <i class = "fa fa-filter" role="presentation" aria-label="filter icon">
-      </i>
-      ${slider.label}
-    </div>
-  `;
+Shiny.addCustomMessageHandler(
+  'change-slider-label'
+  , function(slider) {
 
-
-
-});
-
-// #main-value_slider-label
-
-
-// main-value_slider-label
-// main-value_slider-label
+    const label_id = `${slider.id}-label`;
+    const el = document.getElementById(label_id);
+    el.innerHTML = `
+      <div>
+        <i class = "fa fa-filter" role="presentation" aria-label="filter icon">
+        </i>
+        ${slider.label}
+      </div>
+    `;
+  }
+);
