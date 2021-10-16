@@ -237,3 +237,14 @@ div.statistic__select-box div.selectize-input.items.not-full.has-options.has-ite
 }
 
 
+/* Settings */
+
+#statistic_table-settings_dropdown {
+  background: transparent;
+}
+
+#sw-content-statistic_table-settings_dropdown,
+#sw-content-statistic_table-settings_dropdown div
+{
+  background-color: var(--colour-base);
+}
