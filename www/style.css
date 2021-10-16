@@ -24,6 +24,7 @@
   --colour-desat-blue-lighter: #475d72;
   --colour-desat-blue-lightest: #56708a
   --colour-desat-blue-sater: 45,73,101;
+  --colour-desat-blue-darker: #293542
 
 
 }
@@ -218,13 +219,13 @@ div.statistic__select-box span.pause > i {
 
 /* Select box - factor choices */
 div.statistic__select-box div.selectize-input.items.not-full.has-options.has-items.ui-sortable > div {
-  text-shadow: 0 1px 0 rgb(--colour-desat-blue-sater);
+  text-shadow: 0 1px 0 rgb(--colour-desat-blue-darker);
   border-radius: 6px;
   background-color: var(--colour-desat-blue);
   background-image: linear-gradient(to bottom, var(--colour-desat-blue-lighter) var(--colour-desat-blue-lightest));
   background-repeat: repeat-x;
   box-shadow: 0 1px 0 rgb(255 255 255 / 20%), inset 0 1px rgb(0 0 0 / 3%);
-  color: white;
+  color: var(--colour-white);
   padding: 3px;
   padding-left: 6px;
   padding-right: 6px;
