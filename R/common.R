@@ -108,8 +108,13 @@ replace_col_names <- function(df){
   df
 }
 
-# Add cell bars
-add_bars <- function(col){
+# Add column name to cells in column
+add_col_name <- function(col, col_name){
+  paste0('<div data-col-name="',col_name ,'">',col ,'</div>')
+}
+
+# Add bars to column cells
+add_bars <- function(col, col_name){
 
   bar_html <- function(percent, value, pad_width){
 
@@ -142,6 +147,71 @@ background-position: center center;">
 
   bar_html(percent, col, pad_width)
 
+}
+
+# Combine adding col names and bars to cells
+add_html_to_cells <- function(df, settings, selected){
+
+  names(df) %>% walk(
+    function(col_name){
+
+      col <- df[[col_name]]
+
+      bars <- "count"
+
+      fn <- if(col_name %in% bars) add_bars else add_col_name
+      col <- col %>% fn(col_name)
+
+      df[[col_name]] <<- col
+    }
+  )
+
+  df
+}
+
+# Subset df by value filter from slider definition and value
+apply_value_filter <- function(df, slider, filtered, ac){
+
+  comparison <- if(slider$is_range) "%between%" else "<="
+
+  filter_col <- slider$field
+  group_as <- ac$field[[filter_col]]$group_as
+
+  if(group_as == "date"){
+    df$year <- df[[filter_col]] %>% format("%Y") %>% as.numeric()
+    filter_col <- "year"
+  }
+
+  filter_expression <- parse(
+    text = glue("{filter_col} {comparison} {filtered$value}")
+  )
+
+  # Remove NA values
+  df <- df[!is.na(df[[filter_col]])]
+
+  df[eval(filter_expression)]
+}
+
+# Column bind summary statistics to dataframe summarised by count
+add_statistic_cols <- function(dfc, df, value_statistic, selected){
+  statistic_function <- function(x){
+    res <- do.call(value_statistic, list(x, na.rm = TRUE))
+    if(value_statistic == "sd" && class(x) == "Date"){
+      res <- res %>%
+        format(big.mark = ",", digits = 0) %>%
+        paste("days")
+    }
+    res
+  }
+
+  cols <- selected$value
+
+  df_val <- df[, lapply(.SD, statistic_function)
+               , by = c(selected$factor)
+               , .SDcols = cols
+  ][, ..cols]
+
+  dfc %>% cbind(df_val)
 }
 
 

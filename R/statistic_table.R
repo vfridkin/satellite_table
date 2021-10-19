@@ -66,7 +66,7 @@ statistic_table_ui <- function(id, field_df){
           column(
             width = 6
             , selectizeInput(
-              inputId = ns("factor_col_select")
+              inputId = ns("factor_select")
               , label = div(icon("columns"), "Factors")
               , choices = choices$factor
               , selected = choices$factor[1]
@@ -159,7 +159,7 @@ statistic_table_server <- function(id, init, data){
       # Local reactive values ---------------------------------------------------------------------
       m <- reactiveValues(
         run_once = FALSE
-        , last_factor_col_select = NULL
+        , last_factor_select = NULL
         , slider_field = NULL
         , updated_value_slider_label = NULL
         , slider_is_range = NULL
@@ -170,7 +170,7 @@ statistic_table_server <- function(id, init, data){
       # Initialize --------------------------------------------------------------------------------
       observe({
         if(m$run_once) return()
-        m$last_factor_col_select <- input$factor_col_select
+        m$last_factor_select <- input$factor_select
         m$slider_field <- init$slider_field$name
         m$slider_is_range <- FALSE
         m$factor_filter <- list()
@@ -187,81 +187,65 @@ statistic_table_server <- function(id, init, data){
       # Reactable data ----------------------------------------------------------------------------
       rt_container <- reactive({
 
-        factor_col_select <- input$factor_col_select
-        value_select <- input$value_select
+        settings <- rt_settings()
+        value_statistic <- input$value_statistic
 
-        factor_filter <- m$factor_filter
-        value_filter <- m$value_filter
+        selected <- list(
+          factor = input$factor_select
+          , value = input$value_select
+        )
+        filtered <- list(
+          factor = m$factor_filter
+          , value = m$value_filter
+        )
+        slider <- list(
+          is_range = m$slider_is_range
+          , field = m$slider_field
+        )
 
-        statistic_function <- function(x){
-          fn <- input$value_statistic
-          res <- do.call(input$value_statistic, list(x, na.rm = TRUE))
-          if(fn == "sd" && class(x) == "Date"){
-            res <- res %>% format(big.mark = ",", digits = 0) %>% paste("days")
-          }
-          res
-        }
+        is_selected <- selected %>% map(~!is.null(.x))
+        is_filtered <- filtered %>% map(~length(.x) > 0)
 
         # Ensure group selection always has one element
-        if(is.null(factor_col_select)){
+        if(!is_selected$factor){
           updateSelectizeInput(
             session
-            , inputId = "factor_col_select"
-            , selected = m$last_factor_col_select
+            , inputId = "factor_select"
+            , selected = m$last_factor_select
           )
           return()
         }
 
-        m$last_factor_col_select <- input$factor_col_select
+        m$last_factor_select <- selected$factor
 
         # Make a copy of the data so that original is not edited
         df <- data %>% copy()
 
         # Apply value filters
-        if(length(value_filter) > 0){
-
-          comparison <- if(m$slider_is_range) "%between%" else "<="
-
-          filter_col <- m$slider_field
-          group_as <- ac$field[[filter_col]]$group_as
-
-          if(group_as == "date"){
-            df$year <- df[[filter_col]] %>% format("%Y") %>% as.numeric()
-            filter_col <- "year"
-          }
-
-          filter_expression <- parse(
-            text = glue("{filter_col} {comparison} {value_filter}")
-          )
-
-          df <- df[!is.na(df[[filter_col]])]
-          df <- df[eval(filter_expression)]
+        if(is_filtered$value){
+          df <- df %>% apply_value_filter(slider, filtered, ac)
         }
 
         # Get count
-        df_result <- df[, .(count = .N), by = c(factor_col_select)]
+        dfc <- df[, .(count = .N), by = c(selected$factor)]
 
-        is_value_selected <- !is.null(value_select)
-        if(is_value_selected){
-          df_val <- df[, lapply(.SD, statistic_function)
-                       , by = c(factor_col_select)
-                       , .SDcols = value_select
-          ][, ..value_select]
-
-          df_result <- df_result %>% cbind(df_val)
+        if(is_selected$value){
+          dfc <- dfc %>%
+            add_statistic_cols(df, value_statistic, selected)
         }
 
-        # Order by decreasing count
-        df_result <- df_result %>% setorder(-count)
+        # Sort
+        dfc <- dfc %>% setorder(-count)
 
-        # Add bars
-        df_result$count <- add_bars(df_result$count)
+        # Add html to cells for column names, bars
+        dfc <- dfc %>%
+          add_html_to_cells(settings, selected)
 
         # Get column definition
-        col_def <- k$column_definitions[names(df_result)]
+        col_def <- k$column_definitions[names(dfc)]
 
         list(
-          data = df_result
+          data = dfc
           , columns = col_def
         )
 
@@ -275,6 +259,62 @@ statistic_table_server <- function(id, init, data){
           session$sendCustomMessage("view_controls_switch", input$view_controls_switch)
         }
       )
+
+      # Double click item -------------------------------------------------------------------------
+      observeEvent(
+        input$double_click_selectize_item
+        , {
+          item <- input$double_click_selectize_item %T>% req()
+
+          if(item$container %>% str_detect("factor_select")){
+            message("selected factor: ", item$value)
+          }
+
+          if(item$container %>% str_detect("value_select")){
+            message("selected value: ", item$value)
+            m$slider_field <- item$value
+          }
+
+
+        }
+      )
+
+      # Double click factor cell ------------------------------------------------------------------
+
+      observeEvent(
+        input$double_click_cell
+        , {
+          cell <- input$double_click_cell %>% req()
+
+          has_col_name <- !is.null(cell$col_name)
+
+          if(has_col_name){
+
+            update_factor_filter(
+              session
+              , cell$col_name
+              , cell$value
+            )
+          }
+        }
+      )
+
+      update_factor_filter <- function(session, col_name, value){
+
+        current_filter <- input$factor_filter_select
+        new_filter <- paste(col_name, "=", value)
+
+        if(!new_filter %in% current_filter){
+
+          updateSelectizeInput(
+            session = session
+            , inputId = "factor_filter_select"
+            , choices = c(current_filter, new_filter)
+            , selected = c(current_filter, new_filter)
+          )
+        }
+      }
+
 
 
       # Change slider definition ------------------------------------------------------------------
@@ -349,6 +389,7 @@ statistic_table_server <- function(id, init, data){
           , striped = TRUE
           , highlight = TRUE
           , minRows = 10
+          , rowClass = JS("function(rowInfo){return rowInfo}")
           # , defaultColDef = colDef(
           #   footerStyle = list(fontWeight = "bold")
           #   )

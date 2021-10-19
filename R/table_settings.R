@@ -62,9 +62,26 @@ table_settings_server <- function(id){
     id
     , function(input, output, session){
 
+      # Local reactives ---------------------------------------------------------------------------
+      m <- reactiveValues(
+        run_once = FALSE
+        , out = NULL
+      )
+
+      settings <- reactive(
+        list(
+           slider_handles = input$slider_handles
+           , sort_by = input$sort_by
+           , bar_option = input$bar_option
+        )
+      )
 
 
-      # Return value -------------------------------------------------------------------
+      # Return value ------------------------------------------------------------------------------
+
+      return(
+        settings
+      )
 
 
     }
