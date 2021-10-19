@@ -28,3 +28,6 @@ list.files("R", full.names = TRUE) |> walk(source)
 
 # Load app config
 ac <- load_config()
+
+# Remove scientific notation
+options(scipen=999)

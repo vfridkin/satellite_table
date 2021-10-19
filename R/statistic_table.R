@@ -153,7 +153,7 @@ statistic_table_server <- function(id, init, data){
 
       # Local constants ---------------------------------------------------------------------------
       k <- list(
-        column_definitions = get_column_definitions()
+        column_definitions = get_column_definitions(ac)
       )
 
       # Local reactive values ---------------------------------------------------------------------
@@ -237,13 +237,38 @@ statistic_table_server <- function(id, init, data){
         # Sort
         dfc <- dfc %>% setorder(-count)
 
+        apply_column_definitions <- function(df, field_config){
+
+          names(df) %>% walk(
+            function(col_name){
+              config <- field_config[[col_name]]
+              display_decimals <- config$display_decimals
+
+              col <- df[[col_name]]
+
+              if(!is.na(display_decimals)){
+                col <- col %>% format(big.mark = ",", digits = display_decimals)
+                df[[col_name]] <<- col
+              }
+            }
+          )
+
+          df
+        }
+
+        # Apply column definitions
+        dfc <- dfc %>%
+          apply_column_definitions(ac$field)
+
+
         # Add html to cells for column names, bars
         dfc <- dfc %>%
           add_html_to_cells(settings, selected)
 
-        # Get column definition
+        # Column definitions
         col_def <- k$column_definitions[names(dfc)]
 
+        # Return
         list(
           data = dfc
           , columns = col_def
@@ -380,19 +405,13 @@ statistic_table_server <- function(id, init, data){
           need(rt, "Loading...")
         )
 
-        col_def <- rt$columns %>% copy()
-        # col_def[1][[1]]$footer <- "Total"
-
         reactable(
           rt$data
-          , columns = col_def
+          , columns = rt$columns
           , striped = TRUE
           , highlight = TRUE
           , minRows = 10
           , rowClass = JS("function(rowInfo){return rowInfo}")
-          # , defaultColDef = colDef(
-          #   footerStyle = list(fontWeight = "bold")
-          #   )
         )
 
       })

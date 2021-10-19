@@ -66,28 +66,18 @@ get_data <- function(){
   df
 }
 
-get_column_definitions <- function(){
+get_column_definitions <- function(ac){
 
   df <- ac$field_df
 
-  df[, .(display_name, display_decimals)] %>%
+  df[, .(display_name)] %>%
     pmap(
-      function(display_name, display_decimals){
-
-        this_format <- if(is.na(display_decimals)){NULL} else {
-          colFormat(separators = TRUE, digits = display_decimals)
-        }
-
-        this_footer <- if(display_name != "Count"){NULL} else {
-          footer = function(values) formatC(sum(values), big.mark = ",", digits = 0)
-        }
+      function(display_name){
 
         colDef(
           name = display_name
           , filterable = FALSE
-          , format = this_format
           , html = TRUE
-          # , footer = this_footer
         )
       }
     ) %>%
@@ -139,6 +129,11 @@ background-position: center center;">
 </div>'
     ) %>% str_remove_all("\n")
   }
+
+  # Remove commas and make numeric
+  col <- col %>%
+    str_remove_all(",") %>%
+    as.numeric()
 
   max_val <- max(col)
 
