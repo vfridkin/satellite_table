@@ -63,6 +63,10 @@ get_data <- function(){
       }
     )
 
+  # Replace NA factors with 'unknown'
+  factor_cols <- ac$field_df[group_as == "factor"]$name
+  for (col in factor_cols) df[is.na(get(col)), (col) := "unknown"]
+
   df
 }
 
@@ -163,13 +167,23 @@ add_html_to_cells <- function(df, settings, selected){
 
   df
 }
+# Subset df by factor filter
+apply_factor_filter <- function(df, filtered){
+  filtered$factor %>% pmap(
+    function(name, value){
+      df <<- df[get(name) == value]
+    }
+  )
+  df
+}
 
 # Subset df by value filter from slider definition and value
 apply_value_filter <- function(df, slider, filtered, ac){
 
   comparison <- if(slider$is_range) "%between%" else "<="
+  filter <- filtered$value[1]
 
-  filter_col <- slider$field
+  filter_col <- filter$name
   group_as <- ac$field[[filter_col]]$group_as
 
   if(group_as == "date"){
@@ -178,7 +192,7 @@ apply_value_filter <- function(df, slider, filtered, ac){
   }
 
   filter_expression <- parse(
-    text = glue("{filter_col} {comparison} {filtered$value}")
+    text = glue("{filter_col} {comparison} {filter$value}")
   )
 
   # Remove NA values
@@ -209,4 +223,6 @@ add_statistic_cols <- function(dfc, df, value_statistic, selected){
   dfc %>% cbind(df_val)
 }
 
-
+# Round up/down to significant digits
+floor_dec <- function(x, digits=1) round(x - 5*10^(-digits-1), digits)
+ceiling_dec <- function(x, digits=1) round(x + 5*10^(-digits-1), digits)

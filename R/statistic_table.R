@@ -109,7 +109,7 @@ statistic_table_ui <- function(id, field_df){
               , max = 10
               , value = 5
               , ticks = FALSE
-              , sep = ""
+              , sep = ","
               , animate = TRUE
               , width = '100%'
             )
@@ -154,6 +154,7 @@ statistic_table_server <- function(id, init, data){
       # Local constants ---------------------------------------------------------------------------
       k <- list(
         column_definitions = get_column_definitions(ac)
+        , max_factor_filter_choices = 10
       )
 
       # Local reactive values ---------------------------------------------------------------------
@@ -163,8 +164,9 @@ statistic_table_server <- function(id, init, data){
         , slider_field = NULL
         , updated_value_slider_label = NULL
         , slider_is_range = NULL
-        , filter_factors = NULL
-        , filter_values = NULL
+        , factor_filter = NULL
+        , value_filter = NULL
+        , factor_filter_choices = NULL
       )
 
       # Initialize --------------------------------------------------------------------------------
@@ -173,8 +175,20 @@ statistic_table_server <- function(id, init, data){
         m$last_factor_select <- input$factor_select
         m$slider_field <- init$slider_field$name
         m$slider_is_range <- FALSE
-        m$factor_filter <- list()
-        m$value_filter <- list()
+        m$factor_filter <- data.table(
+          name = character(0)
+          , display = character(0)
+          , value = character(0)
+          , input_name = character(0)
+          , input_display = character(0)
+        )
+        m$value_filter <- data.table(
+          name = character(0)
+          , display = character(0)
+          , value = numeric(0)
+        )
+        m$factor_filter_choices <- m$factor_filter %>% copy()
+
         m$run_once <- TRUE
 
       })
@@ -204,7 +218,7 @@ statistic_table_server <- function(id, init, data){
         )
 
         is_selected <- selected %>% map(~!is.null(.x))
-        is_filtered <- filtered %>% map(~length(.x) > 0)
+        is_filtered <- filtered %>% map(~nrow(.x) > 0)
 
         # Ensure group selection always has one element
         if(!is_selected$factor){
@@ -221,10 +235,20 @@ statistic_table_server <- function(id, init, data){
         # Make a copy of the data so that original is not edited
         df <- data %>% copy()
 
+        # Apply factor filters
+        if(is_filtered$factor){
+          df <- df %>% apply_factor_filter(filtered)
+        }
+
         # Apply value filters
         if(is_filtered$value){
           df <- df %>% apply_value_filter(slider, filtered, ac)
         }
+
+        # Exit if filtered data has no rows
+        validate(
+          need(nrow(df) > 0, "No results - try removing filters")
+        )
 
         # Get count
         dfc <- df[, .(count = .N), by = c(selected$factor)]
@@ -314,31 +338,82 @@ statistic_table_server <- function(id, init, data){
           has_col_name <- !is.null(cell$col_name)
 
           if(has_col_name){
-
             update_factor_filter(
               session
               , cell$col_name
               , cell$value
+              , ac
             )
           }
         }
       )
 
-      update_factor_filter <- function(session, col_name, value){
+      update_factor_filter <- function(session, col_name, value, ac){
 
-        current_filter <- input$factor_filter_select
-        new_filter <- paste(col_name, "=", value)
+        display_name <- ac$field[[col_name]]$display_name
 
-        if(!new_filter %in% current_filter){
+        new_row <- data.table(
+          name = col_name
+          , display = display_name
+          , value = value
+          , input_name = paste(col_name, "=", value)
+          , input_display = paste(display_name, "=", value)
+        )
 
-          updateSelectizeInput(
-            session = session
-            , inputId = "factor_filter_select"
-            , choices = c(current_filter, new_filter)
-            , selected = c(current_filter, new_filter)
-          )
+        # Get current choices
+        choices_df <- m$factor_filter_choices
+
+        # Check if new row is already in choices
+        is_new_choice <- !new_row$input_name %in% choices_df$input_name
+        if(is_new_choice){
+          # Add to choices and reduce choices if over max
+          choices_df <- new_row %>% list(choices_df) %>% rbindlist() %>% unique()
+          choice_row_count <- min(k$max_factor_filter_choices, nrow(choices_df))
+          choices_df <- choices_df[1:choice_row_count]
         }
+
+        # Get currently selected
+        selected <- input$factor_filter_select
+        selected_df <- choices_df[input_name %in% selected]
+
+        # Check if new row is already in selected
+        is_new_select <- !new_row$input_name %in% selected_df$input_name
+
+        # Exit if already in selection (as it would also be in choices)
+        if(!is_new_select) return()
+
+        # Add to currently selected
+        selected_df <- new_row %>% list(selected_df) %>% rbindlist()
+
+        # Convert dataframes to nameed vectors for updaing selectize input
+        choices <- choices_df$input_name %>% set_names(choices_df$input_display)
+        selected <- selected_df$input_name %>% set_names(selected_df$input_display)
+
+        updateSelectizeInput(
+          session = session
+          , inputId = "factor_filter_select"
+          , choices = choices
+          , selected = selected
+        )
+
+        m$factor_filter_choices <- choices_df
+
       }
+
+      observeEvent(
+        input$factor_filter_select
+        , {
+
+          m$factor_filter <- input$factor_filter_select %>% map(
+            function(x){
+              x_split <- x %>% str_split("=", simplify = TRUE) %>% str_trim()
+              data.table(name = x_split[1], value = x_split[2])
+            }
+          ) %>%
+            rbindlist()
+
+        }, ignoreNULL = FALSE
+      )
 
 
 
@@ -348,16 +423,19 @@ statistic_table_server <- function(id, init, data){
         , {
 
           # Get range
+          slider_step <- ac$field[[m$slider_field]]$slider_step
           slider_range <- data[[m$slider_field]] %>% range(na.rm = TRUE)
           slider_label <- init$field[[m$slider_field]]$display_name %>%
             paste("(range)")
 
           range_class <- slider_range[1] %>% class()
+          # It seems step is in milliseconds for time (hence large number for year step)
+          time_format <- if(range_class == "Date") "%Y" else NULL
+          decimal_count <- nchar(slider_step)
 
-          if(range_class == "Date"){
-            slider_range <- slider_range %>%
-              format("%Y") %>%
-              as.numeric()
+          # Remove decimal point from decimal count
+          if(decimal_count > 1){
+            decimal_count <- decimal_count - 1
           }
 
           # update slider
@@ -367,7 +445,9 @@ statistic_table_server <- function(id, init, data){
             , label = slider_label
             , value = slider_range[2]
             , min = slider_range[1]
-            , max = slider_range[2]
+            , max = slider_range[2] %>% ceiling_dec(digits = decimal_count)
+            , step = slider_step
+            , timeFormat = time_format
           )
         }
       )
@@ -378,12 +458,18 @@ statistic_table_server <- function(id, init, data){
         , {
 
           slider <- input$value_slider
-          m$value_filter <- list(slider) %>%
-            set_names(m$slider_field)
+          if(ac$field[[m$slider_field]]$group_as == "date"){
+            slider <- slider %>% format("%Y") %>% as.numeric()
+          }
+
+          df <- data.table(
+            name = m$slider_field
+            , display = init$field[[m$slider_field]]$display_name
+            , value = slider
+          )
 
           # Update label with filter icon - terrible workaround!
-          slider_label <- init$field[[m$slider_field]]$display_name %>%
-            paste("(range)")
+          slider_label <- df$display[1] %>% paste("(range)")
 
           session$sendCustomMessage(
             'change-slider-label'
@@ -392,6 +478,8 @@ statistic_table_server <- function(id, init, data){
               , label = slider_label
             )
           )
+
+          m$value_filter <- df
 
         }, ignoreInit = TRUE
       )
