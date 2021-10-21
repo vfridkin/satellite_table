@@ -56,7 +56,7 @@ statistic_table_ui <- function(id, field_df){
           , div(
             class = "table_controls"
             , style = "display: inline-block; position: absolute; right: 0;"
-            , table_settings_ui("statistic_table", settings_init)
+            , table_settings_ui(ns("statistic_table"), settings_init)
           )
         )
       )
@@ -72,7 +72,9 @@ statistic_table_ui <- function(id, field_df){
               , selected = choices$factor[1]
               , multiple = TRUE
               , width = '100%'
-              , options = list(plugins = list('drag_drop'))
+              , options = list(
+                plugins = list('drag_drop')
+                )
             )
           )
           , column(
@@ -84,7 +86,10 @@ statistic_table_ui <- function(id, field_df){
               , selected = ""
               , multiple = TRUE
               , width = '100%'
-              , options = list(plugins = list('drag_drop'))
+              , options = list(
+                plugins = list('drag_drop')
+                , placeholder = "Click to add value columns"
+                )
             )
           )
         )
@@ -98,21 +103,15 @@ statistic_table_ui <- function(id, field_df){
               , selected = ""
               , multiple = TRUE
               , width = '100%'
+              , options = list(
+                placeholder = "Double click a table cell (on left side of count column)"
+
+              )
             )
           )
           , column(
             width = 3
-            , sliderInput(
-              inputId = ns("value_slider")
-              , label = div(icon("filter"), "Loading...")
-              , min = 1
-              , max = 10
-              , value = 5
-              , ticks = FALSE
-              , sep = ","
-              , animate = TRUE
-              , width = '100%'
-            )
+            , uiOutput(ns("value_slider_ui"))
           )
           , column(
             width = 3
@@ -162,6 +161,7 @@ statistic_table_server <- function(id, init, data){
         run_once = FALSE
         , last_factor_select = NULL
         , slider_field = NULL
+        , slider_handles = NULL
         , updated_value_slider_label = NULL
         , slider_is_range = NULL
         , factor_filter = NULL
@@ -197,11 +197,11 @@ statistic_table_server <- function(id, init, data){
 
       rt_settings <- table_settings_server("statistic_table")
 
-
       # Reactable data ----------------------------------------------------------------------------
       rt_container <- reactive({
 
         settings <- rt_settings()
+
         value_statistic <- input$value_statistic
 
         selected <- list(
@@ -415,42 +415,115 @@ statistic_table_server <- function(id, init, data){
         }, ignoreNULL = FALSE
       )
 
+      # Slider UI ---------------------------------------------------------------------------------
 
+      output$value_slider_ui <- renderUI({
 
-      # Change slider definition ------------------------------------------------------------------
+        # Get range
+        slider_step <- ac$field[[m$slider_field]]$slider_step
+        slider_range <- data[[m$slider_field]] %>% range(na.rm = TRUE)
+        slider_label <- init$field[[m$slider_field]]$display_name %>%
+          paste("(range)")
+
+        range_class <- slider_range[1] %>% class()
+        # It seems step is in milliseconds for time (hence large number for year step)
+        time_format <- if(range_class == "Date") "%Y" else NULL
+        decimal_count <- nchar(slider_step)
+
+        # Remove decimal point from decimal count
+        if(decimal_count > 1){
+          decimal_count <- decimal_count - 1
+        }
+
+        # Settings - one or two handles
+        if(m$slider_handles == "one"){
+          value <- slider_range[2]
+        } else {
+          value <- slider_range
+        }
+
+        sliderInput(
+          inputId = ns("value_slider")
+          , label = div(icon("filter"), slider_label)
+          , value = value
+          , min = slider_range[1]
+          , max = slider_range[2] %>% ceiling_dec(digits = decimal_count)
+          , step = slider_step
+          , timeFormat = time_format
+          , ticks = FALSE
+          , sep = ","
+          , animate = TRUE
+          , width = '100%'
+        )
+
+      })
+
+      # # Change slider definition ------------------------------------------------------------------
+      # observeEvent(
+      #   m$slider_field
+      #   , {
+      #
+      #     # Get range
+      #     slider_step <- ac$field[[m$slider_field]]$slider_step
+      #     slider_range <- data[[m$slider_field]] %>% range(na.rm = TRUE)
+      #     slider_label <- init$field[[m$slider_field]]$display_name %>%
+      #       paste("(range)")
+      #
+      #     range_class <- slider_range[1] %>% class()
+      #     # It seems step is in milliseconds for time (hence large number for year step)
+      #     time_format <- if(range_class == "Date") "%Y" else NULL
+      #     decimal_count <- nchar(slider_step)
+      #
+      #     # Remove decimal point from decimal count
+      #     if(decimal_count > 1){
+      #       decimal_count <- decimal_count - 1
+      #     }
+      #
+      #     # update slider
+      #     updateSliderInput(
+      #       session = session
+      #       , inputId = "value_slider"
+      #       , label = slider_label
+      #       , value = slider_range[2]
+      #       , min = slider_range[1]
+      #       , max = slider_range[2] %>% ceiling_dec(digits = decimal_count)
+      #       , step = slider_step
+      #       , timeFormat = time_format
+      #     )
+      #   }
+      # )
+
+      # Change number of slider handles -----------------------------------------------------------
+
       observeEvent(
-        m$slider_field
+        rt_settings()
         , {
-
-          # Get range
-          slider_step <- ac$field[[m$slider_field]]$slider_step
-          slider_range <- data[[m$slider_field]] %>% range(na.rm = TRUE)
-          slider_label <- init$field[[m$slider_field]]$display_name %>%
-            paste("(range)")
-
-          range_class <- slider_range[1] %>% class()
-          # It seems step is in milliseconds for time (hence large number for year step)
-          time_format <- if(range_class == "Date") "%Y" else NULL
-          decimal_count <- nchar(slider_step)
-
-          # Remove decimal point from decimal count
-          if(decimal_count > 1){
-            decimal_count <- decimal_count - 1
-          }
-
-          # update slider
-          updateSliderInput(
-            session = session
-            , inputId = "value_slider"
-            , label = slider_label
-            , value = slider_range[2]
-            , min = slider_range[1]
-            , max = slider_range[2] %>% ceiling_dec(digits = decimal_count)
-            , step = slider_step
-            , timeFormat = time_format
-          )
+          settings <- rt_settings()
+          m$slider_handles <- settings$slider_handles
         }
       )
+
+      # observeEvent(
+      #   m$slider_handles
+      #   , {
+      #     handles <- m$slider_handles
+      #     selected <- input$value_slider %>% tail(1)
+      #
+      #     if(handles == "two"){
+      #       slider_range <- data[[m$slider_field]] %>% range(na.rm = TRUE)
+      #       selected <- c(slider_range[1], selected)
+      #     }
+      #
+      #     # update slider
+      #     updateSliderInput(
+      #       session = session
+      #       , inputId = "value_slider"
+      #       , value = selected
+      #     )
+      #
+      #   }
+      # )
+
 
       # Change slider values ----------------------------------------------------------------------
       observeEvent(
@@ -468,16 +541,16 @@ statistic_table_server <- function(id, init, data){
             , value = slider
           )
 
-          # Update label with filter icon - terrible workaround!
-          slider_label <- df$display[1] %>% paste("(range)")
-
-          session$sendCustomMessage(
-            'change-slider-label'
-            , list(
-              id = ns("value_slider")
-              , label = slider_label
-            )
-          )
+          # # Update label with filter icon - terrible workaround!
+          # slider_label <- df$display[1] %>% paste("(range)")
+          #
+          # session$sendCustomMessage(
+          #   'change-slider-label'
+          #   , list(
+          #     id = ns("value_slider")
+          #     , label = slider_label
+          #   )
+          # )
 
           m$value_filter <- df
 

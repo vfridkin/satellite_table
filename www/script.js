@@ -47,8 +47,6 @@ $(function(){
   );
 
 
-
-
 });
 
 // Hide/show table controls
@@ -60,8 +58,9 @@ Shiny.addCustomMessageHandler(
       : $('.table_controls').hide(500)
 })
 
+/*
 // Workaround for icon in slider label - without it the label shows [object object] on update
-Shiny.addCustomMessageHandler(
+ Shiny.addCustomMessageHandler(
   'change-slider-label'
   , function(slider) {
 
@@ -76,3 +75,4 @@ Shiny.addCustomMessageHandler(
     `;
   }
 );
+*/

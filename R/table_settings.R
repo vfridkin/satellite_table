@@ -15,6 +15,7 @@ table_settings_ui <- function(id, init){
             , label = "Slider handles"
             , choices = c("one", "two") %>%
               set_names(c("One", "Two"))
+            , selected = "one"
             , justified = TRUE
           )
         )
@@ -40,6 +41,7 @@ table_settings_ui <- function(id, init){
             , label = "Value columns with bars"
             , choices = c("count", "sort", "all") %>%
               set_names(c("Count", "Sorted", "All"))
+            , selected = "count"
             , justified = TRUE
           )
         )
@@ -68,13 +70,27 @@ table_settings_server <- function(id){
         , out = NULL
       )
 
-      settings <- reactive(
+      # observeEvent(
+      #   list(
+      #     input$slider_handles
+      #     , input$sort_by
+      #     , input$bar_option
+      #   )
+      #   , {
+      #     browser()
+      #   }
+      # )
+
+      settings <- reactive({
+
         list(
-           slider_handles = input$slider_handles
-           , sort_by = input$sort_by
-           , bar_option = input$bar_option
+          slider_handles = input$slider_handles
+          , sort_by = input$sort_by
+          , bar_option = input$bar_option
         )
-      )
+      })
+
+
 
 
       # Return value ------------------------------------------------------------------------------
@@ -85,7 +101,7 @@ table_settings_server <- function(id){
 
 
     }
-)}
+  )}
 
 
 
