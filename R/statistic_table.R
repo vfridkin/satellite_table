@@ -337,10 +337,14 @@ statistic_table_server <- function(id, init, data){
 
           has_col_name <- !is.null(cell$col_name)
 
-          # Seperate factor and value cell dblclicks
-          browser()
+          # Exit if cell has no column name
+          if(!has_col_name) return()
 
-          if(has_col_name){
+          # Seperate factor and value cell dblclicks
+          group_as <- ac$field[[cell$col_name]]$group_as
+
+          # Send factor cell double clicks to factor filter
+          if(group_as == "factor"){
             update_factor_filter(
               session
               , cell$col_name
@@ -348,6 +352,15 @@ statistic_table_server <- function(id, init, data){
               , ac
             )
           }
+
+          # Send value cell double clicks to value slider
+          if(group_as == "value"){
+
+            browser()
+
+          }
+
+
         }
       )
 
