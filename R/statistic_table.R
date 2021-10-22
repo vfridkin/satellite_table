@@ -153,7 +153,6 @@ statistic_table_server <- function(id, init, data){
       # Local constants ---------------------------------------------------------------------------
       k <- list(
         column_definitions = get_column_definitions(ac)
-        , max_factor_filter_choices = 10
       )
 
       # Local reactive values ---------------------------------------------------------------------
@@ -174,6 +173,7 @@ statistic_table_server <- function(id, init, data){
         if(m$run_once) return()
         m$last_factor_select <- input$factor_select
         m$slider_field <- init$slider_field$name
+        m$slider_handles <- "one"
         m$slider_is_range <- FALSE
         m$factor_filter <- data.table(
           name = character(0)
@@ -337,6 +337,9 @@ statistic_table_server <- function(id, init, data){
 
           has_col_name <- !is.null(cell$col_name)
 
+          # Seperate factor and value cell dblclicks
+          browser()
+
           if(has_col_name){
             update_factor_filter(
               session
@@ -351,6 +354,8 @@ statistic_table_server <- function(id, init, data){
       update_factor_filter <- function(session, col_name, value, ac){
 
         display_name <- ac$field[[col_name]]$display_name
+
+        settings <- rt_settings()
 
         new_row <- data.table(
           name = col_name
@@ -368,7 +373,7 @@ statistic_table_server <- function(id, init, data){
         if(is_new_choice){
           # Add to choices and reduce choices if over max
           choices_df <- new_row %>% list(choices_df) %>% rbindlist() %>% unique()
-          choice_row_count <- min(k$max_factor_filter_choices, nrow(choices_df))
+          choice_row_count <- min(settings$max_factor_filter_choices, nrow(choices_df))
           choices_df <- choices_df[1:choice_row_count]
         }
 
@@ -435,12 +440,22 @@ statistic_table_server <- function(id, init, data){
           decimal_count <- decimal_count - 1
         }
 
-        # Settings - one or two handles
-        if(m$slider_handles == "one"){
-          value <- slider_range[2]
-        } else {
-          value <- slider_range
-        }
+        tryCatch(
+          {
+            # Settings - one or two handles
+            if(m$slider_handles == "one"){
+              value <- slider_range[2]
+            } else {
+              value <- slider_range
+            }
+
+          }, error = function(e){
+            browser()
+          }
+
+
+        ) # TC
+
 
         sliderInput(
           inputId = ns("value_slider")

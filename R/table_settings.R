@@ -46,6 +46,17 @@ table_settings_ui <- function(id, init){
           )
         )
       )
+      , fluidRow(
+        column(
+          width = 12
+          , selectInput(
+            inputId = ns("max_factor_filter_choices")
+            , label = "Maxiumum factor filter choices"
+            , choices = 1:50
+            , selected = 10
+          )
+        )
+      )
       , style = "simple"
       , icon = icon(init$icon)
       , status = "default"
@@ -87,6 +98,7 @@ table_settings_server <- function(id){
           slider_handles = input$slider_handles
           , sort_by = input$sort_by
           , bar_option = input$bar_option
+          , max_factor_filter_choices = input$max_factor_filter_choices %>% as.integer()
         )
       })
 
