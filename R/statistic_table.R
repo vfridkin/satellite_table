@@ -24,8 +24,6 @@ statistic_table_ui <- function(id, field_df){
     , choices_value = choices_value
   )
 
-
-
   # Main UI ---------------------------------------------------------------------------------------
   div(
     class = "statistic_container"
@@ -37,7 +35,7 @@ statistic_table_ui <- function(id, field_df){
           , radioGroupButtons(
             inputId = ns("table_view")
             , label = NULL
-            , choices = c("summary", "details") %>%
+            , choices = c("summary", "detail") %>%
               set_names(c("Summary", "Details"))
             , justified = TRUE
           )
@@ -158,6 +156,7 @@ statistic_table_server <- function(id, init, data){
       # Local reactive values ---------------------------------------------------------------------
       m <- reactiveValues(
         run_once = FALSE
+        , table_view = NULL
         , last_factor_select = NULL
         , slider_field = NULL
         , slider_handles = NULL
@@ -171,6 +170,8 @@ statistic_table_server <- function(id, init, data){
       # Initialize --------------------------------------------------------------------------------
       observe({
         if(m$run_once) return()
+
+        m$table_view <- "summary"
         m$last_factor_select <- input$factor_select
         m$slider_field <- init$slider_field$name
         m$slider_handles <- "one"
@@ -258,6 +259,11 @@ statistic_table_server <- function(id, init, data){
             add_statistic_cols(df, value_statistic, selected)
         }
 
+        # Narrow detail data: df
+        id_cols <- ac$field_df[group_as == "identifier"]$name
+        detail_cols <- c(id_cols, selected$factor, selected$value, m$slider_field) %>% unique()
+        df <- df[, ..detail_cols]
+
         # Sort
         dfc <- dfc %>% setorder(-count)
 
@@ -270,6 +276,8 @@ statistic_table_server <- function(id, init, data){
 
               col <- df[[col_name]]
 
+              if(is.null(display_decimals)) browser()
+
               if(!is.na(display_decimals)){
                 col <- col %>% format(big.mark = ",", digits = display_decimals)
                 df[[col_name]] <<- col
@@ -281,27 +289,41 @@ statistic_table_server <- function(id, init, data){
         }
 
         # Apply column definitions
+        df <- df %>%
+          apply_column_definitions(ac$field)
+
         dfc <- dfc %>%
           apply_column_definitions(ac$field)
 
 
         # Add html to cells for column names, bars
+        df <- df %>%
+          add_html_to_cells(settings, selected)
+
         dfc <- dfc %>%
           add_html_to_cells(settings, selected)
 
-        # Column definitions
-        col_def <- k$column_definitions[names(dfc)]
-
         # Return
         list(
-          data = dfc
-          , columns = col_def
+          summary = dfc
+          , detail = df
+          , columns = list(
+            summary = k$column_definitions[names(dfc)]
+            , detail = k$column_definitions[names(df)]
+          )
         )
 
       })
 
-      # View/hide controls ------------------------------------------------------------------------
+      # Change table view -------------------------------------------------------------------------
+      observeEvent(
+        input$table_view
+        , {
+          m$table_view <- input$table_view
+        }
+      )
 
+      # View/hide controls ------------------------------------------------------------------------
       observeEvent(
         input$view_controls_switch
         , {
@@ -512,9 +534,13 @@ statistic_table_server <- function(id, init, data){
           need(rt, "Loading...")
         )
 
+        view <- m$table_view
+        df <- rt[[view]]
+        columns <- rt$columns[[view]]
+
         reactable(
-          rt$data
-          , columns = rt$columns
+          df
+          , columns = columns
           , striped = TRUE
           , highlight = TRUE
           , minRows = 10
