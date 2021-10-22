@@ -192,7 +192,7 @@ div.statistic__select-box {
   color: #888888;
 }
 
-/* Slider format */
+/* Measure slider */
 div.statistic__select-box span.irs-single {
   background: transparent;
   color: #fffe46;
@@ -216,6 +216,13 @@ div.statistic__select-box span.play > i,
 div.statistic__select-box span.pause > i {
   color: white;
 }
+
+/* Measure statistic */
+
+div#main-measure_statistic .control-label {
+  margin-bottom: 20px;
+}
+
 
 /* Select box - factor choices */
 div.statistic__select-box div.selectize-input.items.not-full.has-options.has-items.ui-sortable > div {

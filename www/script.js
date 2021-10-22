@@ -14,6 +14,15 @@ $(function(){
     }
   );
 
+  // Handle setting circle clicks
+  $('.setting-circle').on('click'
+    , function(event){
+      if(!$(this).hasClass('far')) return;
+      $('.setting-circle.fas').fadeOut(50).removeClass('fas').addClass('far').fadeIn(50);
+      $(this).removeClass('far').addClass('fas');
+    }
+  );
+
   // Handle double click on table controls - used for selecting slider definition
   $('.table_controls').on('dblclick'
     , function(event){

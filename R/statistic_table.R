@@ -25,6 +25,18 @@ statistic_table_ui <- function(id, field_df){
     , choices_measure = choices_measure
   )
 
+  circle_icon <- function(id, fill = FALSE){
+    class_fill <- if(fill) "fas" else "far"
+    HTML(paste0('
+      <i
+        data-id="',id ,'"
+        class="setting-circle ',class_fill ,' fa-circle"
+        style="padding: 5px;"
+      ></i>'
+    ))
+  }
+
+
   # Main UI ---------------------------------------------------------------------------------------
   div(
     class = "statistic_container"
@@ -44,7 +56,7 @@ statistic_table_ui <- function(id, field_df){
         , column(
           width = 6
           , div(
-            style = "display: inline-block; margin-top: 6px;"
+            style = "display: inline-block; margin-top: 6px; width: 40%;"
             , materialSwitch(
               inputId = ns("view_controls_switch"),
               label = "View controls",
@@ -53,8 +65,16 @@ statistic_table_ui <- function(id, field_df){
             )
           )
           , div(
+            style = "display: inline-block; width: 55%"
+            , circle_icon(1, TRUE)
+            , circle_icon(2)
+            , circle_icon(3)
+            , circle_icon(4)
+            , circle_icon(5)
+          )
+          , div(
             class = "table_controls"
-            , style = "display: inline-block; position: absolute; right: 0;"
+            , style = "display: inline-block; width: 5%; position: absolute; right: 1px;"
             , table_settings_ui(ns("statistic_table"), settings_init)
           )
         )
@@ -73,7 +93,7 @@ statistic_table_ui <- function(id, field_df){
               , width = '100%'
               , options = list(
                 plugins = list('drag_drop')
-                )
+              )
             )
           )
           , column(
@@ -88,7 +108,7 @@ statistic_table_ui <- function(id, field_df){
               , options = list(
                 plugins = list('drag_drop')
                 , placeholder = "Click to add measure columns"
-                )
+              )
             )
           )
         )
