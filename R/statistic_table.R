@@ -354,13 +354,9 @@ statistic_table_server <- function(id, init, data){
           }
 
           # Send value cell double clicks to value slider
-          if(group_as == "value"){
-
-            browser()
-
+          if(group_as %in% c("date", "value")){
+            m$slider_field <- cell$col_name
           }
-
-
         }
       )
 
@@ -453,22 +449,12 @@ statistic_table_server <- function(id, init, data){
           decimal_count <- decimal_count - 1
         }
 
-        tryCatch(
-          {
-            # Settings - one or two handles
-            if(m$slider_handles == "one"){
-              value <- slider_range[2]
-            } else {
-              value <- slider_range
-            }
-
-          }, error = function(e){
-            browser()
-          }
-
-
-        ) # TC
-
+        # Settings - one or two handles
+        if(m$slider_handles == "one"){
+          value <- slider_range[2]
+        } else {
+          value <- slider_range
+        }
 
         sliderInput(
           inputId = ns("value_slider")
@@ -486,41 +472,6 @@ statistic_table_server <- function(id, init, data){
 
       })
 
-      # # Change slider definition ------------------------------------------------------------------
-      # observeEvent(
-      #   m$slider_field
-      #   , {
-      #
-      #     # Get range
-      #     slider_step <- ac$field[[m$slider_field]]$slider_step
-      #     slider_range <- data[[m$slider_field]] %>% range(na.rm = TRUE)
-      #     slider_label <- init$field[[m$slider_field]]$display_name %>%
-      #       paste("(range)")
-      #
-      #     range_class <- slider_range[1] %>% class()
-      #     # It seems step is in milliseconds for time (hence large number for year step)
-      #     time_format <- if(range_class == "Date") "%Y" else NULL
-      #     decimal_count <- nchar(slider_step)
-      #
-      #     # Remove decimal point from decimal count
-      #     if(decimal_count > 1){
-      #       decimal_count <- decimal_count - 1
-      #     }
-      #
-      #     # update slider
-      #     updateSliderInput(
-      #       session = session
-      #       , inputId = "value_slider"
-      #       , label = slider_label
-      #       , value = slider_range[2]
-      #       , min = slider_range[1]
-      #       , max = slider_range[2] %>% ceiling_dec(digits = decimal_count)
-      #       , step = slider_step
-      #       , timeFormat = time_format
-      #     )
-      #   }
-      # )
-
       # Change number of slider handles -----------------------------------------------------------
 
       observeEvent(
@@ -530,28 +481,6 @@ statistic_table_server <- function(id, init, data){
           m$slider_handles <- settings$slider_handles
         }
       )
-
-      # observeEvent(
-      #   m$slider_handles
-      #   , {
-      #     handles <- m$slider_handles
-      #     selected <- input$value_slider %>% tail(1)
-      #
-      #     if(handles == "two"){
-      #       slider_range <- data[[m$slider_field]] %>% range(na.rm = TRUE)
-      #       selected <- c(slider_range[1], selected)
-      #     }
-      #
-      #     # update slider
-      #     updateSliderInput(
-      #       session = session
-      #       , inputId = "value_slider"
-      #       , value = selected
-      #     )
-      #
-      #   }
-      # )
-
 
       # Change slider values ----------------------------------------------------------------------
       observeEvent(
@@ -568,17 +497,6 @@ statistic_table_server <- function(id, init, data){
             , display = init$field[[m$slider_field]]$display_name
             , value = slider
           )
-
-          # # Update label with filter icon - terrible workaround!
-          # slider_label <- df$display[1] %>% paste("(range)")
-          #
-          # session$sendCustomMessage(
-          #   'change-slider-label'
-          #   , list(
-          #     id = ns("value_slider")
-          #     , label = slider_label
-          #   )
-          # )
 
           m$value_filter <- df
 
