@@ -48,14 +48,29 @@ table_settings_ui <- function(id, init){
       )
       , fluidRow(
         column(
-          width = 12
+          width = 9
+          , selectizeInput(
+            inputId = ns("identifier_select")
+            , label = div(icon("satellite"), "Identifiers (Details view only)")
+            , choices = init$choices_identifier
+            , selected = init$choices_identifier[1]
+            , multiple = TRUE
+            , width = '100%'
+            , options = list(
+              plugins = list('drag_drop')
+            )
+          )
+        )
+        , column(
+          width = 3
           , selectInput(
             inputId = ns("max_factor_filter_choices")
-            , label = "Maxiumum factor filter choices"
+            , label = div(icon("filter"), "Factor max history")
             , choices = 1:50
             , selected = 10
           )
         )
+
       )
       , style = "simple"
       , icon = icon(init$icon)
@@ -78,32 +93,47 @@ table_settings_server <- function(id){
       # Local reactives ---------------------------------------------------------------------------
       m <- reactiveValues(
         run_once = FALSE
-        , out = NULL
+        , last_factor_select = NULL
       )
 
-      # observeEvent(
-      #   list(
-      #     input$slider_handles
-      #     , input$sort_by
-      #     , input$bar_option
-      #   )
-      #   , {
-      #     browser()
-      #   }
-      # )
+      # Initialise local reactive values ----------------------------------------------------------
+      observe({
+        if(m$run_once) return()
 
+          m$last_identifier_select <- input$identifier_select
+
+          m$run_once <- TRUE
+      })
+
+      # Settings reactive -------------------------------------------------------------------------
       settings <- reactive({
+
+        identifier_select <- input$identifier_select
+
+        is_selected <- list(
+          identifier = !is.null(identifier_select)
+        )
+
+        # Ensure group selection always has one element
+        if(!is_selected$identifier){
+          updateSelectizeInput(
+            session
+            , inputId = "identifier_select"
+            , selected = m$last_identifier_select
+          )
+          return()
+        }
+
+        m$last_identifier_select <- identifier_select
 
         list(
           slider_handles = input$slider_handles
           , sort_by = input$sort_by
           , bar_option = input$bar_option
+          , identifier_select = identifier_select
           , max_factor_filter_choices = input$max_factor_filter_choices %>% as.integer()
         )
       })
-
-
-
 
       # Return value ------------------------------------------------------------------------------
 

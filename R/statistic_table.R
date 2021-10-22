@@ -5,7 +5,7 @@ statistic_table_ui <- function(id, field_df){
 
   # Set up choices for selectize inputs -----------------------------------------------------------
   field_df <- field_df[order(display_name),]
-  choices <- c("factor", "measure", "date") %>%
+  choices <- c("identifier", "factor", "measure", "date") %>%
     {set_names(
       map(.,
           function(var){
@@ -21,6 +21,7 @@ statistic_table_ui <- function(id, field_df){
   # Settings init
   settings_init <- list(
     icon = "ellipsis-v"
+    , choices_identifier = choices$identifier
     , choices_measure = choices_measure
   )
 
@@ -260,7 +261,7 @@ statistic_table_server <- function(id, init, data){
         }
 
         # Narrow detail data: df
-        id_cols <- ac$field_df[group_as == "identifier"]$name
+        id_cols <- settings$identifier_select
         detail_cols <- c(id_cols, selected$factor, selected$measure, m$slider_field) %>% unique()
         df <- df[, ..detail_cols]
 
