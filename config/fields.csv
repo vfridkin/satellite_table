@@ -9,17 +9,17 @@ purpose,Purpose,factor,0,,
 detailed_purpose,Detailed Purpose,factor,0,,
 class_of_orbit,Class of Orbit,factor,0,,
 type_of_orbit,Type of Orbit,factor,0,,
-longitude_of_geo_degrees,Longitude of GEO (degrees),value,0,2,1
-perigee_km,Perigee (km),value,0,0,100
-apogee_km,Apogee (km),value,0,0,100
-eccentricity,Eccentricity,value,0,5,0.01
-inclination_degrees,Inclination (degrees),value,0,2,1
-period_minutes,Period (minutes),value,0,1,1
-launch_mass_kg,Launch Mass (kg.),value,0,0,1
-dry_mass_kg,Dry Mass (kg.),value,0,0,1
-power_watts,Power (watts),value,0,0,10
-date_of_launch,Date of Launch,date,0,0,31536000000
-expected_lifetime_yrs,Expected Lifetime (yrs.),value,0,2,1
+longitude_of_geo_degrees,Longitude of GEO (degrees),measure,0,2,1
+perigee_km,Perigee (km),measure,0,0,100
+apogee_km,Apogee (km),measure,0,0,100
+eccentricity,Eccentricity,measure,0,5,0.01
+inclination_degrees,Inclination (degrees),measure,0,2,1
+period_minutes,Period (minutes),measure,0,1,1
+launch_mass_kg,Launch Mass (kg.),measure,0,0,1
+dry_mass_kg,Dry Mass (kg.),measure,0,0,1
+power_watts,Power (watts),measure,0,0,10
+date_of_launch,Date of Launch,date,0,0,365
+expected_lifetime_yrs,Expected Lifetime (yrs.),measure,0,2,1
 contractor,Contractor,factor,0,,
 country_of_contractor,Country of Contractor,factor,0,,
 launch_site,Launch Site,factor,0,,
@@ -29,5 +29,5 @@ norad_number,NORAD Number,identifier,0,,
 comments,Comments,description,1,,
 source_used_for_orbital_data,Source Used for Orbital Data,description,0,,
 source,Source,description,1,,
-count,Count,value_calc,0,0,1
-count_prop,Proportion (%),value_calc,0,0,1
+count,Count,calc,0,0,1
+count_prop,Proportion (%),calc,0,0,1

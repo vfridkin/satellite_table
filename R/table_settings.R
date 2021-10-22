@@ -26,7 +26,7 @@ table_settings_ui <- function(id, init){
           , selectizeInput(
             inputId = ns("sort_by")
             , label = "Sort by"
-            , choices = init$choices_value
+            , choices = init$choices_measure
             , selected = ""
             , multiple = TRUE
             , width = '100%'
@@ -38,7 +38,7 @@ table_settings_ui <- function(id, init){
           width = 12
           , radioGroupButtons(
             inputId = ns("bar_option")
-            , label = "Value columns with bars"
+            , label = "Measure columns with bars"
             , choices = c("count", "sort", "all") %>%
               set_names(c("Count", "Sorted", "All"))
             , selected = "count"

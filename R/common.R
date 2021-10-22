@@ -40,11 +40,11 @@ get_data <- function(){
 
   field_df <- ac$field_df[name %in% names(df)]
 
-  value_fields <- field_df[group_as == "value"]$name
+  measure_fields <- field_df[group_as == "measure"]$name
   date_fields <- field_df[group_as == "date"]$name
 
-  # Set value fields to numeric
-  value_fields %>%
+  # Set measure fields to numeric
+  measure_fields %>%
     walk(
       ~{
         df[[.x]] <<- df[[.x]] %>%
@@ -177,11 +177,11 @@ apply_factor_filter <- function(df, filtered){
   df
 }
 
-# Subset df by value filter from slider definition and value
-apply_value_filter <- function(df, slider, filtered, ac){
+# Subset df by measure filter from slider definition and value
+apply_measure_filter <- function(df, slider, filtered, ac){
 
   comparison <- if(slider$is_range) "%between%" else "<="
-  filter <- filtered$value[1]
+  filter <- filtered$measure[1]
 
   filter_col <- filter$name
   group_as <- ac$field[[filter_col]]$group_as
@@ -195,17 +195,17 @@ apply_value_filter <- function(df, slider, filtered, ac){
     text = glue("{filter_col} {comparison} {filter$value}")
   )
 
-  # Remove NA values
+  # Remove NAs
   df <- df[!is.na(df[[filter_col]])]
 
   df[eval(filter_expression)]
 }
 
 # Column bind summary statistics to dataframe summarised by count
-add_statistic_cols <- function(dfc, df, value_statistic, selected){
+add_statistic_cols <- function(dfc, df, measure_statistic, selected){
   statistic_function <- function(x){
-    res <- do.call(value_statistic, list(x, na.rm = TRUE))
-    if(value_statistic == "sd" && class(x) == "Date"){
+    res <- do.call(measure_statistic, list(x, na.rm = TRUE))
+    if(measure_statistic == "sd" && class(x) == "Date"){
       res <- res %>%
         format(big.mark = ",", digits = 0) %>%
         paste("days")
@@ -213,7 +213,7 @@ add_statistic_cols <- function(dfc, df, value_statistic, selected){
     res
   }
 
-  cols <- selected$value
+  cols <- selected$measure
 
   df_val <- df[, lapply(.SD, statistic_function)
                , by = c(selected$factor)

@@ -5,7 +5,7 @@ statistic_table_ui <- function(id, field_df){
 
   # Set up choices for selectize inputs -----------------------------------------------------------
   field_df <- field_df[order(display_name),]
-  choices <- c("factor", "value", "date") %>%
+  choices <- c("factor", "measure", "date") %>%
     {set_names(
       map(.,
           function(var){
@@ -15,13 +15,13 @@ statistic_table_ui <- function(id, field_df){
       ),.
     )}
 
-  # Allow dates to be selected as values
-  choices_value <- c(choices$value, choices$date) %>% sort()
+  # Allow dates to be selected as measures
+  choices_measure <- c(choices$measure, choices$date) %>% sort()
 
   # Settings init
   settings_init <- list(
     icon = "ellipsis-v"
-    , choices_value = choices_value
+    , choices_measure = choices_measure
   )
 
   # Main UI ---------------------------------------------------------------------------------------
@@ -78,15 +78,15 @@ statistic_table_ui <- function(id, field_df){
           , column(
             width = 6
             , selectizeInput(
-              inputId = ns("value_select")
-              , label = div(icon("columns"), "Values")
-              , choices = choices_value
+              inputId = ns("measure_select")
+              , label = div(icon("columns"), "Measures")
+              , choices = choices_measure
               , selected = ""
               , multiple = TRUE
               , width = '100%'
               , options = list(
                 plugins = list('drag_drop')
-                , placeholder = "Click to add value columns"
+                , placeholder = "Click to add measure columns"
                 )
             )
           )
@@ -109,15 +109,15 @@ statistic_table_ui <- function(id, field_df){
           )
           , column(
             width = 3
-            , uiOutput(ns("value_slider_ui"))
+            , uiOutput(ns("measure_slider_ui"))
           )
           , column(
             width = 3
             , awesomeRadio(
-              inputId = ns("value_statistic")
+              inputId = ns("measure_statistic")
               , label = "Summary statistic"
               , choices = c("min", "mean", "max", "sd") %>% set_names(
-                c("Min", "Avg", "Max", "Std dev")
+                c("Min", "Avg", "Max", "SD")
               )
               , selected = "mean"
               , inline = TRUE
@@ -160,10 +160,10 @@ statistic_table_server <- function(id, init, data){
         , last_factor_select = NULL
         , slider_field = NULL
         , slider_handles = NULL
-        , updated_value_slider_label = NULL
+        , updated_measure_slider_label = NULL
         , slider_is_range = NULL
         , factor_filter = NULL
-        , value_filter = NULL
+        , measure_filter = NULL
         , factor_filter_choices = NULL
       )
 
@@ -183,7 +183,7 @@ statistic_table_server <- function(id, init, data){
           , input_name = character(0)
           , input_display = character(0)
         )
-        m$value_filter <- data.table(
+        m$measure_filter <- data.table(
           name = character(0)
           , display = character(0)
           , value = numeric(0)
@@ -203,15 +203,15 @@ statistic_table_server <- function(id, init, data){
 
         settings <- rt_settings()
 
-        value_statistic <- input$value_statistic
+        measure_statistic <- input$measure_statistic
 
         selected <- list(
           factor = input$factor_select
-          , value = input$value_select
+          , measure = input$measure_select
         )
         filtered <- list(
           factor = m$factor_filter
-          , value = m$value_filter
+          , measure = m$measure_filter
         )
         slider <- list(
           is_range = m$slider_is_range
@@ -241,9 +241,9 @@ statistic_table_server <- function(id, init, data){
           df <- df %>% apply_factor_filter(filtered)
         }
 
-        # Apply value filters
-        if(is_filtered$value){
-          df <- df %>% apply_value_filter(slider, filtered, ac)
+        # Apply measure filters
+        if(is_filtered$measure){
+          df <- df %>% apply_measure_filter(slider, filtered, ac)
         }
 
         # Exit if filtered data has no rows
@@ -254,14 +254,14 @@ statistic_table_server <- function(id, init, data){
         # Get count
         dfc <- df[, .(count = .N), by = c(selected$factor)]
 
-        if(is_selected$value){
+        if(is_selected$measure){
           dfc <- dfc %>%
-            add_statistic_cols(df, value_statistic, selected)
+            add_statistic_cols(df, measure_statistic, selected)
         }
 
         # Narrow detail data: df
         id_cols <- ac$field_df[group_as == "identifier"]$name
-        detail_cols <- c(id_cols, selected$factor, selected$value, m$slider_field) %>% unique()
+        detail_cols <- c(id_cols, selected$factor, selected$measure, m$slider_field) %>% unique()
         df <- df[, ..detail_cols]
 
         # Sort
@@ -341,8 +341,8 @@ statistic_table_server <- function(id, init, data){
             message("selected factor: ", item$value)
           }
 
-          if(item$container %>% str_detect("value_select")){
-            message("selected value: ", item$value)
+          if(item$container %>% str_detect("measure_select")){
+            message("selected measure: ", item$value)
             m$slider_field <- item$value
           }
 
@@ -362,7 +362,7 @@ statistic_table_server <- function(id, init, data){
           # Exit if cell has no column name
           if(!has_col_name) return()
 
-          # Seperate factor and value cell dblclicks
+          # Seperate factor and measure cell dblclicks
           group_as <- ac$field[[cell$col_name]]$group_as
 
           # Send factor cell double clicks to factor filter
@@ -375,8 +375,8 @@ statistic_table_server <- function(id, init, data){
             )
           }
 
-          # Send value cell double clicks to value slider
-          if(group_as %in% c("date", "value")){
+          # Send measure cell double clicks to measure slider
+          if(group_as %in% c("date", "measure")){
             m$slider_field <- cell$col_name
           }
         }
@@ -453,7 +453,7 @@ statistic_table_server <- function(id, init, data){
 
       # Slider UI ---------------------------------------------------------------------------------
 
-      output$value_slider_ui <- renderUI({
+      output$measure_slider_ui <- renderUI({
 
         # Get range
         slider_step <- ac$field[[m$slider_field]]$slider_step
@@ -479,7 +479,7 @@ statistic_table_server <- function(id, init, data){
         }
 
         sliderInput(
-          inputId = ns("value_slider")
+          inputId = ns("measure_slider")
           , label = div(icon("filter"), slider_label)
           , value = value
           , min = slider_range[1]
@@ -506,10 +506,10 @@ statistic_table_server <- function(id, init, data){
 
       # Change slider values ----------------------------------------------------------------------
       observeEvent(
-        input$value_slider
+        input$measure_slider
         , {
 
-          slider <- input$value_slider
+          slider <- input$measure_slider
           if(ac$field[[m$slider_field]]$group_as == "date"){
             slider <- slider %>% format("%Y") %>% as.numeric()
           }
@@ -520,7 +520,7 @@ statistic_table_server <- function(id, init, data){
             , value = slider
           )
 
-          m$value_filter <- df
+          m$measure_filter <- df
 
         }, ignoreInit = TRUE
       )

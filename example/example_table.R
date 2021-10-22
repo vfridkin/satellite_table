@@ -5,7 +5,7 @@ if(FALSE){
   data <- get_data()
 
   group_fields <- ac$field_df[group_as == "group"]$name
-  value_fields <- ac$field_df[group_as == "value"]$name
+  measure_fields <- ac$field_df[group_as == "measure"]$name
 
   # Count single field
   g1 <- group_fields[1]
@@ -16,7 +16,7 @@ if(FALSE){
   rt_gAll <- data[, .(count = .N), by = gAll] %>% setorder(-count)
 
   # Mean single field
-  v1 <- value_fields[1]
+  v1 <- measure_fields[1]
   exp1 <- glue("mean({v1}, na.rm = TRUE)")
   new_names <- c(g1, "count", v1)
 
@@ -26,9 +26,9 @@ if(FALSE){
 
   reactable(rt_g1_v1)
 
-  # One group field, Mean all value field
+  # One group field, Mean all measure fields
   g1 <- group_fields[1]
-  vAll <- value_fields
+  vAll <- measure_fields
   fn <- function(x) mean(x, na.rm = TRUE)
 
   rt_g1_Count <- data[, .(count = .N), by = c(g1)]
