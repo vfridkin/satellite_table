@@ -354,6 +354,11 @@ statistic_table_server <- function(id, init, data){
         # Get count
         dfc <- df[, .(count = .N), by = c(selected$factor)]
 
+        # Get total count for later use in count heading
+        count_total <- dfc$count %>%
+          sum() %>%
+          format(big.mark = ",")
+
         if(is_selected$measure){
           dfc <- dfc %>%
             add_statistic_cols(df, measure_statistic, selected)
@@ -376,8 +381,6 @@ statistic_table_server <- function(id, init, data){
 
               col <- df[[col_name]]
 
-              if(is.null(display_decimals)) browser()
-
               if(!is.na(display_decimals)){
                 col <- col %>% format(big.mark = ",", digits = display_decimals)
                 df[[col_name]] <<- col
@@ -395,7 +398,6 @@ statistic_table_server <- function(id, init, data){
         dfc <- dfc %>%
           apply_column_definitions(init$field)
 
-
         # Add html to cells for column names, bars
         df <- df %>%
           add_html_to_cells(settings, selected)
@@ -403,12 +405,25 @@ statistic_table_server <- function(id, init, data){
         dfc <- dfc %>%
           add_html_to_cells(settings, selected)
 
+        # Add count total to count column heading
+
+        col_def_summary <- k$column_definitions[names(dfc)]
+
+        col_def_summary$count <- col_def_summary$count %>% list_modify(
+          name = HTML(paste0('
+                    Count
+                    <span style = "position: absolute; right: 15px; bottom: 6px;">
+                      ', count_total,'
+                    </span>
+                  '))
+        )
+
         # Return
         list(
           summary = dfc
           , detail = df
           , columns = list(
-            summary = k$column_definitions[names(dfc)]
+            summary = col_def_summary
             , detail = k$column_definitions[names(df)]
           )
         )

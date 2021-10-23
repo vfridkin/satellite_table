@@ -81,7 +81,6 @@ get_column_definitions <- function(ac){
   df[, .(display_name)] %>%
     pmap(
       function(display_name){
-
         colDef(
           name = display_name
           , filterable = FALSE
@@ -160,13 +159,13 @@ background-position: center center;">
   }
 
   # Remove commas and make numeric
-  col <- col %>%
+  values <- col %>%
     str_remove_all(",") %>%
     as.numeric()
 
-  max_val <- max(col)
+  max_val <- max(values)
 
-  percent <- (100*col/max_val) %>% round()
+  percent <- (100*values/max_val) %>% round()
   pad_width <- nchar(col) %>% max()
 
   bar_html(percent, col, pad_width)
