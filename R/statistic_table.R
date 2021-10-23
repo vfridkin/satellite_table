@@ -25,18 +25,6 @@ statistic_table_ui <- function(id, field_df){
     , choices_measure = choices_measure
   )
 
-  circle_icon <- function(id, fill = FALSE){
-    class_fill <- if(fill) "fas" else "far"
-    HTML(paste0('
-      <i
-        data-id="',id ,'"
-        class="setting-circle ',class_fill ,' fa-circle"
-        style="padding: 5px;"
-      ></i>'
-    ))
-  }
-
-
   # Main UI ---------------------------------------------------------------------------------------
   div(
     class = "statistic_container"
@@ -66,11 +54,7 @@ statistic_table_ui <- function(id, field_df){
           )
           , div(
             style = "display: inline-block; width: 55%"
-            , circle_icon(1, TRUE)
-            , circle_icon(2)
-            , circle_icon(3)
-            , circle_icon(4)
-            , circle_icon(5)
+            , uiOutput(ns("setting_circle_ui"))
           )
           , div(
             class = "table_controls"
@@ -178,6 +162,8 @@ statistic_table_server <- function(id, init, data){
       m <- reactiveValues(
         run_once = FALSE
         , table_view = NULL
+        , setting_circle = NULL
+        , local_storage = NULL
         , last_factor_select = NULL
         , slider_field = NULL
         , slider_handles = NULL
@@ -193,6 +179,7 @@ statistic_table_server <- function(id, init, data){
         if(m$run_once) return()
 
         m$table_view <- "summary"
+        m$setting_circle <- 0
         m$last_factor_select <- input$factor_select
         m$slider_field <- init$slider_field$name
         m$slider_handles <- "one"
@@ -214,6 +201,73 @@ statistic_table_server <- function(id, init, data){
         m$run_once <- TRUE
 
       })
+
+      output$setting_circle_ui <- renderUI({
+        id <- m$setting_circle %>% as.integer()
+        1:5 %>% map(~circle_icon(.x, id == .x))
+      })
+
+      observeEvent(
+        m$setting_circle
+        , {
+          get_local_storage(m$setting_circle, session)
+
+          # Update local storage for 0
+          data <- list(setting_circle = m$setting_circle)
+          set_local_storage(0, data, session)
+        }
+      )
+
+      observeEvent(
+        input$setting_circle
+        , {
+          m$setting_circle <- input$setting_circle
+        }
+      )
+
+      initialise_local_storage <- function(id, session){
+
+        id <- id %>% as.integer()
+
+        # Zero contains non-settings meta data - e.g. circle last clicked
+        if(id == 0){
+          data <- list(
+            setting_circle = 1
+          )
+        }
+
+        if(id > 0){
+          data <- list(
+            test = "test"
+          )
+        }
+
+        set_local_storage(id, data, session)
+      }
+
+      observeEvent(
+        input$local_storage
+        , {
+          id <- m$setting_circle
+          local_storage <- input$local_storage
+          storage_empty <- is.null(local_storage)
+
+          if(storage_empty){
+            message("local storage - initialising: ", id)
+            initialise_local_storage(id, session)
+            get_local_storage(id, session)
+            return()
+          }
+
+          message("local storage - loading: ", id)
+          ls_data <- local_storage %>% fromJSON()
+
+          if(id == 0){
+            m$setting_circle <- ls_data$setting_circle
+          }
+
+        }, ignoreNULL = FALSE, ignoreInit = TRUE
+      )
 
       # Table settings ----------------------------------------------------------------------------
 
@@ -268,8 +322,8 @@ statistic_table_server <- function(id, init, data){
         }
 
         # Exit if filtered data has no rows
-        validate(
-          need(nrow(df) > 0, "No results - try removing filters")
+        shiny::validate(
+          need({nrow(df) > 0}, "No results try removing filters")
         )
 
         # Get count
@@ -311,10 +365,10 @@ statistic_table_server <- function(id, init, data){
 
         # Apply column definitions
         df <- df %>%
-          apply_column_definitions(ac$field)
+          apply_column_definitions(init$field)
 
         dfc <- dfc %>%
-          apply_column_definitions(ac$field)
+          apply_column_definitions(init$field)
 
 
         # Add html to cells for column names, bars
@@ -384,7 +438,7 @@ statistic_table_server <- function(id, init, data){
           if(!has_col_name) return()
 
           # Seperate factor and measure cell dblclicks
-          group_as <- ac$field[[cell$col_name]]$group_as
+          group_as <- init$field[[cell$col_name]]$group_as
 
           # Send factor cell double clicks to factor filter
           if(group_as == "factor"){
@@ -392,7 +446,7 @@ statistic_table_server <- function(id, init, data){
               session
               , cell$col_name
               , cell$value
-              , ac
+              , init$field
             )
           }
 
@@ -403,9 +457,9 @@ statistic_table_server <- function(id, init, data){
         }
       )
 
-      update_factor_filter <- function(session, col_name, value, ac){
+      update_factor_filter <- function(session, col_name, value, field){
 
-        display_name <- ac$field[[col_name]]$display_name
+        display_name <- field[[col_name]]$display_name
 
         settings <- rt_settings()
 
@@ -477,7 +531,7 @@ statistic_table_server <- function(id, init, data){
       output$measure_slider_ui <- renderUI({
 
         # Get range
-        slider_step <- ac$field[[m$slider_field]]$slider_step
+        slider_step <- init$field[[m$slider_field]]$slider_step
         slider_range <- data[[m$slider_field]] %>% range(na.rm = TRUE)
         slider_label <- init$field[[m$slider_field]]$display_name %>%
           paste("(range)")
@@ -531,7 +585,7 @@ statistic_table_server <- function(id, init, data){
         , {
 
           slider <- input$measure_slider
-          if(ac$field[[m$slider_field]]$group_as == "date"){
+          if(init$field[[m$slider_field]]$group_as == "date"){
             slider <- slider %>% format("%Y") %>% as.numeric()
           }
 
@@ -551,7 +605,7 @@ statistic_table_server <- function(id, init, data){
       output$statistic_rt <- renderReactable({
 
         rt <- rt_container()
-        validate(
+        shiny::validate(
           need(rt, "Loading...")
         )
 

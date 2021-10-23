@@ -11,10 +11,13 @@
 
 function(input, output, session){
 
+  # Initial default values
   init <- list(
     slider_field = ac$field$date_of_launch
     , field = ac$field
   )
+
   data <- get_data()
   statistic_table_server("main", init, data)
+
 }

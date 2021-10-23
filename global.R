@@ -22,6 +22,7 @@ library(stringr)
 library(purrr)
 library(magrittr)
 library(sparkline)
+library(jsonlite)
 
 # Load files
 list.files("R", full.names = TRUE) |> walk(source)

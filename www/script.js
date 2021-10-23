@@ -5,22 +5,28 @@ $(function(){
   // Activate post start animations and table view
   $('#launch_button').on("click"
     , function(){
-      $('.body__image').addClass('image-up');
-      $('.header__text-box').addClass('header-up');
-      $('#launch_button').fadeOut(2000);
-      $('.statistic_container').addClass('fade-in');
-      $('.body__help-box').addClass('fade-in');
-      $('.body__help-image').addClass('btn');
+        $('.body__image').addClass('image-up');
+        $('.header__text-box').addClass('header-up');
+        $('#launch_button').fadeOut(2000);
+        $('.statistic_container').addClass('fade-in');
+        $('.body__help-box').addClass('fade-in');
+        $('.body__help-image').addClass('btn');
     }
   );
 
   // Handle setting circle clicks
-  $('.setting-circle').on('click'
+  $('#main-setting_circle_ui').on('click'
     , function(event){
-      if(!$(this).hasClass('far')) return;
-      $('.setting-circle.fas').fadeOut(50).removeClass('fas').addClass('far').fadeIn(50);
-      $(this).removeClass('far').addClass('fas');
-    }
+        const el = event.target.closest('.setting-circle');
+        if(el){
+          const id = $(el).data('id');
+          Shiny.setInputValue(
+            'main-setting_circle'
+            , id
+            , {priority: "event"}
+          );
+        }
+      }
   );
 
   // Handle double click on table controls - used for selecting slider definition
@@ -65,23 +71,23 @@ Shiny.addCustomMessageHandler(
       visible
       ? $('.table_controls').show(500)
       : $('.table_controls').hide(500)
-})
+});
 
-/*
-// Workaround for icon in slider label - without it the label shows [object object] on update
- Shiny.addCustomMessageHandler(
-  'change-slider-label'
-  , function(slider) {
+// Set local storage
+Shiny.addCustomMessageHandler(
+  'set_local_storage'
+  , function(input) {
+      localStorage.setItem(input.id, input.data);
+});
 
-    const label_id = `${slider.id}-label`;
-    const el = document.getElementById(label_id);
-    el.innerHTML = `
-      <div>
-        <i class = "fa fa-filter" role="presentation" aria-label="filter icon">
-        </i>
-        ${slider.label}
-      </div>
-    `;
-  }
-);
-*/
+// Set local storage
+Shiny.addCustomMessageHandler(
+  'get_local_storage'
+  , function(id) {
+      const message = localStorage.getItem(id);
+      Shiny.setInputValue(
+        'main-local_storage'
+        , message
+        , {priority: "event"}
+      );
+});

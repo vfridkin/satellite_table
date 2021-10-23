@@ -1,2 +1,3 @@
 source_version: 5-1-2021
 source_link: http://www.ucsusa.org/satellite_database
+local_storage_id_prefix: satellite_table_shiny_app

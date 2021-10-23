@@ -1,10 +1,14 @@
 # Common functions
 
+# RUN APP -----------------------------------------------------------------------------------------
+
 # Save and rerun app - easier than clicking the run button :)
 sar <- function(){
   rstudioapi::documentSaveAll()
   runApp()
 }
+
+# SOURCE CONFIG/DATA ------------------------------------------------------------------------------
 
 # App configuration
 load_config <- function(){
@@ -23,7 +27,7 @@ load_config <- function(){
 
 get_data <- function(){
 
-  # # Text version - found to have older version
+  # # Text version - is an older version so using XL below instead
   # if(FALSE){
   #   df <- fread("data/UCS-Satellite-Database-1-1-2021.txt", colClasses = "character") %>%
   #     janitor::remove_empty(which = "cols") %>%
@@ -88,18 +92,39 @@ get_column_definitions <- function(ac){
     set_names(df$name)
 }
 
+# DATA I/O ----------------------------------------------------------------------------------------
 
-# Col name of form ...12 replace with preceding name
-replace_col_names <- function(df){
-  df_names <- names(df)
-  for(i in 2:length(df_names)){
-    x <- df_names[i]
-    if(str_detect(x, "^\\.\\.\\.\\d+$")){
-      df_names[i] <- df_names[i-1]
-    }
-  }
-  names(df) <- df_names
-  df
+to_local_storage_id <- function(id){
+  paste0(ac$local_storage_id_prefix, id)
+}
+
+set_local_storage <- function(id, data, session){
+  ls_id <- id %>% to_local_storage_id()
+  json_string <- data %>% toJSON() %>% toString()
+  session$sendCustomMessage("set_local_storage", list(id = ls_id, data = json_string))
+}
+
+get_local_storage <- function(id, session){
+  ls_id <- id %>% to_local_storage_id()
+  session$sendCustomMessage("get_local_storage", ls_id)
+}
+
+set_setting_circle <- function(id, session){
+  session$sendCustomMessage("set_setting_circle", id)
+}
+
+# USER INTERFACE ----------------------------------------------------------------------------------
+
+# Circles for saving settings
+circle_icon <- function(id, fill = FALSE){
+  class_fill <- if(fill) "fas" else "far"
+  HTML(paste0('
+      <i
+        data-id="',id ,'"
+        class="setting-circle ',class_fill ,' fa-circle"
+        style="padding: 5px;"
+      ></i>'
+  ))
 }
 
 # Add column name to cells in column
@@ -167,6 +192,9 @@ add_html_to_cells <- function(df, settings, selected){
 
   df
 }
+
+# TABLE FILTERS -----------------------------------------------------------------------------------
+
 # Subset df by factor filter
 apply_factor_filter <- function(df, filtered){
   filtered$factor %>% pmap(
@@ -201,6 +229,8 @@ apply_measure_filter <- function(df, slider, filtered, ac){
   df[eval(filter_expression)]
 }
 
+# DATA WRANGLING ----------------------------------------------------------------------------------
+
 # Column bind summary statistics to dataframe summarised by count
 add_statistic_cols <- function(dfc, df, measure_statistic, selected){
   statistic_function <- function(x){
@@ -221,6 +251,19 @@ add_statistic_cols <- function(dfc, df, measure_statistic, selected){
   ][, ..cols]
 
   dfc %>% cbind(df_val)
+}
+
+# Col name of form ...12 replace with preceding name
+replace_col_names <- function(df){
+  df_names <- names(df)
+  for(i in 2:length(df_names)){
+    x <- df_names[i]
+    if(str_detect(x, "^\\.\\.\\.\\d+$")){
+      df_names[i] <- df_names[i-1]
+    }
+  }
+  names(df) <- df_names
+  df
 }
 
 # Round up/down to significant digits
