@@ -80,9 +80,9 @@ Shiny.addCustomMessageHandler(
       const id = `#${input.id}`;
       console.log(id, input.visible);
       if(input.visible){
-        $(id).show(500)
+        $(id).show(100)
       } else {
-        $(id).hide(500)
+        $(id).hide(100)
       }
 });
 

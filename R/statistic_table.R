@@ -4,25 +4,12 @@ statistic_table_ui <- function(id, field_df){
   ns <- NS(id)
 
   # Set up choices for selectize inputs -----------------------------------------------------------
-  field_df <- field_df[order(display_name),]
-  choices <- c("identifier", "factor", "measure", "date") %>%
-    {set_names(
-      map(.,
-          function(var){
-            field_df[group_as == var] %>%
-              {set_names(.$name, .$display_name)}
-          }
-      ),.
-    )}
-
-  # Allow dates to be selected as measures
-  choices_measure <- c(choices$measure, choices$date) %>% sort()
+  choices <- get_choices()
 
   # Settings init
   settings_init <- list(
     icon = "ellipsis-v"
-    , choices_identifier = choices$identifier
-    , choices_measure = choices_measure
+    , choices = choices
   )
 
   # Main UI ---------------------------------------------------------------------------------------
@@ -85,7 +72,7 @@ statistic_table_ui <- function(id, field_df){
             , selectizeInput(
               inputId = ns("measure_select")
               , label = div(icon("columns"), "Measures")
-              , choices = choices_measure
+              , choices = choices$measure_date
               , selected = ""
               , multiple = TRUE
               , width = '100%'
@@ -122,7 +109,7 @@ statistic_table_ui <- function(id, field_df){
               id = ns("measure_statistic_div")
               , awesomeRadio(
                 inputId = ns("measure_statistic")
-                , label = "Summary statistic"
+                , label = "Measures statistic"
                 , choices = c("min", "mean", "max", "sd") %>%
                   set_names(c("Min", "Avg", "Max", "SD"))
                 , selected = "mean"
@@ -157,17 +144,19 @@ statistic_table_server <- function(id, init, data){
 
       # Local constants ---------------------------------------------------------------------------
       k <- list(
-        column_definitions = get_column_definitions(ac)
+        choices = get_choices()
+        , column_definitions = get_column_definitions(ac)
       )
 
       # Local reactive values ---------------------------------------------------------------------
       m <- reactiveValues(
         run_once = FALSE
         , table_view = NULL
-        , setting_circle = NULL
+        , id = NULL
         , local_storage = NULL
         , last_factor_select = NULL
         , slider_field = NULL
+        , measure_slider = NULL
         , slider_handles = NULL
         , updated_measure_slider_label = NULL
         , slider_is_range = NULL
@@ -181,7 +170,7 @@ statistic_table_server <- function(id, init, data){
         if(m$run_once) return()
 
         m$table_view <- "summary"
-        m$setting_circle <- 0
+        m$id <- 0
         m$last_factor_select <- input$factor_select
         m$slider_field <- init$slider_field$name
         m$slider_handles <- "one"
@@ -207,19 +196,20 @@ statistic_table_server <- function(id, init, data){
       # Setting circles ---------------------------------------------------------------------------
 
       output$setting_circle_ui <- renderUI({
-        id <- m$setting_circle %>% as.integer()
-        1:5 %>% map(~circle_icon(.x, id == .x))
+        1:5 %>% map(~circle_icon(.x, m$id == .x))
       })
 
       # Change to circle loads stored settings
       observeEvent(
-        m$setting_circle
+        m$id
         , {
-          get_local_storage(m$setting_circle, session)
+          get_local_storage(m$id, session)
 
           # Update local storage for 0
-          data <- list(setting_circle = m$setting_circle)
-          set_local_storage(0, data, session)
+          if(m$id > 0){
+            data <- list(setting_circle = m$id)
+            set_local_storage(0, data, session)
+          }
         }
       )
 
@@ -227,7 +217,7 @@ statistic_table_server <- function(id, init, data){
       observeEvent(
         input$setting_circle
         , {
-          m$setting_circle <- input$setting_circle
+          m$id <- input$setting_circle
         }
       )
 
@@ -247,18 +237,23 @@ statistic_table_server <- function(id, init, data){
 
         if(id > 0){
           data <- list(
-            test = "test"
+            factor_select = k$choices$factor[1]
+            , measure_select = NULL
+            , factor_filter_select = NULL
+            , slider_field = init$slider_field$name
+            , measure_slider = NULL
           )
         }
 
         set_local_storage(id, data, session)
       }
 
+      # > Get -------------------------------------------------------------------------------------
       # Get local storage settings - triggered by get_local_storage()
       observeEvent(
         input$local_storage
         , {
-          id <- m$setting_circle %>% as.integer()
+          id <- m$id
           local_storage <- input$local_storage
           storage_empty <- is.null(local_storage)
 
@@ -270,20 +265,69 @@ statistic_table_server <- function(id, init, data){
           }
 
           message("local storage - loading: ", id)
-          ls_data <- local_storage %>% fromJSON()
+          stored <- local_storage %>% fromJSON()
 
           if(id == 0){
-            m$setting_circle <- ls_data$setting_circle
+            m$id <- stored$setting_circle %>% as.integer()
           }
 
           if(id > 0){
+
+            # Update selectize inputs
+            c("factor_select"
+              , "measure_select"
+              , "factor_filter_select"
+            ) %>% walk(
+              ~updateSelectizeInput(
+                session = session
+                , inputId = .x
+                , selected = stored[[.x]]
+              )
+            )
+
+            # Update slider
+            m$slider_field <- stored$slider_field
+            m$measure_slider <- stored$measure_slider
 
           }
 
         }, ignoreNULL = FALSE, ignoreInit = TRUE
       )
 
-      # Toggle measure statistics --------------------------------------------------------------
+      # > Set -------------------------------------------------------------------------------------
+      observeEvent(
+        list(
+          input$factor_select
+          , input$measure_select
+          , input$factor_filter_select
+          , m$slider_field
+          , input$measure_slider
+        )
+        , {
+          id <- m$id
+
+          if(id == 0){
+            return()
+          }
+
+          if(id > 0){
+            data <- list(
+              factor_select = input$factor_select
+              , measure_select = input$measure_select
+              , factor_filter_select = input$factor_filter_select
+              , slider_field = m$slider_field
+              , measure_slider = input$measure_slider
+            )
+          }
+
+          set_local_storage(id, data, session)
+        }
+      )
+
+
+
+
+      # Toggle measure statistics -----------------------------------------------------------------
       observeEvent(
         input$measure_select
         , {
@@ -459,6 +503,7 @@ statistic_table_server <- function(id, init, data){
           if(item$container %>% str_detect("measure_select")){
             message("selected measure: ", item$value)
             m$slider_field <- item$value
+            m$measure_slider <- NULL
           }
 
 
@@ -591,6 +636,16 @@ statistic_table_server <- function(id, init, data){
           value <- slider_range[2]
         } else {
           value <- slider_range
+        }
+
+        # Update slider value if exists (i.e. from storage)
+        load_slider_value <- m$measure_slider %>% {!is.null(.) && length(.) > 0}
+        if(load_slider_value){
+          value <- m$measure_slider
+          # Convert character to date class - occurs when loading from JSON
+          if(class(value) == "character"){
+            value <- value %>% as.Date()
+          }
         }
 
         sliderInput(

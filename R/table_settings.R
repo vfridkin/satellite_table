@@ -26,7 +26,7 @@ table_settings_ui <- function(id, init){
           , selectizeInput(
             inputId = ns("sort_by")
             , label = "Sort by"
-            , choices = init$choices_measure
+            , choices = init$choices$measure_date
             , selected = ""
             , multiple = TRUE
             , width = '100%'
@@ -52,8 +52,8 @@ table_settings_ui <- function(id, init){
           , selectizeInput(
             inputId = ns("identifier_select")
             , label = div(icon("satellite"), "Identifiers (Details view only)")
-            , choices = init$choices_identifier
-            , selected = init$choices_identifier[1]
+            , choices = init$choices$identifier
+            , selected = init$choices$identifier[1]
             , multiple = TRUE
             , width = '100%'
             , options = list(
@@ -75,7 +75,6 @@ table_settings_ui <- function(id, init){
       , style = "simple"
       , icon = icon(init$icon)
       , status = "default"
-      # , tooltip = tooltipOptions(placement = "bottom", title = init$tooltip, html = FALSE)
       , right = TRUE
       , width = "50vw"
     )

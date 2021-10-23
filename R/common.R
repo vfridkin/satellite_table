@@ -91,6 +91,26 @@ get_column_definitions <- function(ac){
     set_names(df$name)
 }
 
+get_choices <- function(){
+
+  df <- ac$field_df[order(display_name),]
+  choices <- c("identifier", "factor", "measure", "date") %>%
+    {set_names(
+      map(.,
+          function(var){
+            df[group_as == var] %>%
+              {set_names(.$name, .$display_name)}
+          }
+      ),.
+    )}
+
+  # Combine measures with dates
+  choices$measure_date <- c(choices$measure, choices$date) %>% sort()
+
+  choices
+}
+
+
 # DATA I/O ----------------------------------------------------------------------------------------
 
 to_local_storage_id <- function(id){
