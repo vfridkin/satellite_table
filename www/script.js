@@ -73,6 +73,20 @@ Shiny.addCustomMessageHandler(
       : $('.table_controls').hide(500)
 });
 
+// Hide/show if message is null
+Shiny.addCustomMessageHandler(
+  'control_visibility'
+  , function(input){
+      const id = `#${input.id}`;
+      console.log(id, input.visible);
+      if(input.visible){
+        $(id).show(500)
+      } else {
+        $(id).hide(500)
+      }
+});
+
+
 // Set local storage
 Shiny.addCustomMessageHandler(
   'set_local_storage'

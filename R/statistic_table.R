@@ -118,15 +118,17 @@ statistic_table_ui <- function(id, field_df){
           )
           , column(
             width = 3
-            , awesomeRadio(
-              inputId = ns("measure_statistic")
-              , label = "Summary statistic"
-              , choices = c("min", "mean", "max", "sd") %>% set_names(
-                c("Min", "Avg", "Max", "SD")
+            , div(
+              id = ns("measure_statistic_div")
+              , awesomeRadio(
+                inputId = ns("measure_statistic")
+                , label = "Summary statistic"
+                , choices = c("min", "mean", "max", "sd") %>%
+                  set_names(c("Min", "Avg", "Max", "SD"))
+                , selected = "mean"
+                , inline = TRUE
+                , status = "primary"
               )
-              , selected = "mean"
-              , inline = TRUE
-              , status = "primary"
             )
           )
         )
@@ -202,11 +204,14 @@ statistic_table_server <- function(id, init, data){
 
       })
 
+      # Setting circles ---------------------------------------------------------------------------
+
       output$setting_circle_ui <- renderUI({
         id <- m$setting_circle %>% as.integer()
         1:5 %>% map(~circle_icon(.x, id == .x))
       })
 
+      # Change to circle loads stored settings
       observeEvent(
         m$setting_circle
         , {
@@ -218,6 +223,7 @@ statistic_table_server <- function(id, init, data){
         }
       )
 
+      # From clicking on circle
       observeEvent(
         input$setting_circle
         , {
@@ -225,6 +231,9 @@ statistic_table_server <- function(id, init, data){
         }
       )
 
+      # Local storage -----------------------------------------------------------------------------
+
+      # Initialise with defaults - used when no local storage found for an id
       initialise_local_storage <- function(id, session){
 
         id <- id %>% as.integer()
@@ -245,10 +254,11 @@ statistic_table_server <- function(id, init, data){
         set_local_storage(id, data, session)
       }
 
+      # Get local storage settings - triggered by get_local_storage()
       observeEvent(
         input$local_storage
         , {
-          id <- m$setting_circle
+          id <- m$setting_circle %>% as.integer()
           local_storage <- input$local_storage
           storage_empty <- is.null(local_storage)
 
@@ -266,7 +276,22 @@ statistic_table_server <- function(id, init, data){
             m$setting_circle <- ls_data$setting_circle
           }
 
+          if(id > 0){
+
+          }
+
         }, ignoreNULL = FALSE, ignoreInit = TRUE
+      )
+
+      # Toggle measure statistics --------------------------------------------------------------
+      observeEvent(
+        input$measure_select
+        , {
+          session$sendCustomMessage(
+            "control_visibility"
+            , list(id = ns("measure_statistic_div"), visible = !is.null(input$measure_select))
+          )
+        }, ignoreNULL = FALSE
       )
 
       # Table settings ----------------------------------------------------------------------------
