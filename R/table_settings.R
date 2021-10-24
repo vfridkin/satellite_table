@@ -10,19 +10,6 @@ table_settings_ui <- function(id, init){
       , fluidRow(
         column(
           width = 12
-          , radioGroupButtons(
-            inputId = ns("slider_handles")
-            , label = "Slider handles"
-            , choices = c("one", "two") %>%
-              set_names(c("One", "Two"))
-            , selected = "one"
-            , justified = TRUE
-          )
-        )
-      )
-      , fluidRow(
-        column(
-          width = 12
           , selectizeInput(
             inputId = ns("sort_by")
             , label = "Sort by"
@@ -48,7 +35,7 @@ table_settings_ui <- function(id, init){
       )
       , fluidRow(
         column(
-          width = 9
+          width = 12
           , selectizeInput(
             inputId = ns("identifier_select")
             , label = div(icon("satellite"), "Identifiers (Details view only)")
@@ -61,17 +48,30 @@ table_settings_ui <- function(id, init){
             )
           )
         )
+      )
+      , fluidRow(
+        column(
+          width = 6
+          , radioGroupButtons(
+            inputId = ns("slider_handles")
+            , label = "Slider handles"
+            , choices = c("one", "two") %>%
+              set_names(c("One", "Two"))
+            , selected = "one"
+            , justified = TRUE
+          )
+        )
         , column(
-          width = 3
+          width = 6
           , selectInput(
             inputId = ns("max_factor_filter_choices")
-            , label = div(icon("filter"), "Factor max history")
+            , label = div(icon("filter"), "Factor history limit")
             , choices = 1:50
             , selected = 10
           )
         )
-
       )
+
       , style = "simple"
       , icon = icon(init$icon)
       , status = "default"
@@ -84,7 +84,7 @@ table_settings_ui <- function(id, init){
 }
 
 
-table_settings_server <- function(id){
+table_settings_server <- function(id, init){
   moduleServer(
     id
     , function(input, output, session){
@@ -101,8 +101,38 @@ table_settings_server <- function(id){
 
           m$last_identifier_select <- input$identifier_select
 
-          m$run_once <- TRUE
+        m$run_once <- TRUE
       })
+
+      observeEvent(
+        init()
+        , {
+          stored <- init()
+
+          # Update selectize inputs
+          c("sort_by"
+            , "identifier_select"
+            , "max_factor_filter_choices"
+          ) %>% walk(
+            ~updateSelectInput(
+              session = session
+              , inputId = .x
+              , selected = stored[[.x]]
+            )
+          )
+          # Update radio group buttons
+          c("bar_option"
+            , "slider_handles"
+          ) %>% walk(
+            ~updateRadioGroupButtons(
+              session = session
+              , inputId = .x
+              , selected = stored[[.x]]
+            )
+          )
+
+        }, ignoreNULL = TRUE
+      )
 
       # Settings reactive -------------------------------------------------------------------------
       settings <- reactive({

@@ -157,12 +157,14 @@ statistic_table_server <- function(id, init, data){
         , last_factor_select = NULL
         , slider_field = NULL
         , measure_slider = NULL
-        , slider_handles = NULL
-        , updated_measure_slider_label = NULL
-        , slider_is_range = NULL
         , factor_filter = NULL
         , measure_filter = NULL
         , factor_filter_choices = NULL
+
+        # From settings dropdown
+        , settings_init = NULL # input to settings module
+        , slider_handles = NULL
+        , slider_is_range = NULL
       )
 
       # Initialize --------------------------------------------------------------------------------
@@ -237,11 +239,16 @@ statistic_table_server <- function(id, init, data){
 
         if(id > 0){
           data <- list(
-            factor_select = k$choices$factor[1]
+            factor_select = init$factor_select
             , measure_select = NULL
             , factor_filter_select = NULL
             , slider_field = init$slider_field$name
             , measure_slider = NULL
+            , sort_by = NULL
+            , bar_option = init$bar_option
+            , identifier_select = init$identifier_select
+            , slider_handles = init$slider_handles
+            , max_factor_filter_choices = init$max_factor_filter_choices
           )
         }
 
@@ -289,6 +296,14 @@ statistic_table_server <- function(id, init, data){
             m$slider_field <- stored$slider_field
             m$measure_slider <- stored$measure_slider
 
+            # Update drop down settings
+            m$settings_init <- list(
+              sort_by = stored$sort_by
+              , bar_option = stored$bar_option
+              , identifier_select = stored$identifier_select
+              , slider_handles = stored$slider_handles
+              , max_factor_filter_choices = stored$max_factor_filter_choices
+            )
           }
 
         }, ignoreNULL = FALSE, ignoreInit = TRUE
@@ -302,6 +317,7 @@ statistic_table_server <- function(id, init, data){
           , input$factor_filter_select
           , m$slider_field
           , input$measure_slider
+          , rt_settings()
         )
         , {
           id <- m$id
@@ -317,7 +333,8 @@ statistic_table_server <- function(id, init, data){
               , factor_filter_select = input$factor_filter_select
               , slider_field = m$slider_field
               , measure_slider = input$measure_slider
-            )
+            ) %>%
+              c(rt_settings())
           }
 
           set_local_storage(id, data, session)
@@ -340,7 +357,7 @@ statistic_table_server <- function(id, init, data){
 
       # Table settings ----------------------------------------------------------------------------
 
-      rt_settings <- table_settings_server("statistic_table")
+      rt_settings <- table_settings_server("statistic_table", reactive(m$settings_init))
 
       # Reactable data ----------------------------------------------------------------------------
       rt_container <- reactive({

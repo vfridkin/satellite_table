@@ -13,7 +13,12 @@ function(input, output, session){
 
   # Initial default values
   init <- list(
-    slider_field = ac$field$date_of_launch
+    factor_select = "class_of_orbit"
+    , slider_field = ac$field$date_of_launch
+    , identifier_select = "current_official_name_of_satellite"
+    , slider_handles = "one"
+    , bar_option = "count"
+    , max_factor_filter_choices = 10
     , field = ac$field
   )
 
