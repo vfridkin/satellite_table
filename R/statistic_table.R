@@ -40,8 +40,12 @@ statistic_table_ui <- function(id, field_df){
             )
           )
           , div(
-            style = "display: inline-block; width: 55%"
+            style = "display: inline-block; width: 40%"
             , uiOutput(ns("setting_circle_ui"))
+          )
+          , div(
+            style = "display: inline-block; width: 15%"
+            , uiOutput(ns("filters_applied_ui"))
           )
           , div(
             class = "table_controls"
@@ -156,6 +160,8 @@ statistic_table_server <- function(id, init, data){
         , local_storage = NULL
         , last_factor_select = NULL
         , slider_field = NULL
+        , slider_range = NULL
+        , is_slider_filtering = NULL # Boolean: set to false if entire range selected
         , measure_slider = NULL
         , factor_filter = NULL
         , measure_filter = NULL
@@ -164,7 +170,6 @@ statistic_table_server <- function(id, init, data){
         # From settings dropdown
         , settings_init = NULL # input to settings module
         , slider_handles = NULL
-        , slider_is_range = NULL
       )
 
       # Initialize --------------------------------------------------------------------------------
@@ -175,8 +180,8 @@ statistic_table_server <- function(id, init, data){
         m$id <- 0
         m$last_factor_select <- input$factor_select
         m$slider_field <- init$slider_field$name
+        m$is_slider_filtering <- FALSE
         m$slider_handles <- "one"
-        m$slider_is_range <- FALSE
         m$factor_filter <- data.table(
           name = character(0)
           , display = character(0)
@@ -222,6 +227,22 @@ statistic_table_server <- function(id, init, data){
           m$id <- input$setting_circle
         }
       )
+
+      # Filters applied ---------------------------------------------------------------------------
+
+      output$filters_applied_ui <- renderUI({
+
+        factor_filters <- nrow(m$factor_filter)
+        measure_filters <- m$is_slider_filtering %>% as.integer()
+
+        n <- factor_filters + measure_filters
+        filter_message <- if(n == 0){
+          "Unfiltered"
+        } else {
+          "{n} filter{add_s(n)} on" %>% glue()
+        }
+        HTML(filter_message)
+      })
 
       # Local storage -----------------------------------------------------------------------------
 
@@ -375,7 +396,7 @@ statistic_table_server <- function(id, init, data){
           , measure = m$measure_filter
         )
         slider <- list(
-          is_range = m$slider_is_range
+          handles = m$slider_handles
           , field = m$slider_field
         )
 
@@ -629,12 +650,18 @@ statistic_table_server <- function(id, init, data){
       )
 
       # Slider UI ---------------------------------------------------------------------------------
+      observeEvent(
+        m$slider_field
+        , {
+          m$slider_range <- data[[m$slider_field]] %>% range(na.rm = TRUE)
+        }
+      )
 
       output$measure_slider_ui <- renderUI({
 
         # Get range
         slider_step <- init$field[[m$slider_field]]$slider_step
-        slider_range <- data[[m$slider_field]] %>% range(na.rm = TRUE)
+        slider_range <- m$slider_range
         slider_label <- init$field[[m$slider_field]]$display_name %>%
           paste("(range)")
 
@@ -697,6 +724,13 @@ statistic_table_server <- function(id, init, data){
         , {
 
           slider <- input$measure_slider
+
+          m$is_slider_filtering <- if(length(slider) == 1){
+            slider < m$slider_range[2]
+          } else {
+            slider != m$slider_range
+          }
+
           if(init$field[[m$slider_field]]$group_as == "date"){
             slider <- slider %>% format("%Y") %>% as.numeric()
           }

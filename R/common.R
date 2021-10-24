@@ -227,7 +227,7 @@ apply_factor_filter <- function(df, filtered){
 # Subset df by measure filter from slider definition and value
 apply_measure_filter <- function(df, slider, filtered, ac){
 
-  comparison <- if(slider$is_range) "%between%" else "<="
+  comparison <- if(slider$handles == "one") "<=" else "%between%"
   filter <- filtered$measure[1]
 
   filter_col <- filter$name
@@ -288,3 +288,10 @@ replace_col_names <- function(df){
 # Round up/down to significant digits
 floor_dec <- function(x, digits=1) round(x - 5*10^(-digits-1), digits)
 ceiling_dec <- function(x, digits=1) round(x + 5*10^(-digits-1), digits)
+
+# String manipulation -----------------------------------------------------------------------------
+
+add_s <- function(x){
+  if(x > 1) "s" else ""
+}
+
