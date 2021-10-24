@@ -400,8 +400,23 @@ statistic_table_server <- function(id, init, data){
           , field = m$slider_field
         )
 
+        # Restrict sort columns to those in selected measures
+        sort_by <- settings$sort_by %>% .[. %in% selected$measure]
+
+        id_cols <- settings$identifier_select
+        detail_cols <- c(id_cols
+                         , selected$factor
+                         , selected$measure
+                         , m$slider_field) %>% unique()
+
         is_selected <- selected %>% map(~!is.null(.x))
         is_filtered <- filtered %>% map(~nrow(.x) > 0)
+        is_sort_by <- !is.null(sort_by) && length(sort_by) > 0
+
+        # Sort everything decreasing
+        if(is_sort_by){
+          sort_order <- rep(-1, length(sort_by))
+        }
 
         # Ensure group selection always has one element
         if(!is_selected$factor){
@@ -447,30 +462,15 @@ statistic_table_server <- function(id, init, data){
         }
 
         # Narrow detail data: df
-        id_cols <- settings$identifier_select
-        detail_cols <- c(id_cols, selected$factor, selected$measure, m$slider_field) %>% unique()
         df <- df[, ..detail_cols]
 
         # Sort
-        dfc <- dfc %>% setorder(-count)
-
-        apply_column_definitions <- function(df, field_config){
-
-          names(df) %>% walk(
-            function(col_name){
-              config <- field_config[[col_name]]
-              display_decimals <- config$display_decimals
-
-              col <- df[[col_name]]
-
-              if(!is.na(display_decimals)){
-                col <- col %>% format(big.mark = ",", digits = display_decimals)
-                df[[col_name]] <<- col
-              }
-            }
-          )
-
-          df
+        if(is_sort_by){
+          df <- df %>% setorderv(sort_by, sort_order)
+          dfc <- dfc %>% setorderv(sort_by, sort_order)
+        } else {
+          dfc <- dfc %>% setorder(-count)
+          df <- df %>% setorderv(id_cols)
         }
 
         # Apply column definitions
@@ -488,9 +488,7 @@ statistic_table_server <- function(id, init, data){
           add_html_to_cells(settings, selected)
 
         # Add count total to count column heading
-
         col_def_summary <- k$column_definitions[names(dfc)]
-
         col_def_summary$count <- col_def_summary$count %>% list_modify(
           name = HTML(paste0('
                     Count

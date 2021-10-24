@@ -12,7 +12,7 @@ table_settings_ui <- function(id, init){
           width = 12
           , selectizeInput(
             inputId = ns("sort_by")
-            , label = "Sort by"
+            , label = div(icon("sort"), "Sort by")
             , choices = init$choices$measure_date
             , selected = ""
             , multiple = TRUE
@@ -25,7 +25,7 @@ table_settings_ui <- function(id, init){
           width = 12
           , radioGroupButtons(
             inputId = ns("bar_option")
-            , label = "Measure columns with bars"
+            , label = div(icon("align-left"), "Measure columns with bars")
             , choices = c("count", "sort", "all") %>%
               set_names(c("Count", "Sorted", "All"))
             , selected = "count"
@@ -54,7 +54,7 @@ table_settings_ui <- function(id, init){
           width = 6
           , radioGroupButtons(
             inputId = ns("slider_handles")
-            , label = "Slider handles"
+            , label = div(icon("arrows-alt-h"), "Slider handles")
             , choices = c("one", "two") %>%
               set_names(c("One", "Two"))
             , selected = "one"

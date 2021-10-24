@@ -192,6 +192,29 @@ background-position: center center;">
 
 }
 
+# Format column before mixing data values with HTML - the usual column
+# definitions are applied afterwards - in the reactable function, which
+# may not work if the values have been mixed with HTML.
+apply_column_definitions <- function(df, field_config){
+
+  names(df) %>% walk(
+    function(col_name){
+      config <- field_config[[col_name]]
+      display_decimals <- config$display_decimals
+
+      col <- df[[col_name]]
+
+      if(!is.na(display_decimals)){
+        col <- col %>% format(big.mark = ",", digits = display_decimals)
+        df[[col_name]] <<- col
+      }
+    }
+  )
+
+  df
+}
+
+
 # Combine adding col names and bars to cells
 add_html_to_cells <- function(df, settings, selected){
 
