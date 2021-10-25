@@ -31,11 +31,11 @@ statistic_table_ui <- function(id, field_df){
         , column(
           width = 6
           , div(
-            style = "display: inline-block; width: 15%; padding-right: 3px;"
+            style = "display: inline-block; width: 20%; padding-right: 3px; min-width: 100px;"
             , uiOutput(ns("filters_applied_ui"))
           )
           , div(
-            style = "display: inline-block; width: 35%; text-align: center;"
+            style = "display: inline-block; width: 30%; text-align: center;"
             , uiOutput(ns("setting_circle_ui"))
           )
           , div(
@@ -112,15 +112,22 @@ statistic_table_ui <- function(id, field_df){
             width = 3
             , div(
               id = ns("measure_statistic_div")
-              , awesomeRadio(
-                inputId = ns("measure_statistic")
+              , selectizeInput(
+                inputId = ns("measure_statistic_select")
                 , label = "Measures statistic"
                 , choices = c("min", "mean", "max", "sd") %>%
-                  set_names(c("Min", "Avg", "Max", "SD"))
+                  set_names(c("Minimum", "Average", "Maximum", "Standard deviation"))
                 , selected = "mean"
-                , inline = TRUE
-                , status = "primary"
               )
+              # , awesomeRadio(
+              #   inputId = ns("measure_statistic")
+              #   , label = "Measures statistic"
+              #   , choices = c("min", "mean", "max", "sd") %>%
+              #     set_names(c("Min", "Avg", "Max", "SD"))
+              #   , selected = "mean"
+              #   , inline = TRUE
+              #   , status = "primary"
+              # )
             )
           )
         )
@@ -244,7 +251,7 @@ statistic_table_server <- function(id, init, data){
         } else {
           "{n} filter{add_s(n)} on" %>% glue()
         }
-        HTML(filter_message)
+        div(icon("filter"), filter_message)
       })
 
       # Local storage -----------------------------------------------------------------------------
@@ -370,11 +377,17 @@ statistic_table_server <- function(id, init, data){
 
       # Toggle measure statistics -----------------------------------------------------------------
       observeEvent(
-        input$measure_select
+        list(
+          input$measure_select
+          , m$table_view
+        )
         , {
           session$sendCustomMessage(
             "control_visibility"
-            , list(id = ns("measure_statistic_div"), visible = !is.null(input$measure_select))
+            , list(
+              id = ns("measure_statistic_div")
+              , visible = all(!is.null(input$measure_select), m$table_view == "summary")
+            )
           )
         }, ignoreNULL = FALSE
       )
@@ -388,7 +401,7 @@ statistic_table_server <- function(id, init, data){
 
         settings <- rt_settings()
 
-        measure_statistic <- input$measure_statistic
+        measure_statistic <- input$measure_statistic_select
 
         selected <- list(
           factor = input$factor_select
