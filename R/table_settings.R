@@ -73,7 +73,7 @@ table_settings_ui <- function(id, init){
       )
 
       , style = "simple"
-      , icon = icon(init$icon)
+      , icon = div(style = "font-size: 14px; padding-top: 2px; padding-right: 2px;", "...more")
       , status = "default"
       , right = TRUE
       , width = "50vw"

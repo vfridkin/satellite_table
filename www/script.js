@@ -69,8 +69,8 @@ Shiny.addCustomMessageHandler(
   'view_controls_switch'
   , function(visible) {
       visible
-      ? $('.table_controls').show(500)
-      : $('.table_controls').hide(500)
+      ? $('.table_controls').slideDown(500)
+      : $('.table_controls').slideUp(500)
 });
 
 // Hide/show if message is null

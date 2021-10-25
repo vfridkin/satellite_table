@@ -10,6 +10,7 @@
   --colour-gray-medium: #888888;
   --colour-gray-light: #aeb0b5;
   --colour-white: #ffffff;
+  --colour-base2: #030303;
 
   --colour-primary-alt: #02bfe7;
   --colour-primary-alt-darkest: #046b99;
@@ -218,6 +219,24 @@ i {
   padding-right: 3px;
 }
 
+/* Don't pad rangle slider */
+.irs i {
+  padding-right: 0px;
+}
+
+/* Table controls */
+div#main-table_controls_div {
+  box-shadow: -1px 0px 8px 0px var(--colour-gray-light) inset;
+  padding: 15px 0 10px 0;
+  /* border: 1px solid #f5f5f5; */
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+div#main-table_controls_div .row {
+  margin-left: 10px;
+  margin-right: 10px;
+}
 
 /* Measure slider */
 div.statistic__select-box span.irs-single {
@@ -243,6 +262,11 @@ div.statistic__select-box span.play > i,
 div.statistic__select-box span.pause > i {
   color: white;
 }
+
+#main-measure_slider_ui > div {
+  margin-bottom: 0;
+}
+
 
 /* Measure statistic */
 

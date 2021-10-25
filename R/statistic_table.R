@@ -8,7 +8,7 @@ statistic_table_ui <- function(id, field_df){
 
   # Settings init
   settings_init <- list(
-    icon = "ellipsis-v"
+    icon = "ellipsis-h"
     , choices = choices
   )
 
@@ -31,31 +31,32 @@ statistic_table_ui <- function(id, field_df){
         , column(
           width = 6
           , div(
-            style = "display: inline-block; margin-top: 6px; width: 40%;"
+            style = "display: inline-block; width: 15%; padding-right: 3px;"
+            , uiOutput(ns("filters_applied_ui"))
+          )
+          , div(
+            style = "display: inline-block; width: 35%; text-align: center;"
+            , uiOutput(ns("setting_circle_ui"))
+          )
+          , div(
+            style = "display: inline-block; margin-top: 6px; width: 35%;"
             , materialSwitch(
               inputId = ns("view_controls_switch"),
-              label = "View controls",
+              label = "Controls",
               value = FALSE,
               status = "danger"
             )
           )
           , div(
-            style = "display: inline-block; width: 40%"
-            , uiOutput(ns("setting_circle_ui"))
-          )
-          , div(
-            style = "display: inline-block; width: 15%"
-            , uiOutput(ns("filters_applied_ui"))
-          )
-          , div(
             class = "table_controls"
-            , style = "display: inline-block; width: 5%; position: absolute; right: 1px;"
+            , style = "display: inline-block; width: 15%; position: absolute; right: 0;"
             , table_settings_ui(ns("statistic_table"), settings_init)
           )
         )
       )
       , div(
-        class = "table_controls"
+        id = ns("table_controls_div")
+        , class = "table_controls"
         , fluidRow(
           column(
             width = 6
@@ -156,6 +157,7 @@ statistic_table_server <- function(id, init, data){
       m <- reactiveValues(
         run_once = FALSE
         , table_view = NULL
+        , setting_circle_count = NULL
         , id = NULL
         , local_storage = NULL
         , last_factor_select = NULL
@@ -177,6 +179,7 @@ statistic_table_server <- function(id, init, data){
         if(m$run_once) return()
 
         m$table_view <- "summary"
+        m$setting_circle_count <- 3
         m$id <- 0
         m$last_factor_select <- input$factor_select
         m$slider_field <- init$slider_field$name
@@ -203,7 +206,7 @@ statistic_table_server <- function(id, init, data){
       # Setting circles ---------------------------------------------------------------------------
 
       output$setting_circle_ui <- renderUI({
-        1:5 %>% map(~circle_icon(.x, m$id == .x))
+        1:m$setting_circle_count %>% map(~circle_icon(.x, m$id == .x))
       })
 
       # Change to circle loads stored settings
@@ -237,7 +240,7 @@ statistic_table_server <- function(id, init, data){
 
         n <- factor_filters + measure_filters
         filter_message <- if(n == 0){
-          "Unfiltered"
+          "No filters"
         } else {
           "{n} filter{add_s(n)} on" %>% glue()
         }
