@@ -1,6 +1,5 @@
 /* Constants */
 
-
 /* Colour palette from https://nasa.github.io/nasawds-site/components/colors/ */
 :root {
   --colour-primary: #105bd8;
@@ -8,6 +7,7 @@
   --colour-primary-darkest: #061f4a;
   --colour-base: #212121;
   --colour-gray-dark: #323a45;
+  --colour-gray-medium: #888888;
   --colour-gray-light: #aeb0b5;
   --colour-white: #ffffff;
 
@@ -15,30 +15,32 @@
   --colour-primary-alt-darkest: #046b99;
   --colour-primary-alt-dark: #00a6d2;
 
-  --colour-text-gradient-bottom: #38495A;
+  --colour-text-gradient-bottom: #38495a;
   --colour-text-sub: #475d72;
-  --colour-rocket-flame-red: 141, 45, 5;
-  --colour-rocket-flame-orange: 215, 120, 32;
+  --colour-rocket-flame-red: #8d2d05;
+  --colour-rocket-flame-orange: #d77820;
 
-  --colour-desat-blue: #38495A;
+  --colour-rocket-flame-red-rgb: 141, 45, 5;
+  --colour-rocket-flame-orange-rgb: 215, 120, 32;
+
+  --colour-desat-blue: #38495a;
   --colour-desat-blue-lighter: #475d72;
-  --colour-desat-blue-lightest: #56708a
-  --colour-desat-blue-sater: 45,73,101;
-  --colour-desat-blue-darker: #293542
+  --colour-desat-blue-lightest: #56708a;
+  --colour-desat-blue-sater: #2d4965;
+  --colour-desat-blue-darker: #293542;
 
-
+  --colour-desat-blue-sater-rgb: 45, 73, 101;
 }
-
-
 
 /* Styles */
 
- * {
-   background-color: var(--colour-base)
- }
+* {
+  background-color: var(--colour-base);
+}
 
 html {
-  font-size: 62.5%; }
+  font-size: 62.5%;
+}
 
 body {
   font-family: "Lato", Arial, Verdana, sans-serif;
@@ -49,6 +51,7 @@ body {
 
 .header__text-box {
   position: absolute;
+  z-index: 9;
   left: 50%;
   top: 20%;
   transform: translate(-50%, -50%);
@@ -77,7 +80,10 @@ body {
   animation-name: moveInLeft;
   animation-duration: 2s;
   animation-timing-function: ease-in-out;
-  background: -webkit-linear-gradient(var(--colour-white), var(--colour-text-gradient-bottom));
+  background: -webkit-linear-gradient(
+    var(--colour-white),
+    var(--colour-text-gradient-bottom)
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -108,8 +114,8 @@ body {
   z-index: 9;
   position: absolute;
   background-color: transparent;
-  right:0;
-  top:0;
+  right: 0;
+  top: 0;
   opacity: 0;
 }
 
@@ -122,7 +128,7 @@ body {
 
 .image-up {
   animation: flyUp 3s;
-  animation-timing-function: cubic-bezier(0,0,0.5,2,5);
+  animation-timing-function: cubic-bezier(0, 0, 0.5, 2, 5);
   left: 2%;
   top: 7%;
   transform: translate(-50%, -50%) scale(0.3) rotate(-70deg);
@@ -138,8 +144,8 @@ body {
   animation: fadeIn 6s;
 }
 
-.btn:link,
-.btn:visited {
+.launch-btn:link,
+.launch-btn:visited {
   text-transform: uppercase;
   text-decoration: none;
   background-color: var(--colour-text-gradient-bottom);
@@ -152,19 +158,19 @@ body {
   transition: all 0.4s;
 }
 
-.btn:hover {
+.launch-btn:hover {
   transform: translateY(-0.3rem);
-  box-shadow: 0 1rem 2rem rgba(var(--colour-rocket-flame-red), 0.5);
+  box-shadow: 0 1rem 2rem rgba(var(--colour-rocket-flame-red-rgb), 0.5);
 }
-.btn:hover::after {
+.launch-btn:hover::after {
   transition: all 0.4s;
   transform: scaleX(1.4) scaleY(1.6);
   opacity: 0;
 }
 
-.btn:active {
+.launch-btn:active {
   transform: translateY(0.1rem);
-  box-shadow: 0 0.5rem 1rem rgba(var(--colour-rocket-flame-orange), 0.5);
+  box-shadow: 0 0.5rem 1rem rgba(var(--colour-rocket-flame-orange-rgb), 0.5);
 }
 
 .statistic_container {
@@ -189,8 +195,29 @@ body {
 
 /* Select box */
 div.statistic__select-box {
-  color: #888888;
+  color: var(--colour-gray-medium);
 }
+
+/* Table view buttons */
+#main-table_view button.btn.radiobtn.active {
+  background-color: var(--colour-desat-blue);
+  color: var(--colour-white);
+  font-weight: bolder;
+}
+
+/* View controls switch */
+.label-danger {
+  background-color: var(--colour-rocket-flame-red);
+}
+
+.material-switch > label:after {
+  background: var(--colour-gray-light);
+}
+
+i {
+  padding-right: 3px;
+}
+
 
 /* Measure slider */
 div.statistic__select-box span.irs-single {
@@ -223,13 +250,17 @@ div#main-measure_statistic .control-label {
   margin-bottom: 20px;
 }
 
-
 /* Select box - factor choices */
-div.statistic__select-box div.selectize-input.items.not-full.has-options.has-items.ui-sortable > div {
+div.statistic__select-box
+  div.selectize-input.items.not-full.has-options.has-items.ui-sortable
+  > div {
   text-shadow: 0 1px 0 rgb(--colour-desat-blue-darker);
   border-radius: 6px;
   background-color: var(--colour-desat-blue);
-  background-image: linear-gradient(to bottom, var(--colour-desat-blue-lighter) var(--colour-desat-blue-lightest));
+  background-image: linear-gradient(
+    to bottom,
+    var(--colour-desat-blue-lighter) var(--colour-desat-blue-lightest)
+  );
   background-repeat: repeat-x;
   box-shadow: 0 1px 0 rgb(255 255 255 / 20%), inset 0 1px rgb(0 0 0 / 3%);
   color: var(--colour-white);
@@ -244,7 +275,6 @@ div.statistic__select-box div.selectize-input.items.not-full.has-options.has-ite
   color: darkgray;
 }
 
-
 /* Settings */
 
 #main-statistic_table-settings_dropdown {
@@ -252,14 +282,6 @@ div.statistic__select-box div.selectize-input.items.not-full.has-options.has-ite
 }
 
 #sw-content-main-statistic_table-settings_dropdown,
-#sw-content-main-statistic_table-settings_dropdown div
-{
+#sw-content-main-statistic_table-settings_dropdown div {
   background-color: var(--colour-base);
 }
-
-
-
-
-
-
-

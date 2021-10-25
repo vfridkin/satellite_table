@@ -39,7 +39,7 @@ button_element <- function(label){
     , a(
       href="#"
       , id = "launch_button"
-      , class = "btn btn--animated"
+      , class = "launch-btn btn--animated"
       , label
     )
   )
