@@ -31,6 +31,8 @@
   --colour-desat-blue-darker: #293542;
 
   --colour-desat-blue-sater-rgb: 45, 73, 101;
+
+  --colour-sun: #f9d71c;
 }
 
 /* Styles */
@@ -174,6 +176,8 @@ body {
   box-shadow: 0 0.5rem 1rem rgba(var(--colour-rocket-flame-orange-rgb), 0.5);
 }
 
+/* Table Screen ---------------------------------------------------------------------------------*/
+
 .statistic_container {
   opacity: 0;
   top: 10%;
@@ -208,7 +212,7 @@ div.statistic__select-box {
 
 /* View controls switch */
 .label-danger {
-  background-color: var(--colour-rocket-flame-red);
+  background-color: var(--colour-sun);
 }
 
 .material-switch > label:after {
@@ -241,21 +245,23 @@ div#main-table_controls_div .row {
 /* Measure slider */
 div.statistic__select-box span.irs-single {
   background: transparent;
-  color: #fffe46;
+  color: var(--colour-white);
 }
 
 div.statistic__select-box span.irs-bar.irs-bar--single,
 div.statistic__select-box span.irs-handle.single {
-  background-color: #ffdf46;
+  background-color: var(--colour-desat-blue);
+  border: none;
 }
 
 div.statistic__select-box span.irs-line {
   background: transparent;
+  border: none;
 }
 
 div.statistic__select-box span.irs-min,
 div.statistic__select-box span.irs-max {
-  color: #ccc;
+  color: var(--colour-gray-light);
 }
 
 div.statistic__select-box span.play > i,

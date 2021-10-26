@@ -31,25 +31,21 @@ statistic_table_ui <- function(id, field_df){
         , column(
           width = 6
           , div(
-            style = "display: inline-block; width: 15%; padding-right: 3px;"
-            , uiOutput(ns("filters_applied_ui"))
-          )
-          , div(
-            style = "display: inline-block; width: 35%; text-align: center;"
-            , uiOutput(ns("setting_circle_ui"))
-          )
-          , div(
-            style = "display: inline-block; margin-top: 6px; width: 35%;"
+            style = "display: inline-block; margin-top: 6px; width: 55px;"
             , materialSwitch(
-              inputId = ns("view_controls_switch"),
-              label = "Controls",
-              value = FALSE,
-              status = "danger"
+              inputId = ns("view_controls_switch")
+              , label = NULL
+              , value = FALSE
+              , status = "danger"
             )
           )
           , div(
+            style = "display: inline-block;"
+            , uiOutput(ns("setting_circle_ui"))
+          )
+          , div(
             class = "table_controls"
-            , style = "display: inline-block; width: 15%; position: absolute; right: 0;"
+            , style = "display: inline-block; position: absolute; right: 0;"
             , table_settings_ui(ns("statistic_table"), settings_init)
           )
         )
@@ -179,7 +175,7 @@ statistic_table_server <- function(id, init, data){
         if(m$run_once) return()
 
         m$table_view <- "summary"
-        m$setting_circle_count <- 3
+        m$setting_circle_count <- 8
         m$id <- 0
         m$last_factor_select <- input$factor_select
         m$slider_field <- init$slider_field$name

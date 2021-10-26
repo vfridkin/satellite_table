@@ -137,11 +137,12 @@ set_setting_circle <- function(id, session){
 # Circles for saving settings
 circle_icon <- function(id, fill = FALSE){
   class_fill <- if(fill) "fas" else "far"
+  margin_right <- if(id %% 4 == 0) "10px" else "0"
   HTML(paste0('
       <i
         data-id="',id ,'"
         class="setting-circle ',class_fill ,' fa-circle"
-        style="padding: 5px;"
+        style="padding: 5px; margin-right: ', margin_right,'"
       ></i>'
   ))
 }
