@@ -127,6 +127,10 @@ statistic_table_ui <- function(id, field_df){
       , fluidRow(
         column(
           width = 12
+          , div(
+            style = "position: absolute; left: -5px; top: 5px;"
+            , uiOutput(ns("filters_applied_ui"))
+          )
           , reactableOutput(
             outputId = ns("statistic_rt")
           )
@@ -234,13 +238,9 @@ statistic_table_server <- function(id, init, data){
         factor_filters <- nrow(m$factor_filter)
         measure_filters <- m$is_slider_filtering %>% as.integer()
 
-        n <- factor_filters + measure_filters
-        filter_message <- if(n == 0){
-          "No filters"
-        } else {
-          "{n} filter{add_s(n)} on" %>% glue()
-        }
-        HTML(filter_message)
+        filter_count <- factor_filters + measure_filters
+        filter_message <- if(filter_count > 0) icon("filter") else ""
+        filter_message
       })
 
       # Local storage -----------------------------------------------------------------------------

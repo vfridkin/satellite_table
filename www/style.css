@@ -315,3 +315,11 @@ div.statistic__select-box
 #sw-content-main-statistic_table-settings_dropdown div {
   background-color: var(--colour-base);
 }
+
+/* Filter icon */
+
+#main-filters_applied_ui {
+  color: var(--colour-rocket-flame-orange);
+}
+
+
