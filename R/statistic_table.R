@@ -108,15 +108,22 @@ statistic_table_ui <- function(id, field_df){
             width = 3
             , div(
               id = ns("measure_statistic_div")
-              , awesomeRadio(
-                inputId = ns("measure_statistic")
+              , selectizeInput(
+                inputId = ns("measure_statistic_select")
                 , label = "Measures statistic"
                 , choices = c("min", "mean", "max", "sd") %>%
-                  set_names(c("Min", "Avg", "Max", "SD"))
+                  set_names(c("Minimum", "Average", "Maximum", "Standard deviation"))
                 , selected = "mean"
-                , inline = TRUE
-                , status = "primary"
               )
+              # , awesomeRadio(
+              #   inputId = ns("measure_statistic")
+              #   , label = "Measures statistic"
+              #   , choices = c("min", "mean", "max", "sd") %>%
+              #     set_names(c("Min", "Avg", "Max", "SD"))
+              #   , selected = "mean"
+              #   , inline = TRUE
+              #   , status = "primary"
+              # )
             )
           )
         )
@@ -239,8 +246,7 @@ statistic_table_server <- function(id, init, data){
         measure_filters <- m$is_slider_filtering %>% as.integer()
 
         filter_count <- factor_filters + measure_filters
-        filter_message <- if(filter_count > 0) icon("filter") else ""
-        filter_message
+        if(filter_count > 0) icon("filter") else ""
       })
 
       # Local storage -----------------------------------------------------------------------------
@@ -366,11 +372,17 @@ statistic_table_server <- function(id, init, data){
 
       # Toggle measure statistics -----------------------------------------------------------------
       observeEvent(
-        input$measure_select
+        list(
+          input$measure_select
+          , m$table_view
+        )
         , {
           session$sendCustomMessage(
             "control_visibility"
-            , list(id = ns("measure_statistic_div"), visible = !is.null(input$measure_select))
+            , list(
+              id = ns("measure_statistic_div")
+              , visible = all(!is.null(input$measure_select), m$table_view == "summary")
+            )
           )
         }, ignoreNULL = FALSE
       )
@@ -384,7 +396,7 @@ statistic_table_server <- function(id, init, data){
 
         settings <- rt_settings()
 
-        measure_statistic <- input$measure_statistic
+        measure_statistic <- input$measure_statistic_select
 
         selected <- list(
           factor = input$factor_select
