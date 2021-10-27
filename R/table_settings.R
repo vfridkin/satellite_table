@@ -4,6 +4,11 @@ table_settings_ui <- function(id, init){
 
   ns <- NS(id)
 
+  select_choices <- list(
+    Measure = init$choices$measure_date
+    , Special = c("Count" = "count", "All" = "all", "Inverse" = "inverse")
+    )
+
   div(
     dropdown(
       inputId = ns("settings_dropdown")
@@ -13,8 +18,8 @@ table_settings_ui <- function(id, init){
           , selectizeInput(
             inputId = ns("sort_by")
             , label = div(icon("sort"), "Sort by")
-            , choices = init$choices$measure_date
-            , selected = ""
+            , choices = select_choices
+            , selected = "count"
             , multiple = TRUE
             , width = '100%'
           )
@@ -23,13 +28,13 @@ table_settings_ui <- function(id, init){
       , fluidRow(
         column(
           width = 12
-          , radioGroupButtons(
+          , selectizeInput(
             inputId = ns("bar_option")
             , label = div(icon("align-left"), "Measure columns with bars")
-            , choices = c("count", "sort", "all") %>%
-              set_names(c("Count", "Sorted", "All"))
+            , choices = select_choices
             , selected = "count"
-            , justified = TRUE
+            , multiple = TRUE
+            , width = '100%'
           )
         )
       )
