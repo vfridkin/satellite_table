@@ -13,7 +13,7 @@ table_settings_ui <- function(id, init){
           , selectizeInput(
             inputId = ns("sort_by")
             , label = div(icon("sort"), "Sort by")
-            , choices = init$choices$measure_date %>%
+            , choices = init$choices$sort_by %>%
               add_special_choices("Measure", "count", "clear")
             , selected = "count"
             , multiple = TRUE
@@ -27,7 +27,7 @@ table_settings_ui <- function(id, init){
           , selectizeInput(
             inputId = ns("bar_option")
             , label = div(icon("align-left"), "Measure columns with bars")
-            , choices = init$choices$measure_date %>%
+            , choices = init$choices$bar_option %>%
               add_special_choices("Measure", "count", "all", "inverse", "clear")
             , selected = "count"
             , multiple = TRUE
@@ -91,9 +91,18 @@ table_settings_server <- function(id, init){
     id
     , function(input, output, session){
 
+      # Local constants ---------------------------------------------------------------------------
+      k <- list(
+        choices = get_choices()
+      )
+
       # Local reactives ---------------------------------------------------------------------------
       m <- reactiveValues(
         run_once = FALSE
+
+        , sort_by = NULL
+        , bar_option = NULL
+
         , last_factor_select = NULL
       )
 
@@ -137,6 +146,24 @@ table_settings_server <- function(id, init){
         }, ignoreNULL = TRUE
       )
 
+      # Special selections ------------------------------------------------------------------------
+
+      # Process special selections and store result in reactive values
+      observeEvent(
+        list(
+          input$sort_by
+          , input$bar_option
+        )
+        , {
+          if(special_select(session, "sort_by", k$choices)) return()
+          if(special_select(session, "bar_option", k$choices)) return()
+
+          m$sort_by <- input$sort_by
+          m$bar_option <- input$bar_option
+        }
+      )
+
+
       # Settings reactive -------------------------------------------------------------------------
       settings <- reactive({
 
@@ -160,8 +187,8 @@ table_settings_server <- function(id, init){
 
         list(
           slider_handles = input$slider_handles
-          , sort_by = input$sort_by
-          , bar_option = input$bar_option
+          , sort_by = m$sort_by
+          , bar_option = m$bar_option
           , identifier_select = identifier_select
           , max_factor_filter_choices = input$max_factor_filter_choices %>% as.integer()
         )

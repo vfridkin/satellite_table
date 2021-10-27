@@ -160,7 +160,9 @@ statistic_table_server <- function(id, init, data){
         , setting_circle_count = NULL
         , id = NULL
         , local_storage = NULL
+        , factor_select = NULL
         , last_factor_select = NULL
+        , measure_select = NULL
         , slider_field = NULL
         , slider_range = NULL
         , is_slider_filtering = NULL # Boolean: set to false if entire range selected
@@ -384,7 +386,25 @@ statistic_table_server <- function(id, init, data){
 
       rt_settings <- table_settings_server("statistic_table", reactive(m$settings_init))
 
+      # Special selections ------------------------------------------------------------------------
+
+      # Process special selections and store result in reactive values
+      observeEvent(
+        list(
+          input$factor_select
+          , input$measure_select
+        )
+        , {
+          if(special_select(session, "factor_select", k$choices, m$last_factor_select)) return()
+          if(special_select(session, "measure_select", k$choices, m$last_factor_select)) return()
+
+          m$factor_select <- input$factor_select
+          m$measure_select <- input$measure_select
+        }
+      )
+
       # Reactable data ----------------------------------------------------------------------------
+
       rt_container <- reactive({
 
         settings <- rt_settings()
@@ -392,8 +412,8 @@ statistic_table_server <- function(id, init, data){
         measure_statistic <- input$measure_statistic_select
 
         selected <- list(
-          factor = input$factor_select
-          , measure = input$measure_select
+          factor = m$factor_select
+          , measure = m$measure_select
         )
         filtered <- list(
           factor = m$factor_filter

@@ -107,10 +107,17 @@ get_choices <- function(){
   # Combine measures with dates
   choices$measure_date <- c(choices$measure, choices$date) %>% sort()
 
+  choices$factor_select <- choices$factor
+  choices$measure_select <- choices$measure_date
+  choices$sort_by <- choices$measure_date
+  choices$bar_option <- choices$measure_date
+
   choices
 }
 
 add_special_choices <- function(choices, choices_name, ...){
+
+  special <- c(...)
 
   special_choices <- c(
     "Count" = "count"
@@ -119,10 +126,63 @@ add_special_choices <- function(choices, choices_name, ...){
     , "Clear" = "clear"
   ) %>% .[. %in% c(...)]
 
+  special_choices <- special_choices %>%
+    map_chr(
+      function(x){
+        if(x == "count") return(x)
+        paste0(x, ac$special_function_suffix)
+      }
+    )
+
   list(choices, special_choices) %>%
     set_names(c(choices_name, "Special"))
 }
 
+special_select <- function(session, id, choices, last_factor_select = ""){
+
+  select <- session$input[[id]]
+  sfx <- ac$special_function_suffix
+
+  nothing_special <- any(
+    is.null(select)
+    , !any(select %>% str_detect(sfx))
+  )
+
+  if(nothing_special) return(FALSE)
+
+  # Get first special function - should only be one anyway
+  special <- select %>% keep(~str_detect(.x, sfx)) %>% .[1]
+  special <- special %>% str_remove(sfx)
+
+  # Default to no selection
+  selected <- ""
+
+  if(special == "all"){
+    selected <- choices[[id]]
+  }
+
+  if(special == "inverse"){
+    selected <- choices[[id]] %>% setdiff(select)
+  }
+
+  # Replace null selection with empty string to enable update
+  if(length(selected) == 0){
+    selected <- ""
+  }
+
+  # Leave one remainder if factors
+  if(selected == "" && id == "factor_select"){
+    selected <- last_factor_select[1]
+  }
+
+  updateSelectizeInput(
+    session = session
+    , inputId = id
+    , selected = selected
+  )
+
+  return(TRUE)
+}
 
 # DATA I/O ----------------------------------------------------------------------------------------
 
