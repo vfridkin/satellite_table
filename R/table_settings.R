@@ -163,7 +163,6 @@ table_settings_server <- function(id, init){
         }
       )
 
-
       # Settings reactive -------------------------------------------------------------------------
       settings <- reactive({
 
