@@ -59,7 +59,8 @@ statistic_table_ui <- function(id, field_df){
             , selectizeInput(
               inputId = ns("factor_select")
               , label = div(icon("columns"), "Factors")
-              , choices = choices$factor
+              , choices = choices$factor %>%
+                add_special_choices("Factor", "all", "inverse", "clear")
               , selected = choices$factor[1]
               , multiple = TRUE
               , width = '100%'
@@ -73,7 +74,8 @@ statistic_table_ui <- function(id, field_df){
             , selectizeInput(
               inputId = ns("measure_select")
               , label = div(icon("columns"), "Measures")
-              , choices = choices$measure_date
+              , choices = choices$measure_date %>%
+                add_special_choices("Measure", "all", "inverse", "clear")
               , selected = ""
               , multiple = TRUE
               , width = '100%'
@@ -115,15 +117,6 @@ statistic_table_ui <- function(id, field_df){
                   set_names(c("Minimum", "Average", "Maximum", "Standard deviation"))
                 , selected = "mean"
               )
-              # , awesomeRadio(
-              #   inputId = ns("measure_statistic")
-              #   , label = "Measures statistic"
-              #   , choices = c("min", "mean", "max", "sd") %>%
-              #     set_names(c("Min", "Avg", "Max", "SD"))
-              #   , selected = "mean"
-              #   , inline = TRUE
-              #   , status = "primary"
-              # )
             )
           )
         )
@@ -483,6 +476,10 @@ statistic_table_server <- function(id, init, data){
           dfc <- dfc %>% setorder(-count)
           df <- df %>% setorderv(id_cols)
         }
+
+        # Apply column definitions
+        df <- df %>%
+          apply_column_definitions(init$field)
 
         # Apply column definitions
         df <- df %>%

@@ -4,11 +4,6 @@ table_settings_ui <- function(id, init){
 
   ns <- NS(id)
 
-  select_choices <- list(
-    Measure = init$choices$measure_date
-    , Special = c("Count" = "count", "All" = "all", "Inverse" = "inverse")
-    )
-
   div(
     dropdown(
       inputId = ns("settings_dropdown")
@@ -18,7 +13,8 @@ table_settings_ui <- function(id, init){
           , selectizeInput(
             inputId = ns("sort_by")
             , label = div(icon("sort"), "Sort by")
-            , choices = select_choices
+            , choices = init$choices$measure_date %>%
+              add_special_choices("Measure", "count", "clear")
             , selected = "count"
             , multiple = TRUE
             , width = '100%'
@@ -31,7 +27,8 @@ table_settings_ui <- function(id, init){
           , selectizeInput(
             inputId = ns("bar_option")
             , label = div(icon("align-left"), "Measure columns with bars")
-            , choices = select_choices
+            , choices = init$choices$measure_date %>%
+              add_special_choices("Measure", "count", "all", "inverse", "clear")
             , selected = "count"
             , multiple = TRUE
             , width = '100%'
@@ -116,6 +113,7 @@ table_settings_server <- function(id, init){
 
           # Update selectize inputs
           c("sort_by"
+            , "bar_option"
             , "identifier_select"
             , "max_factor_filter_choices"
           ) %>% walk(
@@ -126,8 +124,8 @@ table_settings_server <- function(id, init){
             )
           )
           # Update radio group buttons
-          c("bar_option"
-            , "slider_handles"
+          c(
+            "slider_handles"
           ) %>% walk(
             ~updateRadioGroupButtons(
               session = session

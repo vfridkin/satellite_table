@@ -110,6 +110,19 @@ get_choices <- function(){
   choices
 }
 
+add_special_choices <- function(choices, choices_name, ...){
+
+  special_choices <- c(
+    "Count" = "count"
+    , "All" = "all"
+    , "Inverse" = "inverse"
+    , "Clear" = "clear"
+  ) %>% .[. %in% c(...)]
+
+  list(choices, special_choices) %>%
+    set_names(c(choices_name, "Special"))
+}
+
 
 # DATA I/O ----------------------------------------------------------------------------------------
 
