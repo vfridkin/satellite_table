@@ -10,8 +10,7 @@
 #  "Y88888P"  8888888 Y8P 888   T88b
 
 fluidPage(
-  includeCSS("www/animations.css")
-  , includeCSS("www/style.css")
+  load_styles()
   , includeScript("www/script.js")
   , header_element(
     title = "Satellites"
@@ -21,7 +20,7 @@ fluidPage(
   , image_element("satellite2.png", "Satellite")
   , button_element("Launch")
   , help_element("moon_question.png", "Moon helper")
-  , statistic_table_ui("main", ac$field_df)
+  , satellite_table_ui("main", ac$field_df)
 
 
 )

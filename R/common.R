@@ -8,7 +8,17 @@ sar <- function(){
   runApp()
 }
 
-# SOURCE CONFIG/DATA ------------------------------------------------------------------------------
+# SOURCE FILES/CONFIG/DATA ------------------------------------------------------------------------------
+
+load_styles <- function(){
+  div(
+    includeCSS("www/animations.css")
+    , includeCSS("www/main.css")
+    , includeCSS("www/launch_screen.css")
+    , includeCSS("www/table_screen.css")
+  )
+}
+
 
 # App configuration
 load_config <- function(){

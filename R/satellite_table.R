@@ -1,5 +1,5 @@
-# Statistic table
-statistic_table_ui <- function(id, field_df){
+# Satellite table
+satellite_table_ui <- function(id, field_df){
 
   ns <- NS(id)
 
@@ -14,9 +14,9 @@ statistic_table_ui <- function(id, field_df){
 
   # Main UI ---------------------------------------------------------------------------------------
   div(
-    class = "statistic_container"
+    class = "main_container"
     , div(
-      class = "statistic__select-box"
+      class = "top_controls"
       , fluidRow(
         column(
           width = 6
@@ -44,86 +44,86 @@ statistic_table_ui <- function(id, field_df){
             , uiOutput(ns("setting_circle_ui"))
           )
           , div(
-            class = "table_controls"
-            , style = "display: inline-block; position: absolute; right: 0;"
-            , table_settings_ui(ns("statistic_table"), settings_init)
+            class = "more_settings"
+            , style = "display: inline-block; position: absolute; right: 5px;"
+            , table_settings_ui(ns("satellite_table"), settings_init)
           )
         )
       )
-      , div(
-        id = ns("table_controls_div")
-        , class = "table_controls"
-        , fluidRow(
-          column(
-            width = 6
-            , selectizeInput(
-              inputId = ns("factor_select")
-              , label = div(icon("columns"), "Factors")
-              , choices = choices$factor %>%
-                add_special_choices("Factor", "all", "inverse", "clear")
-              , selected = choices$factor[1]
-              , multiple = TRUE
-              , width = '100%'
-              , options = list(
-                plugins = list('drag_drop')
-              )
-            )
-          )
-          , column(
-            width = 6
-            , selectizeInput(
-              inputId = ns("measure_select")
-              , label = div(icon("columns"), "Measures")
-              , choices = choices$measure_date %>%
-                add_special_choices("Measure", "all", "inverse", "clear")
-              , selected = ""
-              , multiple = TRUE
-              , width = '100%'
-              , options = list(
-                plugins = list('drag_drop')
-                , placeholder = "Click to add measure columns"
-              )
+    )
+    , div(
+      id = ns("table_controls_div")
+      , class = "table_controls"
+      , fluidRow(
+        column(
+          width = 6
+          , selectizeInput(
+            inputId = ns("factor_select")
+            , label = div(icon("columns"), "Factors")
+            , choices = choices$factor %>%
+              add_special_choices("Factor", "all", "inverse", "clear")
+            , selected = choices$factor[1]
+            , multiple = TRUE
+            , width = '100%'
+            , options = list(
+              plugins = list('drag_drop')
             )
           )
         )
-        , fluidRow(
-          column(
-            width = 6
-            , selectizeInput(
-              inputId = ns("factor_filter_select")
-              , label = div(icon("filter"), "Factors")
-              , choices = ""
-              , selected = ""
-              , multiple = TRUE
-              , width = '100%'
-              , options = list(
-                placeholder = "Double click a table cell (on left side of count column)"
-
-              )
+        , column(
+          width = 6
+          , selectizeInput(
+            inputId = ns("measure_select")
+            , label = div(icon("columns"), "Measures")
+            , choices = choices$measure_date %>%
+              add_special_choices("Measure", "all", "inverse", "clear")
+            , selected = ""
+            , multiple = TRUE
+            , width = '100%'
+            , options = list(
+              plugins = list('drag_drop')
+              , placeholder = "Click to add measure columns"
             )
           )
-          , column(
-            width = 3
-            , uiOutput(ns("measure_slider_ui"))
+        )
+      )
+      , fluidRow(
+        column(
+          width = 6
+          , selectizeInput(
+            inputId = ns("factor_filter_select")
+            , label = div(icon("filter"), "Factors")
+            , choices = ""
+            , selected = ""
+            , multiple = TRUE
+            , width = '100%'
+            , options = list(
+              placeholder = "Double click a table cell (on left side of count column)"
+
+            )
           )
-          , column(
-            width = 3
-            , div(
-              id = ns("measure_statistic_div")
-              , selectizeInput(
-                inputId = ns("measure_statistic_select")
-                , label = "Measures statistic"
-                , choices = c("min", "mean", "max", "sd") %>%
-                  set_names(c("Minimum", "Average", "Maximum", "Standard deviation"))
-                , selected = "mean"
-              )
+        )
+        , column(
+          width = 3
+          , uiOutput(ns("measure_slider_ui"))
+        )
+        , column(
+          width = 3
+          , div(
+            id = ns("measure_statistic_div")
+            , selectizeInput(
+              inputId = ns("measure_statistic_select")
+              , label = "Measures statistic"
+              , choices = c("min", "mean", "max", "sd") %>%
+                set_names(c("Minimum", "Average", "Maximum", "Standard deviation"))
+              , selected = "mean"
             )
           )
         )
       )
     )
     , div(
-      class = "statistic__table-box"
+      class = "main__table-box"
       , fluidRow(
         column(
           width = 12
@@ -132,7 +132,7 @@ statistic_table_ui <- function(id, field_df){
             , uiOutput(ns("filters_applied_ui"))
           )
           , reactableOutput(
-            outputId = ns("statistic_rt")
+            outputId = ns("main_rt")
           )
         )
       )
@@ -140,7 +140,7 @@ statistic_table_ui <- function(id, field_df){
   )
 }
 
-statistic_table_server <- function(id, init, data){
+satellite_table_server <- function(id, init, data){
   moduleServer(
     id
     , function(input, output, session){
@@ -384,7 +384,7 @@ statistic_table_server <- function(id, init, data){
 
       # Table settings ----------------------------------------------------------------------------
 
-      rt_settings <- table_settings_server("statistic_table", reactive(m$settings_init))
+      rt_settings <- table_settings_server("satellite_table", reactive(m$settings_init))
 
       # Special selections ------------------------------------------------------------------------
 
@@ -774,7 +774,7 @@ statistic_table_server <- function(id, init, data){
 
 
       # Reactable ---------------------------------------------------------------------------------
-      output$statistic_rt <- renderReactable({
+      output$main_rt <- renderReactable({
 
         rt <- rt_container()
         shiny::validate(

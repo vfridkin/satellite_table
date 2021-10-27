@@ -8,7 +8,7 @@ $(function(){
         $('.body__image').addClass('image-up');
         $('.header__text-box').addClass('header-up');
         $('#launch_button').fadeOut(2000);
-        $('.statistic_container').addClass('fade-in');
+        $('.main_container').addClass('fade-in');
         $('.body__help-box').addClass('fade-in');
         $('.body__help-image').addClass('btn');
     }
@@ -48,7 +48,7 @@ $(function(){
   );
 
   // Handle table double click events - used for filtering factors
-  $('#main-statistic_rt').on('dblclick'
+  $('#main-main_rt').on('dblclick'
     , function(event){
       const cell = event.target.closest('.rt-td > div > div');
       if(cell){
@@ -69,8 +69,12 @@ Shiny.addCustomMessageHandler(
   'view_controls_switch'
   , function(visible) {
       visible
+      ? $('.more_settings').show("slide", { direction: "left" }, 500)
+      : $('.more_settings').hide("slide", { direction: "left" }, 500);
+
+      visible
       ? $('.table_controls').slideDown(500)
-      : $('.table_controls').slideUp(500)
+      : $('.table_controls').slideUp(500);
 });
 
 // Hide/show if message is null

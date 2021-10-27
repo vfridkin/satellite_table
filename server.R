@@ -23,6 +23,6 @@ function(input, output, session){
   )
 
   data <- get_data()
-  statistic_table_server("main", init, data)
+  satellite_table_server("main", init, data)
 
 }

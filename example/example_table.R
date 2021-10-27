@@ -39,7 +39,7 @@ if(FALSE){
 
 ui <- fluidPage(
 
-  statistic_table_ui("example", ac$field_df)
+  satellite_table_ui("example", ac$field_df)
 
 )
 
@@ -50,7 +50,7 @@ server <- function(input, output, session){
     , field = ac$field
   )
   data <- get_data()
-  statistic_table_server("example", init, data)
+  satellite_table_server("example", init, data)
 
 }
 
