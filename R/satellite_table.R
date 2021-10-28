@@ -180,7 +180,6 @@ satellite_table_server <- function(id, init, data){
       observe({
         if(m$run_once) return()
 
-        m$table_view <- "summary"
         m$setting_circle_count <- 8
         m$id <- 0
         m$last_factor_select <- input$factor_select
@@ -260,7 +259,9 @@ satellite_table_server <- function(id, init, data){
 
         if(id > 0){
           data <- list(
-            factor_select = init$factor_select
+            table_view = "summary"
+            , view_controls_switch = TRUE
+            , factor_select = init$factor_select
             , measure_select = NULL
             , factor_filter_select = NULL
             , slider_field = init$slider_field$name
@@ -301,6 +302,20 @@ satellite_table_server <- function(id, init, data){
 
           if(id > 0){
 
+            # Update table view (summary vs details)
+            updateRadioGroupButtons(
+              session = session
+              , inputId = "table_view"
+              , selected = stored$table_view
+            )
+
+            # Update controls switch (toggle controls view)
+            updateMaterialSwitch(
+              session = session
+              , inputId = "view_controls_switch"
+              , value = stored$view_controls_switch
+            )
+
             # Update selectize inputs
             c("factor_select"
               , "measure_select"
@@ -333,7 +348,9 @@ satellite_table_server <- function(id, init, data){
       # > Set -------------------------------------------------------------------------------------
       observeEvent(
         list(
-          input$factor_select
+          input$table_view
+          , input$view_controls_switch
+          , input$factor_select
           , input$measure_select
           , input$factor_filter_select
           , m$slider_field
@@ -349,7 +366,9 @@ satellite_table_server <- function(id, init, data){
 
           if(id > 0){
             data <- list(
-              factor_select = input$factor_select
+              table_view = input$table_view
+              , view_controls_switch = input$view_controls_switch
+              , factor_select = input$factor_select
               , measure_select = input$measure_select
               , factor_filter_select = input$factor_filter_select
               , slider_field = m$slider_field
@@ -361,9 +380,6 @@ satellite_table_server <- function(id, init, data){
           set_local_storage(id, data, session)
         }
       )
-
-
-
 
       # Toggle measure statistics -----------------------------------------------------------------
       observeEvent(
