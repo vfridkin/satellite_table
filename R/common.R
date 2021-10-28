@@ -122,7 +122,7 @@ get_choices <- function(){
     factor_select = choices$factor
     , measure_select = md
     , sort_by = md
-    , bar_option = md
+    , bar_option = choices$measure
   )
 }
 
@@ -268,10 +268,13 @@ background-position: center center;">
     str_remove_all(",") %>%
     as.numeric()
 
-  max_val <- max(values)
+  max_val <- max(values, na.rm = TRUE)
 
   percent <- (100*values/max_val) %>% round()
   pad_width <- nchar(col) %>% max()
+
+  # Replace NA with blanks
+  col[is.na(values)] <- ""
 
   bar_html(percent, col, pad_width)
 
@@ -285,14 +288,24 @@ apply_column_definitions <- function(df, field_config){
   names(df) %>% walk(
     function(col_name){
       config <- field_config[[col_name]]
+
+      col_format <- config$format
       display_decimals <- config$display_decimals
+      has_decimals <- !is.na(display_decimals)
 
       col <- df[[col_name]]
+      na_values <- is.na(col)
 
-      if(!is.na(display_decimals)){
-        col <- col %>% format(big.mark = ",", digits = display_decimals)
-        df[[col_name]] <<- col
+      if(col_format == "percent"){
+        col <- 100*col
       }
+
+      if(has_decimals){
+        col <- col %>% format(big.mark = ",", digits = display_decimals)
+      }
+
+      col[na_values] <- ""
+      df[[col_name]] <<- col
     }
   )
 
@@ -303,12 +316,12 @@ apply_column_definitions <- function(df, field_config){
 # Combine adding col names and bars to cells
 add_html_to_cells <- function(df, settings, selected){
 
+  bars <- settings$bar_option
+
   names(df) %>% walk(
     function(col_name){
 
       col <- df[[col_name]]
-
-      bars <- "count"
 
       fn <- if(col_name %in% bars) add_bars else add_col_name
       col <- col %>% fn(col_name)

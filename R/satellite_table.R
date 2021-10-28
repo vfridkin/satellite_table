@@ -46,7 +46,7 @@ satellite_table_ui <- function(id, field_df){
           , div(
             class = "more_settings"
             , style = "display: inline-block; position: absolute; right: 5px;"
-            , table_settings_ui(ns("more_settings"), settings_init)
+            , more_settings_ui(ns("more_settings"), settings_init)
           )
         )
       )
@@ -400,7 +400,7 @@ satellite_table_server <- function(id, init, data){
 
       # Table settings ----------------------------------------------------------------------------
 
-      rt_settings <- table_settings_server("more_settings", reactive(m$settings_init))
+      rt_settings <- more_settings_server("more_settings", reactive(m$settings_init))
 
       # Special selections ------------------------------------------------------------------------
 
@@ -512,10 +512,6 @@ satellite_table_server <- function(id, init, data){
           dfc <- dfc %>% setorder(-count)
           df <- df %>% setorderv(id_cols)
         }
-
-        # Apply column definitions
-        df <- df %>%
-          apply_column_definitions(init$field)
 
         # Apply column definitions
         df <- df %>%

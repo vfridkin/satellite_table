@@ -1,6 +1,6 @@
 # Table settings
 
-table_settings_ui <- function(id, init){
+more_settings_ui <- function(id, init){
 
   ns <- NS(id)
 
@@ -18,6 +18,9 @@ table_settings_ui <- function(id, init){
             , selected = "count"
             , multiple = TRUE
             , width = '100%'
+            , options = list(
+              plugins = list('drag_drop')
+            )
           )
         )
       )
@@ -52,7 +55,8 @@ table_settings_ui <- function(id, init){
         )
       )
       , fluidRow(
-        column(
+        style = "display: none;" # TODO: Complete multi slider handle option
+        , column(
           width = 6
           , radioGroupButtons(
             inputId = ns("slider_handles")
@@ -86,7 +90,7 @@ table_settings_ui <- function(id, init){
 }
 
 
-table_settings_server <- function(id, init){
+more_settings_server <- function(id, init){
   moduleServer(
     id
     , function(input, output, session){
@@ -124,7 +128,7 @@ table_settings_server <- function(id, init){
           c("sort_by"
             , "bar_option"
             , "identifier_select"
-            , "max_factor_filter_choices"
+            # , "max_factor_filter_choices"
           ) %>% walk(
             ~updateSelectInput(
               session = session
@@ -132,7 +136,6 @@ table_settings_server <- function(id, init){
               , selected = stored[[.x]]
             )
           )
-          # Update radio group buttons
           c(
             "slider_handles"
           ) %>% walk(
@@ -185,10 +188,10 @@ table_settings_server <- function(id, init){
         m$last_identifier_select <- identifier_select
 
         list(
-          slider_handles = input$slider_handles
-          , sort_by = m$sort_by
+          sort_by = m$sort_by
           , bar_option = m$bar_option
           , identifier_select = identifier_select
+          , slider_handles = input$slider_handles
           , max_factor_filter_choices = input$max_factor_filter_choices %>% as.integer()
         )
       })
