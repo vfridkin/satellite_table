@@ -33,8 +33,6 @@
 }
 
 /* Table controls toggle switch (Sun) */
-
-
 .label-danger {
   background-color: var(--colour-sun);
   transition: all .2s ease-in-out;
@@ -43,7 +41,6 @@
 .label-danger:hover {
   transform: scale(1.1);
 }
-
 
 /* Setting circles (planets) */
 .setting-circle {
@@ -55,22 +52,23 @@
 }
 
 /* More settings */
-#main-satellite_table-settings_dropdown {
+#main-more_settings-settings_dropdown {
   background: transparent;
 }
 
-#main-satellite_table-settings_dropdown > div {
+#main-more_settings-settings_dropdown > div {
   transition: all .2s ease-in-out;
 }
 
-#main-satellite_table-settings_dropdown > div:hover {
+#main-more_settings-settings_dropdown > div:hover {
   color: rgba(var(--color-white-rgb), var(--alpha-high));
-  transform: scale(1.1);
 }
 
 /* table_controls -------------------------------------------------------------------------------*/
+
+/* Border around table controls */
 div#main-table_controls_div {
-  box-shadow: -1px 0px 8px 0px var(--colour-gray-light) inset;
+  box-shadow: inset -1px -1px 5px 1px var(--colour-gray-darkmed);
   padding: 15px 0 10px 0;
   /* border: 1px solid #f5f5f5; */
   border-radius: 5px;
@@ -82,9 +80,82 @@ div#main-table_controls_div .row {
   margin-right: 10px;
 }
 
+/* Select box */
+
+/* Multi selectize */
+div#main-table_controls_div div.form-group label.control-label {
+  opacity: var(--alpha-med);
+}
+
+div.selectize-control > div.selectize-input {
+  border-color: var(--colour-selectize-border);
+  box-shadow: inset -1px -1px 5px 0px var(--colour-inset-shadow);
+}
+
+/* Single selectize */
+div.selectize-control > div.selectize-input.full {
+  border-color: var(--colour-selectize-border);
+  box-shadow: inset -1px -1px 5px 0px var(--colour-inset-shadow);
+  background-color: transparent;
+}
+
+div.selectize-control > div.selectize-input.full.dropdown-active {
+  border-color: var(--colour-selectize-border);
+  box-shadow: inset -1px -1px 5px 0px var(--colour-inset-shadow);
+  background-color: transparent;
+}
+
+/* Selectize items */
+div.selectize-control > div.selectize-input > div.item {
+  color: rgba(var(--colour-white-rgb), var(--alpha-med));
+  border-radius: 6px;
+  background-color: var(--colour-gray-dark);
+  box-shadow: inset 1px 1px 3px 0px var(--colour-inset-shadow);
+  padding: 3px;
+  padding-left: 7px;
+  padding-right: 7px;
+}
+
+
+/* Active item */
+div.selectize-control > div.selectize-input > div.item.active {
+  color: rgba(var(--colour-white-rgb), var(--alpha-high));
+  border-radius: 6px;
+  background-color: var(--colour-gray-darkmed);
+  box-shadow: inset 1px 1px 3px 0px var(--colour-inset-shadow);
+  padding: 3px;
+  padding-left: 7px;
+  padding-right: 7px;
+}
+
+/* Drop down options - header */
+div.selectize-control > div.selectize-dropdown .optgroup .optgroup-header {
+  color: rgba(var(--colour-white-rgb), var(--alpha-high));
+  background-color: var(--colour-base);
+}
+
+/* Drop down options - active row */
+div.selectize-control > div.selectize-dropdown .optgroup .option.active {
+  color: rgba(var(--colour-white-rgb), var(--alpha-high));
+  background-color: var(--colour-gray-dark);
+}
+
+div.selectize-dropdown-content > div.option:hover {
+  color: rgba(var(--colour-white-rgb), var(--alpha-high));
+  background-color: var(--colour-gray-dark);
+}
+
+
+
+/* Select box - Button format */
+#main-table_view button {
+  background: transparent;
+}
+
 /* Measure slider */
 div.table_controls span.irs-single {
   background: transparent;
+  color: rgba(var(--colour-white-rgb), var(--alpha-med));
 }
 
 div.table_controls span.irs-bar.irs-bar--single,
@@ -100,6 +171,8 @@ div.table_controls span.irs-line {
 
 div.table_controls span.irs-min,
 div.table_controls span.irs-max {
+  background: transparent;
+  color: rgba(var(--colour-white-rgb), var(--alpha-low));
 }
 
 div.table_controls span.play > i,
@@ -116,35 +189,13 @@ div.table_controls span.pause > i {
 }
 
 /* Measure statistic */
-
 div#main-measure_statistic .control-label {
   margin-bottom: 20px;
 }
 
-/* Select box - factor choices */
-div.table_controls
-  div.selectize-input.items.not-full.has-options.has-items.ui-sortable
-  > div {
-  text-shadow: 0 1px 0 rgb(--colour-desat-blue-darker);
-  border-radius: 6px;
-  background-color: var(--colour-desat-blue);
-  background-image: linear-gradient(
-    to bottom,
-    var(--colour-desat-blue-lighter) var(--colour-desat-blue-lightest)
-  );
-  background-repeat: repeat-x;
-  box-shadow: 0 1px 0 rgb(255 255 255 / 20%), inset 0 1px rgb(0 0 0 / 3%);
-  padding: 3px;
-  padding-left: 6px;
-  padding-right: 6px;
-}
 
-/* Select box - Button format */
-#main-table_view button {
-  background: transparent;
-}
 
-/* Settings */
+/* More settings */
 
 #main-main_table-settings_dropdown {
   background: transparent;
@@ -152,6 +203,10 @@ div.table_controls
 
 #sw-content-main-main_table-settings_dropdown,
 #sw-content-main-main_table-settings_dropdown div {
+  background-color: var(--colour-base);
+}
+
+.sw-dropdown-content, .sw-dropdown-in {
   background-color: var(--colour-base);
 }
 

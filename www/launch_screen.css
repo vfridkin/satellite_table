@@ -107,13 +107,13 @@
   position: relative;
   font-size: 1.6rem;
   transition: all 0.4s;
-  color: rgba(var(--colour-white_rgb), var(--alpha-med))
+  color: rgba(var(--colour-white-rgb), var(--alpha-med))
 }
 
 .launch-btn:hover {
   transform: translateY(-0.3rem);
   box-shadow: 0 1rem 2rem rgba(var(--colour-rocket-flame-red-rgb), 0.5);
-  color: rgba(var(--colour-white_rgb), var(--alpha-high))
+  color: rgba(var(--colour-white-rgb), var(--alpha-high))
 }
 .launch-btn:hover::after {
   transition: all 0.4s;

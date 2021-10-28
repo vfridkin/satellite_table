@@ -46,7 +46,7 @@ satellite_table_ui <- function(id, field_df){
           , div(
             class = "more_settings"
             , style = "display: inline-block; position: absolute; right: 5px;"
-            , table_settings_ui(ns("satellite_table"), settings_init)
+            , table_settings_ui(ns("more_settings"), settings_init)
           )
         )
       )
@@ -384,7 +384,7 @@ satellite_table_server <- function(id, init, data){
 
       # Table settings ----------------------------------------------------------------------------
 
-      rt_settings <- table_settings_server("satellite_table", reactive(m$settings_init))
+      rt_settings <- table_settings_server("more_settings", reactive(m$settings_init))
 
       # Special selections ------------------------------------------------------------------------
 

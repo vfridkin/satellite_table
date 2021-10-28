@@ -7,13 +7,16 @@
   --colour-primary-darker: #0b3d91;
   --colour-primary-darkest: #061f4a;
   --colour-base: #212121;
-  --colour-gray-dark: #323a45;
+  --colour-inset-shadow: #101010;
+  --colour-gray-dark: #383838;
+  --colour-gray-darkmed: #525252;
   --colour-gray-medium: #888888;
   --colour-gray-light: #aeb0b5;
+  --colour-selectize-border: #313131;
   --colour-white: #ffffff;
   --colour-base2: #030303;
 
-  --colour-white_rgb: 255, 255, 255;
+  --colour-white-rgb: 255, 255, 255;
   --alpha-high: 0.87;
   --alpha-med: 0.6;
   --alpha-low: 0.38;
@@ -36,6 +39,8 @@
   --colour-desat-blue-sater: #2d4965;
   --colour-desat-blue-darker: #293542;
 
+  --colour-desat-comp: #5a4938;
+
   --colour-desat-blue-sater-rgb: 45, 73, 101;
 
   --colour-sun: #f9d71c;
@@ -45,7 +50,7 @@
 
 * {
   background-color: var(--colour-base);
-  color: rgba(var(--colour-white_rgb), var(--alpha-med));
+  color: rgba(var(--colour-white-rgb), var(--alpha-med));
 }
 
 html {

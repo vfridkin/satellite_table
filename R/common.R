@@ -145,7 +145,7 @@ add_special_choices <- function(choices, choices_name, ...){
     )
 
   list(choices, special_choices) %>%
-    set_names(c(choices_name, "Special"))
+    set_names(c(choices_name, "Bulk select"))
 }
 
 special_select <- function(session, id, choices, last_factor_select = ""){
