@@ -75,7 +75,7 @@ satellite_table_ui <- function(id, field_df){
           , selectizeInput(
             inputId = ns("measure_select")
             , label = div(icon("columns"), "Measures")
-            , choices = choices$measure_date %>%
+            , choices = choices$measure_select %>%
               add_special_choices("Measure", "all", "inverse", "clear")
             , selected = ""
             , multiple = TRUE

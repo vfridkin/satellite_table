@@ -114,15 +114,16 @@ get_choices <- function(){
       ),.
     )}
 
-  # Combine measures with dates
-  choices$measure_date <- c(choices$measure, choices$date) %>% sort()
+  # Combine measures with dates for measures selection
+  md <- c(choices$measure, choices$date) %>% sort()
 
-  choices$factor_select <- choices$factor
-  choices$measure_select <- choices$measure_date
-  choices$sort_by <- choices$measure_date
-  choices$bar_option <- choices$measure_date
-
-  choices
+  # Return with target widget ids
+  choices %>% list_modify(
+    factor_select = choices$factor
+    , measure_select = md
+    , sort_by = md
+    , bar_option = md
+  )
 }
 
 add_special_choices <- function(choices, choices_name, ...){
