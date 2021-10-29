@@ -79,7 +79,7 @@ more_settings_ui <- function(id, init){
       )
 
       , style = "simple"
-      , icon = div(style = "font-size: 14px; padding-top: 2px; padding-right: 2px;", "...more")
+      , icon = div(class = "more_settings_button", "...more")
       , status = "default"
       , right = TRUE
       , width = "50vw"

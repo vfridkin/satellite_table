@@ -43,17 +43,13 @@ satellite_table_ui <- function(id, field_df){
             style = "display: inline-block;"
             , uiOutput(ns("setting_circle_ui"))
           )
-          , div(
-            class = "more_settings"
-            , style = "display: inline-block; position: absolute; right: 5px;"
-            , more_settings_ui(ns("more_settings"), settings_init)
-          )
         )
       )
     )
     , div(
       id = ns("table_controls_div")
       , class = "table_controls"
+      , style = "position: relative;"
       , fluidRow(
         column(
           width = 6
@@ -120,6 +116,11 @@ satellite_table_ui <- function(id, field_df){
             )
           )
         )
+      )
+      , div(
+        class = "more_settings"
+        , style = "position: absolute; bottom: 5px; right: 25px;"
+        , more_settings_ui(ns("more_settings"), settings_init)
       )
     )
     , div(
@@ -811,6 +812,7 @@ satellite_table_server <- function(id, init, data){
           , striped = TRUE
           , highlight = TRUE
           , minRows = 10
+          # , searchable = TRUE
           , rowClass = JS("function(rowInfo){return rowInfo}")
         )
 

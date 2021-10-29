@@ -197,6 +197,15 @@ div#main-measure_statistic .control-label {
 
 /* More settings */
 
+.more_settings_button {
+  color: rgba(var(--colour-white-rgb), var(--alpha-low));
+  font-size: 14px;
+}
+
+#main-more_settings-settings_dropdown {
+  padding: 0;
+}
+
 #main-main_table-settings_dropdown {
   background: transparent;
 }
@@ -217,6 +226,18 @@ div#main-measure_statistic .control-label {
 }
 
 /* Table styling --------------------------------------------------------------------------------*/
+
+.ReactTable {
+  background-color: transparent;
+  color: inherit;
+}
+
+.rt-search {
+  background-color: transparent;
+  border-color: var(--colour-selectize-border);
+  box-shadow: inset -1px -1px 5px 0px var(--colour-inset-shadow);
+  color: rgba(var(--colour-white-rgb), var(--alpha-high));
+}
 
 #main-main_rt .rt-td > div > div {
   background-color: transparent;

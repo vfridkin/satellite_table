@@ -69,12 +69,12 @@ Shiny.addCustomMessageHandler(
   'view_controls_switch'
   , function(visible) {
       visible
-      ? $('.more_settings').show("slide", { direction: "left" }, 500)
-      : $('.more_settings').hide("slide", { direction: "left" }, 500);
-
-      visible
       ? $('.table_controls').slideDown(500)
       : $('.table_controls').slideUp(500);
+
+      visible
+      ? $('.more_settings').delay(500).show("slide", { direction: "left" }, 100)
+      : $('.more_settings').hide("slide", { direction: "left" }, 100);
 });
 
 // Hide/show if message is null
