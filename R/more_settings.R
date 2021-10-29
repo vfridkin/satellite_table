@@ -14,7 +14,7 @@ more_settings_ui <- function(id, init){
             inputId = ns("sort_by")
             , label = div(icon("sort"), "Sort by")
             , choices = init$choices$sort_by %>%
-              add_special_choices("Measure", "count", "clear")
+              add_command_choices("Measure", "count", "clear")
             , selected = "count"
             , multiple = TRUE
             , width = '100%'
@@ -31,7 +31,7 @@ more_settings_ui <- function(id, init){
             inputId = ns("bar_option")
             , label = div(icon("align-left"), "Measure columns with bars")
             , choices = init$choices$bar_option %>%
-              add_special_choices("Measure", "count", "all", "inverse", "clear")
+              add_command_choices("Measure", "count", "all", "inverse", "clear")
             , selected = "count"
             , multiple = TRUE
             , width = '100%'
@@ -149,17 +149,17 @@ more_settings_server <- function(id, init){
         }, ignoreNULL = TRUE
       )
 
-      # Special selections ------------------------------------------------------------------------
+      # command selections ------------------------------------------------------------------------
 
-      # Process special selections and store result in reactive values
+      # Process command selections and store result in reactive values
       observeEvent(
         list(
           input$sort_by
           , input$bar_option
         )
         , {
-          if(special_select(session, "sort_by", k$choices)) return()
-          if(special_select(session, "bar_option", k$choices)) return()
+          if(command_select(session, "sort_by", k$choices)) return()
+          if(command_select(session, "bar_option", k$choices)) return()
 
           m$sort_by <- input$sort_by
           m$bar_option <- input$bar_option

@@ -126,54 +126,113 @@ get_choices <- function(){
   )
 }
 
-add_special_choices <- function(choices, choices_name, ...){
+add_command_choices <- function(choices, choices_name, ...){
 
-  special <- c(...)
+  command <- c(...)
 
-  special_choices <- c(
+  command_choices <- c(
     "Count" = "count"
     , "All" = "all"
     , "Inverse" = "inverse"
     , "Clear" = "clear"
+    , "Delete selected" = "delete_selected"
+    , "Delete all" = "delete_all"
   ) %>% .[. %in% c(...)]
 
-  special_choices <- special_choices %>%
+  command_choices <- command_choices %>%
     map_chr(
       function(x){
         if(x == "count") return(x)
-        paste0(x, ac$special_function_suffix)
+        paste0(x, ac$command_function_suffix)
       }
     )
 
-  list(choices, special_choices) %>%
-    set_names(c(choices_name, "Bulk select"))
+  list(choices, command_choices) %>%
+    set_names(c(choices_name, "Commands"))
 }
 
-special_select <- function(session, id, choices, last_factor_select = ""){
+add_factor_filter_commands <- function(choices){
+  choices %>%
+    add_command_choices("Factor filters", "clear", "delete_selected", "delete_all")
+}
+
+get_command_from_id <- function(session, id){
 
   select <- session$input[[id]]
-  sfx <- ac$special_function_suffix
+  sfx <- ac$command_function_suffix
 
-  nothing_special <- any(
-    is.null(select)
-    , !any(select %>% str_detect(sfx))
+  command_found <- all(
+    !is.null(select)
+    , any(select %>% str_detect(sfx))
   )
 
-  if(nothing_special) return(FALSE)
+  command <- NULL
+  if(command_found){
+    command <- select %>%
+      keep(~str_detect(.x, sfx)) %>%
+      .[1] %>%
+      str_remove(sfx)
+  }
 
-  # Get first special function - should only be one anyway
-  special <- select %>% keep(~str_detect(.x, sfx)) %>% .[1]
-  special <- special %>% str_remove(sfx)
+  list(
+    name = command
+    , select = select
+  )
+}
+
+
+# This handles changing the choices
+command_filter <- function(session, id, choices_df = ""){
+
+  command <- get_command_from_id(session, id)
+
+  if(is.null(command$name)) return(
+    list(is_filtered = FALSE)
+    )
 
   # Default to no selection
   selected <- ""
 
-  if(special == "all"){
+  if(command$name == "delete_selected"){
+    choices_df <- choices_df[!input_name %in% command$select]
+  }
+
+  if(command$name == "delete_all"){
+    choices_df <- choices_df[0, ]
+  }
+
+  # Convert from dataframe to vector
+  choices <- choices_df$input_name %>% set_names(choices_df$input_display)
+
+  updateSelectizeInput(
+    session = session
+    , inputId = id
+    , selected = selected
+    , choices = choices %>% add_factor_filter_commands()
+  )
+
+  return(
+    list(is_filtered = TRUE, choices_df = choices_df)
+  )
+
+}
+
+# This handles changing the selection, keeping choices constant
+command_select <- function(session, id, choices = "", last_factor_select = ""){
+
+  command <- get_command_from_id(session, id)
+
+  if(is.null(command$name)) return(FALSE)
+
+  # Default to no selection
+  selected <- ""
+
+  if(command$name == "all"){
     selected <- choices[[id]]
   }
 
-  if(special == "inverse"){
-    selected <- choices[[id]] %>% setdiff(select)
+  if(command$name == "inverse"){
+    selected <- choices[[id]] %>% setdiff(command$select)
   }
 
   # Replace null selection with empty string to enable update
@@ -337,9 +396,20 @@ add_html_to_cells <- function(df, settings, selected){
 
 # Subset df by factor filter
 apply_factor_filter <- function(df, filtered){
-  filtered$factor %>% pmap(
-    function(name, value){
-      df <<- df[get(name) == value]
+
+  factor_names <- filtered$factor$name %>% unique()
+
+  # Split into groups with same filter name
+  # Effect is to have an OR condition on different values with the same filter name
+  filter_groups <- factor_names %>% map(
+    function(x){
+      filtered$factor[name == x]$value
+    }
+  ) %>% set_names(factor_names)
+
+  filter_groups %>% iwalk(
+    function(values, name){
+      df <<- df[get(name) %in% values]
     }
   )
   df

@@ -61,7 +61,7 @@ satellite_table_ui <- function(id, field_df){
             inputId = ns("factor_select")
             , label = div(icon("columns"), "Factors")
             , choices = choices$factor %>%
-              add_special_choices("Factor", "all", "inverse", "clear")
+              add_command_choices("Factor", "all", "inverse", "clear")
             , selected = choices$factor[1]
             , multiple = TRUE
             , width = '100%'
@@ -76,7 +76,7 @@ satellite_table_ui <- function(id, field_df){
             inputId = ns("measure_select")
             , label = div(icon("columns"), "Measures")
             , choices = choices$measure_select %>%
-              add_special_choices("Measure", "all", "inverse", "clear")
+              add_command_choices("Measure", "all", "inverse", "clear")
             , selected = ""
             , multiple = TRUE
             , width = '100%'
@@ -93,12 +93,12 @@ satellite_table_ui <- function(id, field_df){
           , selectizeInput(
             inputId = ns("factor_filter_select")
             , label = div(icon("filter"), "Factors")
-            , choices = ""
+            , choices = "" %>% add_factor_filter_commands()
             , selected = ""
             , multiple = TRUE
             , width = '100%'
             , options = list(
-              placeholder = "Double click a table cell (on left side of count column)"
+              placeholder = "Double click a table factor cell to filter"
 
             )
           )
@@ -350,9 +350,9 @@ satellite_table_server <- function(id, init, data){
         list(
           input$table_view
           , input$view_controls_switch
-          , input$factor_select
-          , input$measure_select
-          , input$factor_filter_select
+          , m$factor_select
+          , m$measure_select
+          , m$factor_filter_select
           , m$slider_field
           , input$measure_slider
           , rt_settings()
@@ -368,9 +368,9 @@ satellite_table_server <- function(id, init, data){
             data <- list(
               table_view = input$table_view
               , view_controls_switch = input$view_controls_switch
-              , factor_select = input$factor_select
-              , measure_select = input$measure_select
-              , factor_filter_select = input$factor_filter_select
+              , factor_select = m$factor_select
+              , measure_select = m$measure_select
+              , factor_filter_select = m$factor_filter_select
               , slider_field = m$slider_field
               , measure_slider = input$measure_slider
             ) %>%
@@ -402,20 +402,28 @@ satellite_table_server <- function(id, init, data){
 
       rt_settings <- more_settings_server("more_settings", reactive(m$settings_init))
 
-      # Special selections ------------------------------------------------------------------------
+      # Command selections ------------------------------------------------------------------------
 
-      # Process special selections and store result in reactive values
+      # Process command selections and store result in reactive values
       observeEvent(
         list(
           input$factor_select
           , input$measure_select
+          , input$factor_filter_select
         )
         , {
-          if(special_select(session, "factor_select", k$choices, m$last_factor_select)) return()
-          if(special_select(session, "measure_select", k$choices, m$last_factor_select)) return()
+          if(command_select(session, "factor_select", k$choices, m$last_factor_select)) return()
+          if(command_select(session, "measure_select", k$choices)) return()
+
+          result <- command_filter(session, "factor_filter_select", m$factor_filter_choices)
+          if(result$is_filtered){
+            m$factor_filter_choices <- result$choices_df
+            return()
+          }
 
           m$factor_select <- input$factor_select
           m$measure_select <- input$measure_select
+          m$factor_filter_select <- input$factor_filter_select
         }
       )
 
@@ -645,7 +653,7 @@ satellite_table_server <- function(id, init, data){
         }
 
         # Get currently selected
-        selected <- input$factor_filter_select
+        selected <- m$factor_filter_select
         selected_df <- choices_df[input_name %in% selected]
 
         # Check if new row is already in selected
@@ -664,7 +672,7 @@ satellite_table_server <- function(id, init, data){
         updateSelectizeInput(
           session = session
           , inputId = "factor_filter_select"
-          , choices = choices
+          , choices = choices %>% add_factor_filter_commands()
           , selected = selected
         )
 
@@ -673,10 +681,10 @@ satellite_table_server <- function(id, init, data){
       }
 
       observeEvent(
-        input$factor_filter_select
+        m$factor_filter_select
         , {
 
-          m$factor_filter <- input$factor_filter_select %>% map(
+          m$factor_filter <- m$factor_filter_select %>% map(
             function(x){
               x_split <- x %>% str_split("=", simplify = TRUE) %>% str_trim()
               data.table(name = x_split[1], value = x_split[2])
