@@ -215,3 +215,24 @@ div#main-measure_statistic .control-label {
 #main-filters_applied_ui {
   color: var(--colour-rocket-flame-orange);
 }
+
+/* Table styling --------------------------------------------------------------------------------*/
+
+#main-main_rt .rt-td > div > div {
+  background-color: transparent;
+  color: inherit;
+}
+
+#main-main_rt .rt-td > div {
+  color: inherit;
+}
+
+#main-main_rt .rt-td {
+  background-color: transparent;
+  border-top: 1px solid #333333;
+}
+
+#main-main_rt .rt-td:hover {
+  color: rgba(var(--colour-white-rgb), var(--alpha-high));
+}
+
