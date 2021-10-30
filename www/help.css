@@ -1,0 +1,13 @@
+/* Help */
+
+.body__help-image:hover {
+  transform: scale(0.9);
+}
+
+.body__help-image:active {
+  transform: translateY(0.1rem);
+}
+
+
+
+

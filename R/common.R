@@ -16,6 +16,7 @@ load_styles <- function(){
     , includeCSS("www/main.css")
     , includeCSS("www/launch_screen.css")
     , includeCSS("www/table_screen.css")
+    , includeCSS("www/help.css")
   )
 }
 
@@ -121,7 +122,7 @@ get_choices <- function(){
   choices %>% list_modify(
     factor_select = choices$factor
     , measure_select = md
-    , sort_by = md
+    , sort_by = md %>% c("Count" = "count")
     , bar_option = choices$measure
   )
 }
@@ -188,7 +189,7 @@ command_filter <- function(session, id, choices_df = ""){
 
   if(is.null(command$name)) return(
     list(is_filtered = FALSE)
-    )
+  )
 
   # Default to no selection
   selected <- ""
@@ -309,9 +310,9 @@ style="
 flex: 100 0 auto;
 background-image: linear-gradient(to right
 , #ff7a14, #8a3c00 '
-, percent, '%
+           , percent, '%
 , transparent '
-, percent, '%);
+           , percent, '%);
 transition: all 1s;
 background-size: 100% 75%;
 border-top: transparent;
@@ -391,6 +392,65 @@ add_html_to_cells <- function(df, settings, selected){
 
   df
 }
+
+# Modified from:
+#https://stackoverflow.com/questions/68509486/shiny-dropdown-input-selectizeinput-with-fontawesome-icons
+selectInputWithIcons <- function(
+  inputId
+  , inputLabel
+  , labels
+  , values
+  , icons
+  , iconStyle = NULL
+  , selected = NULL
+  , multiple = FALSE
+  , width = NULL
+){
+  options <- data.frame(
+    label = labels
+    , value = values
+    , icon = icons
+  ) %>% pmap(
+    function(label, value, icon){
+      list(
+        "label" = label,
+        "value" = value,
+        "icon"  = as.character(fa_i(icon, style = iconStyle))
+      )
+    }
+  )
+
+  render <- paste0(
+    "{",
+    "  item: function(item, escape) {",
+    "    return '<div class = \"item\">' + item.icon + '&nbsp;' + item.label + '</div>';",
+    "  },",
+    "  option: function(item, escape) {",
+    "    return '<div>' + item.label + '</div>';",
+    "  }",
+    "}"
+  )
+
+  widget <- selectizeInput(
+    inputId  = inputId,
+    label    = inputLabel,
+    choices  = NULL,
+    selected = selected,
+    multiple = multiple,
+    width    = width,
+    options  = list(
+      plugins = list('drag_drop'),
+      "options"    = options,
+      "valueField" = "value",
+      "labelField" = "label",
+      "render"     = I(render),
+      "items"     = as.list(selected)
+    )
+  )
+  attachDependencies(widget, fa_html_dependency(), append = TRUE)
+}
+
+
 
 # TABLE FILTERS -----------------------------------------------------------------------------------
 

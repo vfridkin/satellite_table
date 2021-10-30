@@ -1,14 +1,14 @@
 /* Launch screen */
 
-  .header__text-box {
-    background: transparent;
-    position: absolute;
-    z-index: 9;
-    left: 50%;
-    top: 20%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
+.header__text-box {
+  background: transparent;
+  position: absolute;
+  z-index: 9;
+  left: 50%;
+  top: 20%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
 
 .header-up {
   animation: raiseUp 3s;
@@ -38,6 +38,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
 .heading-primary--sub {
   color: var(--colour-desat-blue-lighter);
   display: block;
@@ -61,6 +62,32 @@
   transform: translate(-50%, -50%) scale(0.7) rotate(0deg);
 }
 
+.image-up {
+  animation: flyUp 3s;
+  animation-timing-function: cubic-bezier(0, 0, 0.5, 2, 5);
+  left: 2%;
+  top: 7%;
+  transform: translate(-50%, -50%) scale(0.3) rotate(-70deg);
+  transition: all 1s;
+}
+
+.image-up:hover {
+  left: 2%;
+  top: 7%;
+  transform: translate(-50%, -50%) scale(0.33) rotate(-68deg);
+  transition: all 1s;
+}
+
+.body__btn-box {
+  display: block;
+  position: absolute;
+  z-index: 9;
+  left: 50%;
+  top: 85%;
+  transform: translate(-50%, -50%);
+  animation: fadeIn 6s;
+}
+
 .body__help-box {
   z-index: 9;
   position: absolute;
@@ -78,23 +105,6 @@
   transition: all 0.8s;
 }
 
-.image-up {
-  animation: flyUp 3s;
-  animation-timing-function: cubic-bezier(0, 0, 0.5, 2, 5);
-  left: 2%;
-  top: 7%;
-  transform: translate(-50%, -50%) scale(0.3) rotate(-70deg);
-}
-
-.body__btn-box {
-  display: block;
-  position: absolute;
-  z-index: 9;
-  left: 50%;
-  top: 85%;
-  transform: translate(-50%, -50%);
-  animation: fadeIn 6s;
-}
 
 .launch-btn:link,
 .launch-btn:visited {

@@ -267,7 +267,8 @@ satellite_table_server <- function(id, init, data){
             , factor_filter_select = NULL
             , slider_field = init$slider_field$name
             , measure_slider = NULL
-            , sort_by = NULL
+            , sort_by = "count"
+            , sort_order = -1
             , bar_option = init$bar_option
             , identifier_select = init$identifier_select
             , slider_handles = init$slider_handles
@@ -336,6 +337,7 @@ satellite_table_server <- function(id, init, data){
             # Update drop down settings
             m$settings_init <- list(
               sort_by = stored$sort_by
+              , sort_order = stored$sort_order
               , bar_option = stored$bar_option
               , identifier_select = stored$identifier_select
               , slider_handles = stored$slider_handles
@@ -449,23 +451,15 @@ satellite_table_server <- function(id, init, data){
           , field = m$slider_field
         )
 
-        # Restrict sort columns to those in selected measures
-        sort_by <- settings$sort_by %>% .[. %in% selected$measure]
+        is_selected <- selected %>% map(~!is.null(.x))
+        is_filtered <- filtered %>% map(~nrow(.x) > 0)
 
+        # Get selected id and detail columns
         id_cols <- settings$identifier_select
         detail_cols <- c(id_cols
                          , selected$factor
                          , selected$measure
                          , m$slider_field) %>% unique()
-
-        is_selected <- selected %>% map(~!is.null(.x))
-        is_filtered <- filtered %>% map(~nrow(.x) > 0)
-        is_sort_by <- !is.null(sort_by) && length(sort_by) > 0
-
-        # Sort everything decreasing
-        if(is_sort_by){
-          sort_order <- rep(-1, length(sort_by))
-        }
 
         # Ensure group selection always has one element
         if(!is_selected$factor){
@@ -513,10 +507,31 @@ satellite_table_server <- function(id, init, data){
         # Narrow detail data: df
         df <- df[, ..detail_cols]
 
-        # Sort
+        ## Sort
+        # Restrict sort columns to those in selected measures +
+        sort_measures <- c("count", selected$measure, m$slider_field) %>% unique()
+        in_sort_measures <- settings$sort_by %in% sort_measures
+
+        sort_by <- settings$sort_by[in_sort_measures]
+        sort_order <- settings$sort_order[in_sort_measures]
+
+        is_sort_by <- !is.null(sort_by) && length(sort_by) > 0
+
         if(is_sort_by){
-          df <- df %>% setorderv(sort_by, sort_order)
-          dfc <- dfc %>% setorderv(sort_by, sort_order)
+          in_df <- sort_by %in% names(df)
+          in_dfc <- sort_by %in% names(dfc)
+
+          tryCatch(
+            {
+              df <- df %>% setorderv(sort_by[in_df], sort_order[in_df])
+              dfc <- dfc %>% setorderv(sort_by[in_dfc], sort_order[in_dfc])
+
+            }, error = function(e){
+              browser()
+            }
+
+
+          ) # TC
         } else {
           dfc <- dfc %>% setorder(-count)
           df <- df %>% setorderv(id_cols)

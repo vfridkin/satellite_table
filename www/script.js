@@ -11,6 +11,7 @@ $(function(){
         $('.main_container').addClass('fade-in');
         $('.body__help-box').addClass('fade-in');
         $('.body__help-image').addClass('btn');
+
     }
   );
 
@@ -61,6 +62,70 @@ $(function(){
     }
   );
 
+  $("#sw-content-main-more_settings-settings_dropdown").on('dblclick'
+    , function(event){
+      const item = event.target.closest('.item');
+      const icon = $(item).children('i')
+      if(icon){
+        const icon_class = $(icon).attr('class');
+        const down_class = "fa fa-arrow-down";
+        const up_class = "fa fa-arrow-up";
+
+        // Check icon has an up or down class
+        const valid_class = icon_class.includes(down_class) || icon_class.includes(up_class)
+        if(!valid_class) return;
+
+        const new_class = icon_class.includes(down_class) ? up_class : down_class;
+        $(icon).removeClass(icon_class).addClass(new_class);
+
+        const order = new_class.replace('fa fa-arrow-','');
+
+        Shiny.setInputValue(
+          'main-more_settings-sort_item_change'
+          , {item: $(item).data('value'), order: order}
+          , {priority: "event"}
+        );
+      }
+    }
+  )
+
+
+  // Set sort order
+  Shiny.addCustomMessageHandler(
+    'set_sort_order'
+    , function(sort_message) {
+
+        if(sort_message == null) return;
+
+        const selected = sort_message.selected;
+        const order = sort_message.order;
+
+        const selected_array = Array.isArray(selected) ? selected : [selected];
+        const order_array = Array.isArray(order) ? order : [order];
+
+        selected_array.forEach(
+          function(selection, index){
+            const icon = $(document).find(`.item[data-value='${selection}'] > i`);
+
+            const down_class = "fa fa-arrow-down";
+            const up_class = "fa fa-arrow-up";
+
+            const is_up = order_array[index] === 1;
+            const new_class = is_up ? up_class : down_class;
+
+            $(icon).removeClass(down_class).removeClass(up_class);
+            $(icon).addClass(new_class);
+
+            console.log("Index:", index);
+            console.log("Is up: ", is_up, " .. if true, this should be 1: ", order_array[index]);
+            console.log(new_class);
+            console.log(order_array[index]);
+
+          }
+        );
+
+  });
+
 
 });
 
@@ -98,7 +163,7 @@ Shiny.addCustomMessageHandler(
       localStorage.setItem(input.id, input.data);
 });
 
-// Set local storage
+// Get local storage
 Shiny.addCustomMessageHandler(
   'get_local_storage'
   , function(id) {
@@ -106,6 +171,26 @@ Shiny.addCustomMessageHandler(
       Shiny.setInputValue(
         'main-local_storage'
         , message
+        , {priority: "event"}
+      );
+});
+
+
+
+
+// Get sort order
+Shiny.addCustomMessageHandler(
+  'get_sort_order'
+  , function(x) {
+      const parent_element = $("#main-more_settings-sort_by").parent();
+      const sort_orders = $(parent_element).find('i').map(
+          function() {
+            return $(this).attr('class').replace('fa fa-arrow-','');
+          }).get();
+
+      Shiny.setInputValue(
+        'main-more_settings-sort_order'
+        , sort_orders
         , {priority: "event"}
       );
 });
