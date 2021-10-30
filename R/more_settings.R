@@ -5,7 +5,6 @@ more_settings_ui <- function(id, init){
   ns <- NS(id)
 
   sort_choices <- init$choices$sort_by
-
   # %>%
   #   add_command_choices("Measure", "count", "clear")
 
@@ -194,6 +193,29 @@ more_settings_server <- function(id, init){
 
           m$sort_by <- input$sort_by
           m$bar_option <- input$bar_option
+        }
+      )
+
+      # Sort order from JS ------------------------------------------------------------------------
+
+      get_sort_order <- function(){
+        session$sendCustomMessage("get_sort_order", 0)
+      }
+
+      observeEvent(
+        input$sort_item_change
+        , {
+          change <- input$sort_item_change
+          message(change$item, " ", change$order)
+          get_sort_order()
+        }
+      )
+
+      observeEvent(
+        input$sort_order
+        , {
+          cat(input$sort_order)
+          cat('\n')
         }
       )
 

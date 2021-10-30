@@ -106,8 +106,7 @@ div.selectize-control > div.selectize-input.full.dropdown-active {
 }
 
 /* Selectize items */
-div.selectize-control > div.selectize-input > div.item,
-div.selectize-control > div.selectize-input > span {
+div.selectize-control > div.selectize-input > div.item {
   color: rgba(var(--colour-white-rgb), var(--alpha-med));
   border-radius: 6px;
   background-color: var(--colour-gray-dark);
@@ -118,8 +117,7 @@ div.selectize-control > div.selectize-input > span {
 }
 
 /* Active item */
-div.selectize-control > div.selectize-input > div.item.active,
-div.selectize-control > div.selectize-input > span.active {
+div.selectize-control > div.selectize-input > div.item.active {
   color: rgba(var(--colour-white-rgb), var(--alpha-high));
   border-radius: 6px;
   background-color: var(--colour-gray-darkmed);

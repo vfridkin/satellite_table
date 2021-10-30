@@ -188,7 +188,7 @@ command_filter <- function(session, id, choices_df = ""){
 
   if(is.null(command$name)) return(
     list(is_filtered = FALSE)
-    )
+  )
 
   # Default to no selection
   selected <- ""
@@ -309,9 +309,9 @@ style="
 flex: 100 0 auto;
 background-image: linear-gradient(to right
 , #ff7a14, #8a3c00 '
-, percent, '%
+           , percent, '%
 , transparent '
-, percent, '%);
+           , percent, '%);
 transition: all 1s;
 background-size: 100% 75%;
 border-top: transparent;
@@ -392,28 +392,44 @@ add_html_to_cells <- function(df, settings, selected){
   df
 }
 
+# Modified from:
+#https://stackoverflow.com/questions/68509486/shiny-dropdown-input-selectizeinput-with-fontawesome-icons
 selectInputWithIcons <- function(
-  inputId, inputLabel, labels, values, icons, iconStyle = NULL,
-  selected = NULL, multiple = FALSE, width = NULL
+  inputId
+  , inputLabel
+  , labels
+  , values
+  , icons
+  , iconStyle = NULL
+  , selected = NULL
+  , multiple = FALSE
+  , width = NULL
 ){
+  options <- data.frame(
+    label = labels
+    , value = values
+    , icon = icons
+  ) %>% pmap(
+    function(label, value, icon){
+      list(
+        "label" = label,
+        "value" = value,
+        "icon"  = as.character(fa_i(icon, style = iconStyle))
+      )
+    }
+  )
 
-  options <- mapply(function(label, value, icon){
-    list(
-      "label" = label,
-      "value" = value,
-      "icon"  = as.character(fa_i(icon, style = iconStyle))
-    )
-  }, labels, values, icons, SIMPLIFY = FALSE, USE.NAMES = FALSE)
   render <- paste0(
     "{",
     "  item: function(item, escape) {",
-    "    return '<span>' + item.icon + '&nbsp;' + item.label + '</span>';",
+    "    return '<div class = \"item\">' + item.icon + '&nbsp;' + item.label + '</div>';",
     "  },",
     "  option: function(item, escape) {",
-    "    return '<span>' + item.label + '</span>';",
+    "    return '<div>' + item.label + '</div>';",
     "  }",
     "}"
   )
+
   widget <- selectizeInput(
     inputId  = inputId,
     label    = inputLabel,
