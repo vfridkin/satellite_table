@@ -121,7 +121,7 @@ get_choices <- function(){
   choices %>% list_modify(
     factor_select = choices$factor
     , measure_select = md
-    , sort_by = md
+    , sort_by = md %>% c("Count" = "count")
     , bar_option = choices$measure
   )
 }

@@ -89,6 +89,43 @@ $(function(){
   )
 
 
+  // Set sort order
+  Shiny.addCustomMessageHandler(
+    'set_sort_order'
+    , function(sort_message) {
+
+        if(sort_message == null) return;
+
+        const selected = sort_message.selected;
+        const order = sort_message.order;
+
+        const selected_array = Array.isArray(selected) ? selected : [selected];
+        const order_array = Array.isArray(order) ? order : [order];
+
+        selected_array.forEach(
+          function(selection, index){
+            const icon = $(document).find(`.item[data-value='${selection}'] > i`);
+
+            const down_class = "fa fa-arrow-down";
+            const up_class = "fa fa-arrow-up";
+
+            const is_up = order_array[index] === 1;
+            const new_class = is_up ? up_class : down_class;
+
+            $(icon).removeClass(down_class).removeClass(up_class);
+            $(icon).addClass(new_class);
+
+            console.log("Index:", index);
+            console.log("Is up: ", is_up, " .. if true, this should be 1: ", order_array[index]);
+            console.log(new_class);
+            console.log(order_array[index]);
+
+          }
+        );
+
+  });
+
+
 });
 
 // Hide/show table controls
@@ -125,7 +162,7 @@ Shiny.addCustomMessageHandler(
       localStorage.setItem(input.id, input.data);
 });
 
-// Set local storage
+// Get local storage
 Shiny.addCustomMessageHandler(
   'get_local_storage'
   , function(id) {
@@ -136,6 +173,9 @@ Shiny.addCustomMessageHandler(
         , {priority: "event"}
       );
 });
+
+
+
 
 // Get sort order
 Shiny.addCustomMessageHandler(

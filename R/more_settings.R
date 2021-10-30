@@ -5,8 +5,7 @@ more_settings_ui <- function(id, init){
   ns <- NS(id)
 
   sort_choices <- init$choices$sort_by
-  # %>%
-  #   add_command_choices("Measure", "count", "clear")
+  # %>% add_command_choices("Measure", "count", "clear")
 
   icons <- rep("arrow-down", length(sort_choices))
 
@@ -26,32 +25,7 @@ more_settings_ui <- function(id, init){
               , selected = "count"
               , multiple = TRUE
               , width = '100%'
-              # , options = list(
-              #   plugins = list('drag_drop')
-              # )
           )
-
-          # labels    = c("I want a dog", "I want a cat"),
-          # values    = c("dog", "cat"),
-          # icons     = c("sort-down", "sort-up"),
-          # iconStyle = "font-size: 3rem; vertical-align: middle;",
-          # selected  = "cat",
-          # multiple = TRUE
-
-
-
-          # , selectizeInput(
-          #   inputId = ns("sort_by")
-          #   , label = div(icon("sort"), "Sort by")
-          #   , choices = init$choices$sort_by %>%
-          #     add_command_choices("Measure", "count", "clear")
-          #   , selected = "count"
-          #   , multiple = TRUE
-          #   , width = '100%'
-          #   , options = list(
-          #     plugins = list('drag_drop')
-          #   )
-          # )
         )
       )
       , fluidRow(
@@ -130,11 +104,21 @@ more_settings_server <- function(id, init){
         choices = get_choices()
       )
 
+      # Local functions ---------------------------------------------------------------------------
+      set_sort_order <- function(sort_message){
+        session$sendCustomMessage("set_sort_order", sort_message)
+      }
+
+      get_sort_order <- function(){
+        session$sendCustomMessage("get_sort_order", 0)
+      }
+
       # Local reactives ---------------------------------------------------------------------------
       m <- reactiveValues(
         run_once = FALSE
 
         , sort_by = NULL
+        , sort_order = NULL
         , bar_option = NULL
 
         , last_factor_select = NULL
@@ -158,7 +142,7 @@ more_settings_server <- function(id, init){
           c("sort_by"
             , "bar_option"
             , "identifier_select"
-            # , "max_factor_filter_choices"
+            , "max_factor_filter_choices"
           ) %>% walk(
             ~updateSelectInput(
               session = session
@@ -166,6 +150,14 @@ more_settings_server <- function(id, init){
               , selected = stored[[.x]]
             )
           )
+
+          sort_message <- list(
+            selected = stored$sort_by
+            , order = stored$sort_order
+          )
+
+          set_sort_order(sort_message)
+
           c(
             "slider_handles"
           ) %>% walk(
@@ -198,10 +190,6 @@ more_settings_server <- function(id, init){
 
       # Sort order from JS ------------------------------------------------------------------------
 
-      get_sort_order <- function(){
-        session$sendCustomMessage("get_sort_order", 0)
-      }
-
       observeEvent(
         input$sort_item_change
         , {
@@ -212,10 +200,18 @@ more_settings_server <- function(id, init){
       )
 
       observeEvent(
+        m$sort_by
+        , get_sort_order()
+      )
+
+      observeEvent(
         input$sort_order
         , {
-          cat(input$sort_order)
-          cat('\n')
+          m$sort_order <- input$sort_order %>% map_int(
+            function(x){
+              if(x == "up") 1L else -1L
+            }
+          )
         }
       )
 
@@ -240,8 +236,13 @@ more_settings_server <- function(id, init){
 
         m$last_identifier_select <- identifier_select
 
+        # Ensure sort_by and sort_order are same dimensions
+        valid_sort <- length(m$sort_by) == length(m$sort_order)
+        if(!valid_sort) return()
+
         list(
           sort_by = m$sort_by
+          , sort_order = m$sort_order
           , bar_option = m$bar_option
           , identifier_select = identifier_select
           , slider_handles = input$slider_handles
