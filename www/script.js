@@ -11,6 +11,7 @@ $(function(){
         $('.main_container').addClass('fade-in');
         $('.body__help-box').addClass('fade-in');
         $('.body__help-image').addClass('btn');
+
     }
   );
 

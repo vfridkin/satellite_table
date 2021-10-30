@@ -176,6 +176,8 @@ div.table_controls span.irs-max {
 
 div.table_controls span.play > i,
 div.table_controls span.pause > i {
+  top: -55px;
+  left: -5px;
 }
 
 #main-measure_slider_ui > div {
