@@ -23,6 +23,8 @@ library(purrr)
 library(magrittr)
 library(sparkline)
 library(jsonlite)
+library(fontawesome)
+library(htmltools)
 
 # Load files
 list.files("R", full.names = TRUE) |> walk(source)

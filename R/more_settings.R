@@ -4,24 +4,55 @@ more_settings_ui <- function(id, init){
 
   ns <- NS(id)
 
+  sort_choices <- init$choices$sort_by
+
+  # %>%
+  #   add_command_choices("Measure", "count", "clear")
+
+  icons <- rep("arrow-down", length(sort_choices))
+
   div(
     dropdown(
       inputId = ns("settings_dropdown")
       , fluidRow(
         column(
           width = 12
-          , selectizeInput(
-            inputId = ns("sort_by")
-            , label = div(icon("sort"), "Sort by")
-            , choices = init$choices$sort_by %>%
-              add_command_choices("Measure", "count", "clear")
-            , selected = "count"
-            , multiple = TRUE
-            , width = '100%'
-            , options = list(
-              plugins = list('drag_drop')
-            )
+          , selectInputWithIcons(
+              inputId = ns("sort_by")
+              , div(icon("sort"), "Sort by")
+              , labels = names(sort_choices)
+              , values = sort_choices
+              , icons = icons
+              , iconStyle = "font-size: 14px; background-color: transparent;"
+              , selected = "count"
+              , multiple = TRUE
+              , width = '100%'
+              # , options = list(
+              #   plugins = list('drag_drop')
+              # )
           )
+
+          # labels    = c("I want a dog", "I want a cat"),
+          # values    = c("dog", "cat"),
+          # icons     = c("sort-down", "sort-up"),
+          # iconStyle = "font-size: 3rem; vertical-align: middle;",
+          # selected  = "cat",
+          # multiple = TRUE
+
+
+
+          # , selectizeInput(
+          #   inputId = ns("sort_by")
+          #   , label = div(icon("sort"), "Sort by")
+          #   , choices = init$choices$sort_by %>%
+          #     add_command_choices("Measure", "count", "clear")
+          #   , selected = "count"
+          #   , multiple = TRUE
+          #   , width = '100%'
+          #   , options = list(
+          #     plugins = list('drag_drop')
+          #   )
+          # )
         )
       )
       , fluidRow(

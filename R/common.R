@@ -392,6 +392,49 @@ add_html_to_cells <- function(df, settings, selected){
   df
 }
 
+selectInputWithIcons <- function(
+  inputId, inputLabel, labels, values, icons, iconStyle = NULL,
+  selected = NULL, multiple = FALSE, width = NULL
+){
+
+  options <- mapply(function(label, value, icon){
+    list(
+      "label" = label,
+      "value" = value,
+      "icon"  = as.character(fa_i(icon, style = iconStyle))
+    )
+  }, labels, values, icons, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+  render <- paste0(
+    "{",
+    "  item: function(item, escape) {",
+    "    return '<span>' + item.icon + '&nbsp;' + item.label + '</span>';",
+    "  },",
+    "  option: function(item, escape) {",
+    "    return '<span>' + item.label + '</span>';",
+    "  }",
+    "}"
+  )
+  widget <- selectizeInput(
+    inputId  = inputId,
+    label    = inputLabel,
+    choices  = NULL,
+    selected = selected,
+    multiple = multiple,
+    width    = width,
+    options  = list(
+      plugins = list('drag_drop'),
+      "options"    = options,
+      "valueField" = "value",
+      "labelField" = "label",
+      "render"     = I(render),
+      "items"     = as.list(selected)
+    )
+  )
+  attachDependencies(widget, fa_html_dependency(), append = TRUE)
+}
+
+
+
 # TABLE FILTERS -----------------------------------------------------------------------------------
 
 # Subset df by factor filter

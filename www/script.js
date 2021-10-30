@@ -61,6 +61,12 @@ $(function(){
     }
   );
 
+  $("#sw-content-main-more_settings-settings_dropdown").on('dblclick'
+    , function(event){
+      console.log(event.target)
+    }
+  )
+
 
 });
 
