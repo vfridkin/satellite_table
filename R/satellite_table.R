@@ -137,6 +137,7 @@ satellite_table_ui <- function(id, field_df){
         )
       )
     )
+    , footer_element()
   )
 }
 

@@ -266,3 +266,17 @@ div#main-measure_statistic .control-label {
   color: rgba(var(--colour-white-rgb), var(--alpha-high));
 }
 
+/* Footer ---------------------------------------------------------------------------------------*/
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  height: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+.footer__text-box i {
+  margin-left: 5px;
+}
+

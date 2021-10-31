@@ -455,7 +455,9 @@ selectInputWithIcons <- function(
   attachDependencies(widget, fa_html_dependency(), append = TRUE)
 }
 
-
+icon_link <- function(name, link){
+  a(href = link, target="_blank", rel="noopener noreferrer", icon(name))
+}
 
 # TABLE FILTERS -----------------------------------------------------------------------------------
 

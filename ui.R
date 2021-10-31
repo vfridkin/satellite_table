@@ -12,6 +12,7 @@
 fluidPage(
   load_styles()
   , includeScript("www/script.js")
+  , introjsUI()
   , header_element(
     title = "Satellites"
     , subtitle = glue("UCS Satellite Database vers {ac$source_version}")
@@ -21,7 +22,5 @@ fluidPage(
   , button_element("Launch")
   , help_element("moon_question.png", "Moon helper")
   , satellite_table_ui("main", ac$field_df)
-
-
 )
 

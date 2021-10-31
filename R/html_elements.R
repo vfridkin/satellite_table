@@ -56,5 +56,20 @@ help_element <- function(file, alt){
   )
 }
 
+footer_element <- function(){
+  div(
+   class = "footer"
+   , div(
+     class = "footer__text-box"
+     , div(
+        HTML("RStudio Table Contest 2021 &copy; Vlad Fridkin")
+        , icon_link("linkedin", "https://www.linkedin.com/in/vfridkin/")
+        , icon_link("github", "https://github.com/vfridkin")
+        , icon_link("youtube", "https://www.youtube.com/channel/UCl_LeQWtHsopscfKBg0wE1A")
+     )
+   )
+  )
+}
+
 
 
