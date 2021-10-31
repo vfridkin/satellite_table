@@ -110,8 +110,7 @@ satellite_table_ui <- function(id, field_df){
             , selectizeInput(
               inputId = ns("measure_statistic_select")
               , label = "Measures statistic"
-              , choices = c("min", "mean", "max", "sd") %>%
-                set_names(c("Minimum", "Average", "Maximum", "Standard deviation"))
+              , choices = choices$measure_statistics
               , selected = "mean"
             )
           )
@@ -553,7 +552,7 @@ satellite_table_server <- function(id, init, data){
 
         # Add count total to count column heading
         col_def_summary <- k$column_definitions[names(dfc)]
-        col_def_summary$count <- col_def_summary$count %>% list_modify(
+        col_def_summary$count %<>% list_modify(
           name = HTML(paste0('
                     Count
                     <span style = "position: absolute; right: 15px; bottom: 6px;">
@@ -561,6 +560,25 @@ satellite_table_server <- function(id, init, data){
                     </span>
                   '))
         )
+
+        # Add measure statistic to column headers
+        if(is_selected$measure){
+          measure_statistic_name <- k$choices$measure_statistics %>%
+            .[. == measure_statistic] %>% names()
+
+          selected$measure %>% walk(
+            function(col_name){
+              col_def_summary[[col_name]] <<- col_def_summary[[col_name]] %>%
+                list_modify(header = JS(paste0("
+                function(colInfo) {
+                  return colInfo.column.name + '<div class=\"measure-statistic-subheader\">"
+                                               , measure_statistic_name
+                                               ,"</div>'
+                }
+              ")))
+            }
+          )
+        }
 
         # Return
         list(

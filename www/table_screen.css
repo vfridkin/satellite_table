@@ -240,6 +240,14 @@ div#main-measure_statistic .control-label {
   color: rgba(var(--colour-white-rgb), var(--alpha-high));
 }
 
+.measure-statistic-subheader {
+  font-style: italic;
+  font-size: smaller;
+  color: rgba(var(--colour-white-rgb), var(--alpha-low));
+}
+
+
+/* Table cells */
 #main-main_rt .rt-td > div > div {
   background-color: transparent;
   color: inherit;

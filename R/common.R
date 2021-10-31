@@ -118,10 +118,15 @@ get_choices <- function(){
   # Combine measures with dates for measures selection
   md <- c(choices$measure, choices$date) %>% sort()
 
+  # Measure statistics
+  measure_statistics <- c("min", "mean", "max", "sd") %>%
+    set_names(c("Minimum", "Average", "Maximum", "Standard deviation"))
+
   # Return with target widget ids
   choices %>% list_modify(
     factor_select = choices$factor
     , measure_select = md
+    , measure_statistics = measure_statistics
     , sort_by = md %>% c("Count" = "count")
     , bar_option = choices$measure
   )
