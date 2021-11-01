@@ -17,6 +17,7 @@ load_styles <- function(){
     , includeCSS("www/launch_screen.css")
     , includeCSS("www/table_screen.css")
     , includeCSS("www/help.css")
+    , includeCSS("www/introjs.css")
   )
 }
 

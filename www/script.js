@@ -32,7 +32,12 @@ $(function(){
         $('.help__splash-background').fadeOut(500);
         $('.help__splash-box').fadeOut(500);
         $('.filled_circle').hide(0);
-      }
+      };
+
+      if(moon){
+         Shiny.setInputValue('start_help', 1, {priority: "event"});
+      };
+
 
     }
 
@@ -63,7 +68,7 @@ $(function(){
         const input_id = $(item.parentNode).find('input').attr('id');
         if(input_id){
           const value = item.dataset.value;
-          Shiny.onInputChange(
+          Shiny.setInputValue(
             'main-double_click_selectize_item'
             , {container: input_id, value: value}
             , {priority: "event"}
@@ -78,7 +83,7 @@ $(function(){
     , function(event){
       const cell = event.target.closest('.rt-td > div > div');
       if(cell){
-          Shiny.onInputChange(
+          Shiny.setInputValue(
             'main-double_click_cell'
             , {col_name: cell.dataset.colName, value: cell.innerText}
             , {priority: "event"}

@@ -25,6 +25,7 @@ header_element <- function(title, subtitle, sublink){
 image_element <- function(file, alt){
   div(
     class = "body__image-box"
+    , style = "width: 50px; height: 50px; top: 6vh; left: 1vw; background: transparent;"
     , img(
       class = "body__image"
       , src = file

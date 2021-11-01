@@ -31,17 +31,21 @@ satellite_table_ui <- function(id, field_df){
         , column(
           width = 6
           , div(
-            style = "display: inline-block; margin-top: 6px; width: 55px;"
-            , materialSwitch(
-              inputId = ns("view_controls_switch")
-              , label = NULL
-              , value = FALSE
-              , status = "danger"
+            id = ns("solar_system")
+            , style = "padding-left: 10px; padding-right: 0;"
+            , div(
+              style = "display: inline-block; margin-top: 6px; width: 55px;"
+              , materialSwitch(
+                inputId = ns("view_controls_switch")
+                , label = NULL
+                , value = FALSE
+                , status = "danger"
+              )
             )
-          )
-          , div(
-            style = "display: inline-block;"
-            , uiOutput(ns("setting_circle_ui"))
+            , div(
+              style = "display: inline-block;"
+              , uiOutput(ns("setting_circle_ui"))
+            )
           )
         )
       )
@@ -124,6 +128,7 @@ satellite_table_ui <- function(id, field_df){
     )
     , div(
       class = "main__table-box"
+      , style = "padding: 10px;"
       , fluidRow(
         column(
           width = 12
