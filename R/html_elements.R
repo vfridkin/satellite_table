@@ -76,7 +76,10 @@ help_splash <- function(file, alt){
         , src = file
         , alt = alt
       )
-      , h3("Click the moon for help anytime ", icon(class = "fa-flip-horizontal", "mouse-pointer"))
+      , h3("Click the moon for help anytime "
+           , icon(class = "fa-flip-horizontal", "mouse-pointer")
+           , style = "padding-bottom: 10px;"
+           )
       , prettyCheckbox(
         inputId = "dont_show_again_check"
         , "Don't show next time"

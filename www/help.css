@@ -17,7 +17,7 @@
   top:0;
   z-index: 10;
   width: 100vw;
-  height: 100vw;
+  height: 100vh;
   background-color: rgba(var(--colour-black-rgb), var(--alpha-med));
 }
 
@@ -26,7 +26,7 @@
   position: fixed;
   display: none;
   left: 50vw;
-  top: 50vw;
+  top: 50vh;
   transform: translate(-50%, -50%);
   z-index: 11;
   box-shadow: 0px 0px 15px 0px #c0c0c0;

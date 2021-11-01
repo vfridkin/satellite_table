@@ -271,6 +271,7 @@ div#main-measure_statistic .control-label {
 .footer {
   position: absolute;
   bottom: 0;
+  margin-top: 10px;
   height: 20px;
   width: 100%;
   text-align: center;
@@ -278,11 +279,11 @@ div#main-measure_statistic .control-label {
 
 .footer__text-box i {
   margin-left: 5px;
+  font-size: smaller;
   color: rgba(var(--colour-white-rgb), var(--alpha-low));
 }
 
 .footer__text-box i:hover {
-
   color: rgba(var(--colour-white-rgb), var(--alpha-high));
 }
 
