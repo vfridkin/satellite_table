@@ -66,44 +66,43 @@ help_splash <- function(file, alt){
     , div(
       class = "help__splash-box"
       , style = "display: none;"
-      , align = "center"
-      , div(
-        class="help__splash-title"
-        , "WELCOME"
-      )
-      , img(
-        class = "help__splash-image"
-        , src = file
-        , alt = alt
-      )
       , h3("Click the moon for help anytime "
-           , icon(class = "fa-flip-horizontal", "mouse-pointer")
-           , style = "padding-bottom: 10px;"
-           )
-      , prettyCheckbox(
-        inputId = "dont_show_again_check"
-        , "Don't show next time"
-        , value = FALSE
-        , icon = icon("check")
+           , icon("angle-double-right")
+           , style = "padding: 10px 0 10px 0; margin: 0;"
+      )
+      , div(
+        style = "display: inline-block"
+        , checkboxInput(
+          inputId = "dont_show_splash_again_check"
+          , label = "Don't show again"
+          , value = FALSE
+        )
+      )
+      , div(
+        style = "display: inline-block"
+        , class = "splash-button"
+        , actionButton(
+          inputId = "splash_ok_button"
+          , label = "Got it"
+        )
       )
     )
-
   )
 }
 
 
 footer_element <- function(){
   div(
-   class = "footer"
-   , div(
-     class = "footer__text-box"
-     , div(
+    class = "footer"
+    , div(
+      class = "footer__text-box"
+      , div(
         HTML("RStudio Table Contest 2021 &copy; Vlad Fridkin")
         , icon_link("linkedin", "https://www.linkedin.com/in/vfridkin/")
         , icon_link("github", "https://github.com/vfridkin")
         , icon_link("youtube", "https://www.youtube.com/channel/UCl_LeQWtHsopscfKBg0wE1A")
-     )
-   )
+      )
+    )
   )
 }
 

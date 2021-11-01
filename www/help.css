@@ -22,32 +22,16 @@
 }
 
 .help__splash-box {
-  width: 540px;
+  text-align: center;
+  width: 420px;
   position: fixed;
   display: none;
-  left: 50vw;
-  top: 50vh;
-  transform: translate(-50%, -50%);
+  right: 100px;
+  top: 15px;
   z-index: 11;
   box-shadow: 0px 0px 15px 0px #c0c0c0;
   border-radius: 10px;
+  padding: 10px;
 }
 
-.help__splash-title {
-  display: block;
-  font-size: 6rem;
-  font-weight: 400;
-  margin-right: -3rem;
-  letter-spacing: 3rem;
-  background: -webkit-linear-gradient(
-    var(--colour-white),
-    var(--colour-text-gradient-bottom)
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.help__splash-image {
-  width: 540px;
-}
 
