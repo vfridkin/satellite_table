@@ -48,6 +48,9 @@ button_element <- function(label){
 help_element <- function(file, alt){
   div(
     class = "body__help-box"
+    , span(
+      class = "filled_circle ping"
+    )
     , img(
       class = "body__help-image"
       , src = file
@@ -55,6 +58,36 @@ help_element <- function(file, alt){
     )
   )
 }
+
+help_splash <- function(file, alt){
+  div(
+    class = "help__splash-background"
+    , style = "display: none;"
+    , div(
+      class = "help__splash-box"
+      , style = "display: none;"
+      , align = "center"
+      , div(
+        class="help__splash-title"
+        , "WELCOME"
+      )
+      , img(
+        class = "help__splash-image"
+        , src = file
+        , alt = alt
+      )
+      , h3("Click the moon for help anytime ", icon(class = "fa-flip-horizontal", "mouse-pointer"))
+      , prettyCheckbox(
+        inputId = "dont_show_again_check"
+        , "Don't show next time"
+        , value = FALSE
+        , icon = icon("check")
+      )
+    )
+
+  )
+}
+
 
 footer_element <- function(){
   div(

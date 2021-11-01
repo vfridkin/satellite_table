@@ -25,4 +25,15 @@ function(input, output, session){
   data <- get_data()
   satellite_table_server("main", init, data)
 
+  # introjs(
+  #   session
+  #   , options = list(
+  #     steps = help_steps()
+  #     , nextLabel = "Learn more"
+  #     , skipLabel = "Close"
+  #     , showStepNumbers = FALSE
+  #     , showBullets = FALSE
+  #   )
+  # )
+
 }

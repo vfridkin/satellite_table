@@ -278,5 +278,19 @@ div#main-measure_statistic .control-label {
 
 .footer__text-box i {
   margin-left: 5px;
+  color: rgba(var(--colour-white-rgb), var(--alpha-low));
 }
 
+.footer__text-box i:hover {
+
+  color: rgba(var(--colour-white-rgb), var(--alpha-high));
+}
+
+
+.footer__text-box > div {
+  color: rgba(var(--colour-white-rgb), var(--alpha-low));
+}
+
+.footer__text-box > div:hover {
+  color: rgba(var(--colour-white-rgb), var(--alpha-high));
+}

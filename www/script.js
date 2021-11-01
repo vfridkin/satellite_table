@@ -11,9 +11,33 @@ $(function(){
         $('.main_container').addClass('fade-in');
         $('.body__help-box').addClass('fade-in');
         $('.body__help-image').addClass('btn');
+        $('.help__splash-background').fadeIn(500);
+        $('.help__splash-box').delay(500).fadeIn(500);
 
     }
   );
+
+  // Handle clicks for dynamically created elements
+  $('body').on("click",
+    function(event){
+
+      const splash_box = event.target.closest('.help__splash-box');
+      if(splash_box) return;
+
+      const moon = event.target.closest('.body__help-image');
+      const splash = event.target.closest('.help__splash-background');
+
+      if(moon || splash){
+        $('.help__splash-background').fadeOut(500);
+        $('.help__splash-box').fadeOut(500);
+        $('.filled_circle').hide(0);
+      }
+
+    }
+
+  )
+
+
 
   // Handle setting circle clicks
   $('#main-setting_circle_ui').on('click'

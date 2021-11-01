@@ -17,6 +17,7 @@
   --colour-base2: #030303;
 
   --colour-white-rgb: 255, 255, 255;
+  --colour-black-rgb: 0, 0, 0;
   --alpha-high: 0.87;
   --alpha-med: 0.6;
   --alpha-low: 0.38;
@@ -66,6 +67,11 @@ body {
 
 i {
   padding-right: 3px;
+}
+
+.ping {
+	-webkit-animation: ping 1.5s ease-in-out infinite both;
+	        animation: ping 1.5s ease-in-out infinite both;
 }
 
 

@@ -89,22 +89,38 @@
 }
 
 .body__help-box {
-  z-index: 9;
-  position: absolute;
+  z-index: 11;
+  position: fixed;
   background-color: transparent;
   right: 0;
   top: 0;
+  width: 100px;
+  height: 100px;
   opacity: 0;
 }
 
 .body__help-image {
+  position: absolute;
+  padding: 0;
+  left: 0;
+  top: 0;
   background-color: transparent;
-  width: 110px;
+  width: 100px;
   height: 100px;
   transform: scale(0.8);
   transition: all 0.8s;
 }
 
+.filled_circle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100px;
+  width: 100px;
+  background-color: var(--colour-white);
+  border-radius: 50%;
+  display: inline-block;
+}
 
 .launch-btn:link,
 .launch-btn:visited {
