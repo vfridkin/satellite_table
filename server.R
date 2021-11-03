@@ -32,7 +32,7 @@ function(input, output, session){
         session
         , options = list(
           steps = help_steps()
-          , nextLabel = "next"
+          , nextLabel = "Next"
           , skipLabel = ""
           , showStepNumbers = FALSE
           , showBullets = TRUE

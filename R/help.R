@@ -2,43 +2,148 @@
 
 help_steps <- function(){
 
+  # Override icon to make work in help steps
+  icon_strong <- function(name){
+    icon(style="font-family: \"Font Awesome 5 Free\"; color: rgba(var(--colour-white-rgb), var(--alpha-high))", name)
+  }
+
+  icon_circle_empty <- function(){
+    HTML("<i style=\"font-family: 'Font Awesome 5 Free'; color: rgba(var(--colour-white-rgb), var(--alpha-high))\" class=\"far fa-circle\"></i>")
+  }
+
+  welcome <- div(
+    p(
+      "Create and save up to eight table views.  Satellite data
+       is compiled by the Union of Concerned Scientists (UCS)."
+    )
+    , p(
+      "Things you can do"
+      , tags$ul(
+        tags$li("View aggregated statistics (summary)")
+        , tags$li("View individual records (details)")
+        , tags$li("Add and reorder columns")
+        , tags$li("Filter by double clicking")
+        , tags$li("Add cell bars")
+        , tags$li("Animate measure range")
+        , tags$li("Change the measure statistic")
+        , tags$li("Save your view")
+      )
+    )
+    , p(
+      "Navigate this guide with the buttons below.
+      Exit anytime by clicking the background."
+    )
+  ) %>% as.character()
+
+
   table_view <- div(
     p(
-      "The table can be viewed in two ways, (1) the summary view
-      groups by factors and aggregates measures, (2) the details view
-      is the original table."
+      "The table has three types of columns"
+      , tags$ul(
+        tags$li(strong("Identifiers"), "are unique to each satellite")
+        , tags$li(strong("Factors"), "are words common to multiple satellites")
+        , tags$li(strong("Measures"), "are numbers and dates")
+      )
+      , "Columns of the same type are positioned together."
     )
     , p(
-      "Factors are words common to multiple records (i.e. can be grouped) and
-      measures are numbers and dates (ie. can be aggregated).  The details view
-      also has identifiers, these are unique to each record."
+      "Click the above buttons to view the table as"
+      , tags$ul(
+        tags$li(strong("Summary"), "- factor columns are on the left and aggregates measures
+                  are on the right side of the table")
+        , tags$li(strong("Details"), "- identifier columns on the left,
+                    followed by factors and then measures on the right side of the table.")
+      )
     )
     , p(
-      "In the table, identifiers, factors and measures appear in this order from
-      left to right."
+      "The summary view does not contain identifiers.
+       The details view does not contain the count column.
+      "
     )
   ) %>% as.character()
 
   solar_system <- div(
     p(
-      "Click the switch on he left (the 'Sun') to show/hide the concealable controls.
-      The 8 little circles (the 'Planets') store 8 independent table
-      configurations including column selections, filters, selected measure statistic
-      and which columns have bars.  Saving is automatic, click the little circles to
-      move between configurations.
+      div(
+        id = "switch_for_help_container"
+        , style = "display: inline-block; width: 50px; margin-bottom: 0;"
+        , materialSwitch(
+          inputId = "switch_for_help"
+          , label = NULL
+          , value = TRUE
+          , status = "danger"
+        )
+      )
+      , div(
+        style = "display: inline; width: 80%;"
+        , "The 'sun' switch hides/shows the concealable controls."
+      )
+    )
+    , p(
+      icon_strong("circle"), icon_circle_empty(), "Eight circles (the 'planets') store eight sets of table
+      views including summary/details selection, selected columns, filters, measure statistic
+      and cell bar choices."
+    )
+    , p("
+      Saving is automatic, click the little circles to move between configurations.
       "
     )
   ) %>% as.character()
 
 
-  table_controls <- div("Test") %>% as.character()
-  main_table <- div("Test") %>% as.character()
-  satellite <- div("Test") %>% as.character()
 
+  table_controls <- div(
+    p(
+      "These controls are visible when the 'sun' switch is on."
+    )
+    , p(
+      icon_strong("columns"), strong("Factors"), "select factor columns to display.
+      Minimum one selection."
+    )
+    , p(
+      icon_strong("columns"), strong("Measures"), "select measure columns to display.
+      Double click a measure to put it in the slider."
+    )
+    , p(
+      icon_strong("filter"), strong("Factors"), "shows current factor filters.  To create
+      a filter, double click on a table cell in a factor column.  Recent filters are stored
+      in the drop down. Different factors use an AND condition. Multiple filters on the same
+      factor use an OR condition."
+    )
+    , p(
+      icon_strong("filter"), strong("<measure>"), "filters the selected measure using the slider.
+      Click ", icon_strong("play"), "to animate the slider."
+    )
+    , p(
+      strong("Measure statistic"), "visible when a measure is selected in the summary view.
+      Select a statistic from the drop down."
+    )
+    , p(
+      strong("...more"), "reveals more controls including sort order, columns with
+      cell bars and identifier columns"
+    )
+  ) %>% as.character()
+
+  main_table <- div(
+    p(
+      "The table contains three types of columns in this order: identifier, factor and measure."
+    )
+    , p(
+      "When filtered, a filter icon appears next to the top left corner of the table."
+    )
+    , p(
+      "Double click a table cell to in a factor column to filter. (Use the slider to filter by
+      a measure.)"
+    )
+  ) %>% as.character()
+
+  satellite <- div(
+    p("Click the satellite to view saved settings.")
+  ) %>% as.character()
 
   data.frame(
-    title = c("Table view", "Show controls/save changes", "Concealable controls", "Main table", "Satellite")
-    , intro = c(table_view, solar_system, table_controls, main_table, satellite)
-    , element = c("#main-table_view", "#main-solar_system", ".table_controls", ".main__table-box", ".body__image-box")
+    title = c("Welcome", "Table view", "Show controls/save changes", "Concealable controls", "Table", "Satellite")
+    , intro = c(welcome, table_view, solar_system, table_controls, main_table, satellite)
+    , element = c(".header__text-box", "#main-table_view", "#main-solar_system", ".table_controls", ".main__table-box", ".body__image-box")
   )
 }

@@ -85,9 +85,10 @@ tr.introjs-showElement > th {
 
 .introjs-tooltip {
   position: absolute;
+  text-shadow: none;
   padding: 0;
-  min-width: 200px;
-  max-width: 300px;
+  min-width: 400px;
+  max-width: 500px;
   color:#fff;
   -webkit-transition: opacity 0.1s ease-out;
   -moz-transition: opacity 0.1s ease-out;
@@ -99,8 +100,8 @@ tr.introjs-showElement > th {
 .introjs-tooltipbuttons {
   text-align: right;
   position:relative;
-  padding:5px;
-  background:#656D78;
+  padding:1px;
+  background:#484848;
 }
 
 /*
@@ -108,61 +109,65 @@ tr.introjs-showElement > th {
   Changed by Afshin Mehrabani
 Further modified by: Khashayar P.
 */
-  .introjs-button {
-    position: relative;
-    overflow: visible;
-    display: inline-block;
-    padding: 0.3em 0.8em;
-    border: 2px solid #fff;
-    margin: 0;
-    text-decoration: none;
-    font: 11px/normal sans-serif;
-    color: #fff !important;
-      white-space: nowrap;
-    cursor: pointer;
-    outline: none;
-    -webkit-background-clip: padding;
-    -moz-background-clip: padding;
-    -o-background-clip: padding-box;
-    /*background-clip: padding-box;*/ /* commented out due to Opera 11.10 bug */
-      /* IE hacks */
-      zoom: 1;
-    *display: inline;
-    margin-top: 10px;
-  }
+.introjs-button {
+  position: relative;
+  overflow: visible;
+  display: inline-block;
+  padding: 0.3em 0.8em;
+  border: none;
+  box-shadow: none;
+  text-shadow: none;
+  background-color: transparent !important;
+  margin: 0;
+  text-decoration: none;
+  font-family: "Helvetica Neue",Inter,ui-sans-serif,"Apple Color Emoji",Helvetica,Arial,sans-serif;
+  color: rgba(var(--colour-white-rgb), var(--alpha-med)) !important;
+  white-space: nowrap;
+  cursor: pointer;
+  outline: none;
+  -webkit-background-clip: padding;
+  -moz-background-clip: padding;
+  -o-background-clip: padding-box;
+  /*background-clip: padding-box;*/ /* commented out due to Opera 11.10 bug */
+    /* IE hacks */
+    zoom: 1;
+  *display: inline;
+  margin-top: 10px;
+}
 
 .introjs-button:hover {
+  border: none;
   text-decoration: none;
-  color:#434A54 !important;
-    background:#fff;
+  color: rgba(var(--colour-white-rgb), var(--alpha-high)) !important;
 }
 
 .introjs-button:focus,
 .introjs-button:active {
-  background:#fff !important;
-    color:#434A54 !important;
+  border: none;
+  box-shadow: none;
+  color: rgba(var(--colour-white-rgb), var(--alpha-high));
 }
 
 /* overrides extra padding on button elements in Firefox */
-  .introjs-button::-moz-focus-inner {
-    padding: 0;
-    border: 0;
-  }
+.introjs-button::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
 
 .introjs-skipbutton {
   margin-right: 5px;
-  color: #fff;
+  color: rgba(var(--colour-white-rgb), var(--alpha-med));
 }
 
+/*
 .introjs-prevbutton {
-
-  border-right: none;
+  color: rgba(var(--colour-white-rgb), var(--alpha-med));
 }
-
+*/
 
 .introjs-disabled, .introjs-disabled:hover, .introjs-disabled:focus {
-  color: #fff;
-    box-shadow: none;
+  color: rgba(var(--colour-white-rgb), var(--alpha-low));
+  box-shadow: none;
   cursor: default;
   background:transparent;
   border-color:transparent;

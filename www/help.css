@@ -34,4 +34,6 @@
   padding: 10px;
 }
 
-
+#switch_for_help_container > div.form-group {
+  margin-bottom: 0;
+}

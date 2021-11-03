@@ -20,7 +20,7 @@
 .heading-primary {
   text-transform: uppercase;
   backface-visibility: hidden;
-  margin-bottom: 6rem;
+  margin-bottom: 1rem;
 }
 .heading-primary--main {
   display: block;

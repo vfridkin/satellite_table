@@ -15,6 +15,7 @@
   --colour-selectize-border: #313131;
   --colour-white: #ffffff;
   --colour-base2: #030303;
+  --colour-silver: #C0C0C0;
 
   --colour-white-rgb: 255, 255, 255;
   --colour-black-rgb: 0, 0, 0;
@@ -41,6 +42,7 @@
   --colour-desat-blue-darker: #293542;
 
   --colour-desat-comp: #5a4938;
+  --colour-desat-red: #5a3838;
 
   --colour-desat-blue-sater-rgb: 45, 73, 101;
 
@@ -67,6 +69,10 @@ body {
 
 i {
   padding-right: 3px;
+}
+
+strong {
+  color: rgba(var(--colour-white-rgb), var(--alpha-high));
 }
 
 .ping {
