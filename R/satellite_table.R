@@ -55,7 +55,8 @@ satellite_table_ui <- function(id, field_df){
       , class = "table_controls"
       , style = "position: relative;"
       , fluidRow(
-        column(
+        class = "table-controls-select"
+        , column(
           width = 6
           , selectizeInput(
             inputId = ns("factor_select")
@@ -88,7 +89,8 @@ satellite_table_ui <- function(id, field_df){
         )
       )
       , fluidRow(
-        column(
+        class = "table-controls-filter"
+        , column(
           width = 6
           , selectizeInput(
             inputId = ns("factor_filter_select")

@@ -22,5 +22,7 @@ fluidPage(
   , button_element("Launch")
   , help_element("moon_question.png", "Help button")
   , satellite_table_ui("main", ac$field_df)
-  , help_splash("above_earth.jpg", "Welcome splash screen")
+  , screen_overlay()
+  , help_splash()
+  , saved_info_ui("saved")
 )

@@ -5,15 +5,20 @@ $(function(){
   // Activate post start animations and table view
   $('#launch_button').on("click"
     , function(){
-        $('.body__image').addClass('image-up');
+        $('.body__image').addClass('image-up saved-info-opener');
         $('.header__text-box').addClass('header-up');
         $('#launch_button').fadeOut(2000);
         $('.main_container').addClass('fade-in');
         $('.body__help-box').addClass('fade-in');
         $('.body__help-image').addClass('btn');
-        $('.help__splash-background').fadeIn(500);
-        $('.help__splash-box').delay(500).fadeIn(1000);
 
+        const splash_check = localStorage.getItem('satellite_table_shiny_appsplash_check');
+        if(splash_check !== "[true]"){
+          $('.screen-overlay').fadeIn(500);
+          $('.splash-box').delay(500).fadeIn(1000);
+        } else {
+          $('.filled_circle').hide(0);
+        }
     }
   );
 
@@ -21,23 +26,32 @@ $(function(){
   $('body').on("click",
     function(event){
 
-      const splash_box = event.target.closest('.help__splash-box');
+      const splash_box = event.target.closest('.splash-box');
       const splash_button = event.target.closest('.splash-button');
       if(splash_box && !splash_button) return;
 
+      const satellite = event.target.closest('.saved-info-opener');
       const moon = event.target.closest('.body__help-image');
-      const splash_background = event.target.closest('.help__splash-background');
+      const screen_overlay = event.target.closest('.screen-overlay');
 
-      if(moon || splash_background || splash_button){
-        $('.help__splash-background').fadeOut(500);
-        $('.help__splash-box').fadeOut(500);
+      if(moon || screen_overlay || splash_button){
+        $('.screen-overlay').fadeOut(500);
+        $('.splash-box').fadeOut(500);
         $('.filled_circle').hide(0);
+        $('.saved-info').fadeOut(500);
+        Shiny.setInputValue('splash_close', 1, {priority: "event"});
       };
 
       if(moon){
-         Shiny.setInputValue('start_help', 1, {priority: "event"});
+        Shiny.setInputValue('start_help', 1, {priority: "event"});
+        return;
       };
 
+      if(satellite){
+        $('.screen-overlay').fadeIn(250);
+        $('.saved-info').delay(250).fadeIn(250);
+        return;
+      }
 
     }
 
@@ -205,8 +219,21 @@ Shiny.addCustomMessageHandler(
       );
 });
 
-
-
+// Get all local storage
+Shiny.addCustomMessageHandler(
+  'get_local_storage_multi'
+  , function(ids) {
+      const message = ids.map(
+        function(id){
+          return localStorage.getItem(id);
+        }
+      )
+      Shiny.setInputValue(
+        'local_storage_multi'
+        , message
+        , {priority: "event"}
+      );
+});
 
 // Get sort order
 Shiny.addCustomMessageHandler(

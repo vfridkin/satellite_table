@@ -60,37 +60,38 @@ help_element <- function(file, alt){
   )
 }
 
-help_splash <- function(file, alt){
+screen_overlay <- function(){
   div(
-    class = "help__splash-background"
+    class = "screen-overlay"
     , style = "display: none;"
+  )
+}
+
+help_splash <- function(){
+  div(
+    class = "splash-box"
+    , h3("Click the moon for help - anytime "
+         , icon("angle-double-right")
+         , style = "padding: 10px 0 10px 0; margin: 0;"
+    )
     , div(
-      class = "help__splash-box"
-      , style = "display: none;"
-      , h3("Click the moon for help anytime "
-           , icon("angle-double-right")
-           , style = "padding: 10px 0 10px 0; margin: 0;"
+      style = "display: inline-block"
+      , checkboxInput(
+        inputId = "dont_show_splash_again_check"
+        , label = "Don't show again"
+        , value = FALSE
       )
-      , div(
-        style = "display: inline-block"
-        , checkboxInput(
-          inputId = "dont_show_splash_again_check"
-          , label = "Don't show again"
-          , value = FALSE
-        )
-      )
-      , div(
-        style = "display: inline-block"
-        , class = "splash-button"
-        , actionButton(
-          inputId = "splash_ok_button"
-          , label = "Got it"
-        )
+    )
+    , div(
+      style = "display: inline-block"
+      , class = "splash-button"
+      , actionButton(
+        inputId = "splash_ok_button"
+        , label = "Got it"
       )
     )
   )
 }
-
 
 footer_element <- function(){
   div(

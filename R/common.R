@@ -278,6 +278,11 @@ get_local_storage <- function(id, session){
   session$sendCustomMessage("get_local_storage", ls_id)
 }
 
+get_local_storage_multi <- function(ids, session){
+  ls_ids <- ids %>% map(to_local_storage_id)
+  session$sendCustomMessage("get_local_storage_multi", ls_ids)
+}
+
 set_setting_circle <- function(id, session){
   session$sendCustomMessage("set_setting_circle", id)
 }

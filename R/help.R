@@ -31,7 +31,8 @@ help_steps <- function(){
     )
     , p(
       "Navigate this guide with the buttons below.
-      Exit anytime by clicking the background."
+      Exit by clicking the top right 'x' or the background.
+      "
     )
   ) %>% as.character()
 
@@ -92,7 +93,7 @@ help_steps <- function(){
 
 
 
-  table_controls <- div(
+  table_controls_select <- div(
     p(
       "These controls are visible when the 'sun' switch is on."
     )
@@ -104,7 +105,10 @@ help_steps <- function(){
       icon_strong("columns"), strong("Measures"), "select measure columns to display.
       Double click a measure to put it in the slider."
     )
-    , p(
+  ) %>% as.character()
+
+  table_controls_filter <- div(
+    p(
       icon_strong("filter"), strong("Factors"), "shows current factor filters.  To create
       a filter, double click on a table cell in a factor column.  Recent filters are stored
       in the drop down. Different factors use an AND condition. Multiple filters on the same
@@ -142,8 +146,8 @@ help_steps <- function(){
   ) %>% as.character()
 
   data.frame(
-    title = c("Welcome", "Table view", "Show controls/save changes", "Concealable controls", "Table", "Satellite")
-    , intro = c(welcome, table_view, solar_system, table_controls, main_table, satellite)
-    , element = c(".header__text-box", "#main-table_view", "#main-solar_system", ".table_controls", ".main__table-box", ".body__image-box")
+    title = c("Welcome", "Table columns and views", "Show controls and save changes", "Select and reorder columns", "Filter columns, select statistic", "Table interactions", "Satellite")
+    , intro = c(welcome, table_view, solar_system, table_controls_select, table_controls_filter, main_table, satellite)
+    , element = c(".header__text-box", "#main-table_view", "#main-solar_system", ".table-controls-select", ".table-controls-filter", ".main__table-box", ".body__image-box")
   )
 }

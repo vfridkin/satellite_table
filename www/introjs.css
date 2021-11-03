@@ -83,6 +83,10 @@ tr.introjs-showElement > th {
   display: none !important;
 }
 
+.introjs-tooltiptext {
+  padding-bottom: 5px;
+}
+
 .introjs-tooltip {
   position: absolute;
   text-shadow: none;
@@ -156,8 +160,15 @@ Further modified by: Khashayar P.
 
 .introjs-skipbutton {
   margin-right: 5px;
-  color: rgba(var(--colour-white-rgb), var(--alpha-med));
+  padding: 0;
+  font-family: sans-serif;
+  color: rgba(var(--colour-white-rgb), var(--alpha-low)) !important;
 }
+
+.introjs-skipbutton:hover {
+  color: rgba(var(--colour-white-rgb), var(--alpha-med)) !important;
+}
+
 
 /*
 .introjs-prevbutton {
@@ -175,6 +186,7 @@ Further modified by: Khashayar P.
 
 .introjs-bullets {
   text-align: center;
+  padding-top: 0;
 }
 .introjs-bullets ul {
   clear: both;

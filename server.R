@@ -11,7 +11,7 @@
 
 function(input, output, session){
 
-  # Initial default values
+  # Satellite table -------------------------------------------------------------------------------
   init <- list(
     factor_select = "class_of_orbit"
     , slider_field = ac$field$date_of_launch
@@ -25,15 +25,43 @@ function(input, output, session){
   data <- get_data()
   satellite_table_server("main", init, data)
 
+  # Stored info table -----------------------------------------------------------------------------
+  saved <- eventReactive(
+    input$local_storage_multi
+    , {
+      browser()
+    }
+  )
+  saved_info_server("saved", saved)
+
+  # Help splash -----------------------------------------------------------------------------------
+  observeEvent(
+    input$splash_close
+    , {
+      splash_check <- input$dont_show_splash_again_check
+      set_local_storage("splash_check", splash_check, session)
+    }
+  )
+
+  # Help main -------------------------------------------------------------------------------------
   observeEvent(
     input$start_help
     , {
+
+      #Ensure table controls are visible
+      updateMaterialSwitch(
+        session = session
+        , inputId = "main-view_controls_switch"
+        , value = TRUE
+      )
+
+      # Start guide
       introjs(
         session
         , options = list(
           steps = help_steps()
           , nextLabel = "Next"
-          , skipLabel = ""
+          , skipLabel = "x"
           , showStepNumbers = FALSE
           , showBullets = TRUE
           , disableInteraction = TRUE
@@ -41,6 +69,4 @@ function(input, output, session){
       )
     }
   )
-
-
 }

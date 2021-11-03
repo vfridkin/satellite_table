@@ -1,7 +1,5 @@
 /* Help */
 
-
-
 .body__help-image:hover {
   transform: scale(0.9);
 }
@@ -10,7 +8,7 @@
   transform: translateY(0.1rem);
 }
 
-.help__splash-background {
+.screen-overlay {
   position: fixed;
   display: none;
   left:0;
@@ -21,7 +19,7 @@
   background-color: rgba(var(--colour-black-rgb), var(--alpha-med));
 }
 
-.help__splash-box {
+.splash-box {
   text-align: center;
   width: 420px;
   position: fixed;
@@ -37,3 +35,23 @@
 #switch_for_help_container > div.form-group {
   margin-bottom: 0;
 }
+
+/* Saved table views ----------------------------------------------------------------------------*/
+
+.saved-info {
+  width: 80vw;
+  position: fixed;
+  display: none;
+  left: 5vw;
+  top: 5vh;
+  z-index: 11;
+  box-shadow: inset -4px 1px 15px 0px #c0c0c0;
+  border-radius: 10px;
+  padding: 10px;
+  padding-left: 20px;
+}
+
+
+
+
+
