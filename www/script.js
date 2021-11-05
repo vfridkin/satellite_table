@@ -49,7 +49,8 @@ $(function(){
 
       if(satellite){
         $('.screen-overlay').fadeIn(250);
-        $('.saved-info').delay(250).fadeIn(250);
+        $('.saved-info').show(250);
+        Shiny.setInputValue('saved-refresh_table', 1, {priority: "event"});
         return;
       }
 
@@ -223,13 +224,17 @@ Shiny.addCustomMessageHandler(
 Shiny.addCustomMessageHandler(
   'get_local_storage_multi'
   , function(ids) {
+
       const message = ids.map(
         function(id){
-          return localStorage.getItem(id);
+          const res = localStorage.getItem(id);
+          console.log(res);
+          return res ? res : 0;
         }
       )
+
       Shiny.setInputValue(
-        'local_storage_multi'
+        'saved-local_storage_multi'
         , message
         , {priority: "event"}
       );

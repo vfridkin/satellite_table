@@ -26,13 +26,7 @@ function(input, output, session){
   satellite_table_server("main", init, data)
 
   # Stored info table -----------------------------------------------------------------------------
-  saved <- eventReactive(
-    input$local_storage_multi
-    , {
-      browser()
-    }
-  )
-  saved_info_server("saved", saved)
+  saved_info_server("saved")
 
   # Help splash -----------------------------------------------------------------------------------
   observeEvent(

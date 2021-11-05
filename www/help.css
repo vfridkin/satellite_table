@@ -39,9 +39,9 @@
 /* Saved table views ----------------------------------------------------------------------------*/
 
 .saved-info {
+  display: none;
   width: 80vw;
   position: fixed;
-  display: none;
   left: 5vw;
   top: 5vh;
   z-index: 11;
