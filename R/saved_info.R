@@ -10,7 +10,7 @@ saved_info_ui <- function(id){
         width = 12
         , div(
           class = "saved-info"
-          , h3("Saved table views")
+          , h3("Saved views")
           , reactableOutput(ns("table_ui"))
         )
       )

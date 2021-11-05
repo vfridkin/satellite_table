@@ -22,10 +22,6 @@ help_steps <- function(){
 
   welcome <- div(
     p(
-      "Create and save up to eight table views.  Satellite data
-       is compiled by the Union of Concerned Scientists (UCS)."
-    )
-    , p(
       "Things you can do"
       , tags$ul(
         tags$li("View aggregated statistics (summary)")
@@ -35,8 +31,13 @@ help_steps <- function(){
         , tags$li("Add cell bars")
         , tags$li("Animate measure range")
         , tags$li("Change the measure statistic")
-        , tags$li("Save your view")
+        , tags$li("Save all the above in up to eight custom views")
       )
+    )
+    , p(
+      "The satellite data used here is compiled by the Union of Concerned Scientists (UCS).
+       Click the link below the heading to visit their site and learn more about the data.
+      "
     )
     , p(
       "Navigate this guide with the buttons below.
@@ -161,7 +162,7 @@ help_steps <- function(){
   ) %>% as.character()
 
   satellite <- div(
-    p("Click the satellite to view saved settings.")
+    p("Click the satellite for info on saved views")
   ) %>% as.character()
 
   data.frame(
