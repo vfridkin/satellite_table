@@ -21,11 +21,10 @@ function(input, output, session){
     , max_factor_filter_choices = 10
     , field = ac$field
   )
-
   data <- get_data()
   satellite_table_server("main", init, data)
 
-  # Stored info table -----------------------------------------------------------------------------
+  # Saved info ------------------------------------------------------------------------------------
   saved_info_server("saved")
 
   # Help splash -----------------------------------------------------------------------------------

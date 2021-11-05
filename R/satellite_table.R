@@ -861,6 +861,4 @@ satellite_table_server <- function(id, init, data){
 
     }
   )
-
-
 }

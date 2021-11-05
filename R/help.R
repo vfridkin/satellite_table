@@ -4,11 +4,20 @@ help_steps <- function(){
 
   # Override icon to make work in help steps
   icon_strong <- function(name){
-    icon(style="font-family: \"Font Awesome 5 Free\"; color: rgba(var(--colour-white-rgb), var(--alpha-high))", name)
+    icon(
+      style="font-family: \"Font Awesome 5 Free\";
+        color: rgba(var(--colour-white-rgb), var(--alpha-high))"
+      , name
+    )
   }
 
   icon_circle_empty <- function(){
-    HTML("<i style=\"font-family: 'Font Awesome 5 Free'; color: rgba(var(--colour-white-rgb), var(--alpha-high))\" class=\"far fa-circle\"></i>")
+    HTML("
+      <i style=\"font-family: 'Font Awesome 5 Free';
+         color: rgba(var(--colour-white-rgb), var(--alpha-high))\"
+         class=\"far fa-circle\">
+      </i>
+    ")
   }
 
   welcome <- div(
@@ -50,10 +59,14 @@ help_steps <- function(){
     , p(
       "Click the above buttons to view the table as"
       , tags$ul(
-        tags$li(strong("Summary"), "- factor columns are on the left and aggregates measures
-                  are on the right side of the table")
-        , tags$li(strong("Details"), "- identifier columns on the left,
-                    followed by factors and then measures on the right side of the table.")
+        tags$li(
+          strong("Summary")
+          , "- factor columns are on the left and aggregated measures
+              are on the right side of the table")
+        , tags$li(
+          strong("Details")
+          , "- identifier columns on the left, followed by factors and
+              then measures on the right side of the table.")
       )
     )
     , p(
@@ -81,12 +94,14 @@ help_steps <- function(){
       )
     )
     , p(
-      icon_strong("circle"), icon_circle_empty(), "Eight circles (the 'planets') store eight sets of table
-      views including summary/details selection, selected columns, filters, measure statistic
-      and cell bar choices."
+      icon_strong("circle")
+      , icon_circle_empty()
+      , "Eight circles (the 'planets') store eight sets of table
+        views including summary/details selection, selected columns,
+        filters, measure statistic and cell bar choices."
     )
     , p("
-      Saving is automatic, click the little circles to move between configurations.
+        Saving is automatic, click the little circles to move between configurations.
       "
     )
   ) %>% as.character()
@@ -98,12 +113,15 @@ help_steps <- function(){
       "These controls are visible when the 'sun' switch is on."
     )
     , p(
-      icon_strong("columns"), strong("Factors"), "select factor columns to display.
-      Minimum one selection."
+      icon_strong("columns")
+      , strong("Factors")
+      , "select factor columns to display. Minimum one selection."
     )
     , p(
-      icon_strong("columns"), strong("Measures"), "select measure columns to display.
-      Double click a measure to put it in the slider."
+      icon_strong("columns")
+      , strong("Measures")
+      , "select measure columns to display. Double click a measure
+        to put it in the slider."
     )
   ) %>% as.character()
 
@@ -115,12 +133,13 @@ help_steps <- function(){
       factor use an OR condition."
     )
     , p(
-      icon_strong("filter"), strong("<measure>"), "filters the selected measure using the slider.
-      Click ", icon_strong("play"), "to animate the slider."
+      icon_strong("filter")
+      , strong("<measure>"), "filters the selected measure using the slider.
+        Click ", icon_strong("play"), "to animate the slider."
     )
     , p(
-      strong("Measure statistic"), "visible when a measure is selected in the summary view.
-      Select a statistic from the drop down."
+      strong("Measure statistic"), "visible when a measure is selected in the
+      summary view. Select a statistic from the drop down."
     )
     , p(
       strong("...more"), "reveals more controls including sort order, columns with
@@ -146,8 +165,31 @@ help_steps <- function(){
   ) %>% as.character()
 
   data.frame(
-    title = c("Welcome", "Table columns and views", "Show controls and save changes", "Select and reorder columns", "Filter columns, select statistic", "Table interactions", "Satellite")
-    , intro = c(welcome, table_view, solar_system, table_controls_select, table_controls_filter, main_table, satellite)
-    , element = c(".header__text-box", "#main-table_view", "#main-solar_system", ".table-controls-select", ".table-controls-filter", ".main__table-box", ".body__image-box")
+    title = c("Welcome"
+              , "Table columns and views"
+              , "Show controls and save changes"
+              , "Select and reorder columns"
+              , "Filter columns, select statistic"
+              , "Table interactions"
+              , "Satellite"
+    )
+    , intro = c(
+      welcome
+      , table_view
+      , solar_system
+      , table_controls_select
+      , table_controls_filter
+      , main_table
+      , satellite
+    )
+    , element = c(
+      ".header__text-box"
+      , "#main-table_view"
+      , "#main-solar_system"
+      , ".table-controls-select"
+      , ".table-controls-filter"
+      , ".main__table-box"
+      , ".body__image-box"
+    )
   )
 }

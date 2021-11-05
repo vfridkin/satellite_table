@@ -89,8 +89,6 @@ more_settings_ui <- function(id, init){
       , width = "50vw"
     )
   )
-
-
 }
 
 

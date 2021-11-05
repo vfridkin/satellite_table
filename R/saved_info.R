@@ -90,8 +90,6 @@ saved_info_server <- function(id){
 
       outputOptions(output, "table_ui", suspendWhenHidden = FALSE)
 
-
-
     }
   )
 
