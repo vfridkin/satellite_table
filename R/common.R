@@ -283,6 +283,12 @@ get_local_storage_multi <- function(ids, session){
   session$sendCustomMessage("get_local_storage_multi", ls_ids)
 }
 
+remove_local_storage <- function(id, session){
+  ls_id <- id %>% to_local_storage_id()
+  session$sendCustomMessage("remove_local_storage", ls_id)
+}
+
+
 set_setting_circle <- function(id, session){
   session$sendCustomMessage("set_setting_circle", id)
 }

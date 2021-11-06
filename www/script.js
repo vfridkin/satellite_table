@@ -240,6 +240,14 @@ Shiny.addCustomMessageHandler(
       );
 });
 
+// Clear local storage for id
+Shiny.addCustomMessageHandler(
+  'remove_local_storage'
+  , function(input) {
+      localStorage.removeItem(input);
+});
+
+
 // Get sort order
 Shiny.addCustomMessageHandler(
   'get_sort_order'
