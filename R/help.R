@@ -126,14 +126,17 @@ help_steps <- function(){
     )
   ) %>% as.character()
 
-  table_controls_filter <- div(
+  factor_filter_select <- div(
     p(
       icon_strong("filter"), strong("Factors"), "shows current factor filters.  To create
       a filter, double click on a table cell in a factor column.  Recent filters are stored
       in the drop down. Different factors use an AND condition. Multiple filters on the same
       factor use an OR condition."
     )
-    , p(
+  ) %>% as.character()
+
+  measure_and_more <- div(
+    p(
       icon_strong("filter")
       , strong("<measure>"), "filters the selected measure using the slider.
         Click ", icon_strong("play"), "to animate the slider."
@@ -170,7 +173,8 @@ help_steps <- function(){
               , "Table columns and views"
               , "Show controls and save changes"
               , "Select and reorder columns"
-              , "Filter columns, select statistic"
+              , "Filter factors with double click"
+              , "Measure filter, statistic and ...more"
               , "Table interactions"
               , "Satellite"
     )
@@ -179,7 +183,8 @@ help_steps <- function(){
       , table_view
       , solar_system
       , table_controls_select
-      , table_controls_filter
+      , factor_filter_select
+      , measure_and_more
       , main_table
       , satellite
     )
@@ -188,7 +193,8 @@ help_steps <- function(){
       , "#main-table_view"
       , "#main-solar_system"
       , ".table-controls-select"
-      , ".table-controls-filter"
+      , ".factor-filter-select"
+      , ".measure-and-more"
       , ".main__table-box"
       , ".body__image-box"
     )

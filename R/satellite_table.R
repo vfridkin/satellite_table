@@ -58,32 +58,38 @@ satellite_table_ui <- function(id, field_df){
         class = "table-controls-select"
         , column(
           width = 6
-          , selectizeInput(
-            inputId = ns("factor_select")
-            , label = div(icon("columns"), "Factors")
-            , choices = choices$factor %>%
-              add_command_choices("Factor", "all", "inverse", "clear")
-            , selected = choices$factor[1]
-            , multiple = TRUE
-            , width = '100%'
-            , options = list(
-              plugins = list('drag_drop')
+          , div(
+            class = "factor-select"
+            , selectizeInput(
+              inputId = ns("factor_select")
+              , label = div(icon("columns"), "Factors")
+              , choices = choices$factor %>%
+                add_command_choices("Factor", "all", "inverse", "clear")
+              , selected = choices$factor[1]
+              , multiple = TRUE
+              , width = '100%'
+              , options = list(
+                plugins = list('drag_drop')
+              )
             )
           )
         )
         , column(
           width = 6
-          , selectizeInput(
-            inputId = ns("measure_select")
-            , label = div(icon("columns"), "Measures")
-            , choices = choices$measure_select %>%
-              add_command_choices("Measure", "all", "inverse", "clear")
-            , selected = ""
-            , multiple = TRUE
-            , width = '100%'
-            , options = list(
-              plugins = list('drag_drop')
-              , placeholder = "Click to add measure columns"
+          , div(
+            class = "measure-select"
+            , selectizeInput(
+              inputId = ns("measure_select")
+              , label = div(icon("columns"), "Measures")
+              , choices = choices$measure_select %>%
+                add_command_choices("Measure", "all", "inverse", "clear")
+              , selected = ""
+              , multiple = TRUE
+              , width = '100%'
+              , options = list(
+                plugins = list('drag_drop')
+                , placeholder = "Click to add measure columns"
+              )
             )
           )
         )
@@ -92,40 +98,53 @@ satellite_table_ui <- function(id, field_df){
         class = "table-controls-filter"
         , column(
           width = 6
-          , selectizeInput(
-            inputId = ns("factor_filter_select")
-            , label = div(icon("filter"), "Factors")
-            , choices = "" %>% add_factor_filter_commands()
-            , selected = ""
-            , multiple = TRUE
-            , width = '100%'
-            , options = list(
-              placeholder = "Double click a table factor cell to filter"
-
-            )
-          )
-        )
-        , column(
-          width = 3
-          , uiOutput(ns("measure_slider_ui"))
-        )
-        , column(
-          width = 3
           , div(
-            id = ns("measure_statistic_div")
+            class = "factor-filter-select"
             , selectizeInput(
-              inputId = ns("measure_statistic_select")
-              , label = "Measures statistic"
-              , choices = choices$measure_statistics
-              , selected = "mean"
+              inputId = ns("factor_filter_select")
+              , label = div(icon("filter"), "Factors")
+              , choices = "" %>% add_factor_filter_commands()
+              , selected = ""
+              , multiple = TRUE
+              , width = '100%'
+              , options = list(
+                placeholder = "Double click a table factor cell to filter"
+
+              )
             )
           )
         )
-      )
-      , div(
-        class = "more_settings"
-        , style = "position: absolute; bottom: 5px; right: 25px;"
-        , more_settings_ui(ns("more_settings"), settings_init)
+        , column(
+          width = 6
+          , div(
+            class = "measure-and-more"
+            , fluidRow(
+              style = "margin: 0;"
+              , column(
+                width = 6
+                , style = "padding: 0"
+                , uiOutput(ns("measure_slider_ui"))
+              )
+              , column(
+                width = 6
+                , div(
+                  id = ns("measure_statistic_div")
+                  , selectizeInput(
+                    inputId = ns("measure_statistic_select")
+                    , label = "Measures statistic"
+                    , choices = choices$measure_statistics
+                    , selected = "mean"
+                  )
+                )
+              )
+              , div(
+                class = "more_settings"
+                , style = "position: absolute; bottom: 5px; right: 25px;"
+                , more_settings_ui(ns("more_settings"), settings_init)
+              )
+            )
+          )
+        )
       )
     )
     , div(
