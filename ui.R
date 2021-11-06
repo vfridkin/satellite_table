@@ -23,6 +23,7 @@ fluidPage(
   , help_element("moon_question.png", "Help button")
   , satellite_table_ui("main", ac$field_df)
   , screen_overlay()
-  , help_splash()
+  , bubble_moon()
+  , bubble_satellite()
   , saved_info_ui("saved")
 )

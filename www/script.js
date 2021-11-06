@@ -15,9 +15,10 @@ $(function(){
         const splash_check = localStorage.getItem('satellite_table_shiny_appsplash_check');
         if(splash_check !== "[true]"){
           $('.screen-overlay').fadeIn(500);
-          $('.splash-box').delay(500).fadeIn(1000);
+          $('.bubble-moon').delay(500).fadeIn(1000);
         } else {
           $('.filled_circle').hide(0);
+          $('.filled_circle2').hide(0);
         }
     }
   );
@@ -26,18 +27,37 @@ $(function(){
   $('body').on("click",
     function(event){
 
-      const splash_box = event.target.closest('.splash-box');
-      const splash_button = event.target.closest('.splash-button');
-      if(splash_box && !splash_button) return;
+      const bubble_moon = event.target.closest('.bubble-moon');
+      const bubble_satellite = event.target.closest('.bubble-satellite');
+
+      const moon_button = event.target.closest('.moon-button');
+      const satellite_button = event.target.closest('.satellite-button');
+
+      //const splash_button = event.target.closest('.splash-button');
+
+      if(bubble_moon && !moon_button) return;
+      if(bubble_satellite && !satellite_button) return;
 
       const satellite = event.target.closest('.saved-info-opener');
       const moon = event.target.closest('.body__help-image');
       const screen_overlay = event.target.closest('.screen-overlay');
 
-      if(moon || screen_overlay || splash_button){
-        $('.screen-overlay').fadeOut(500);
-        $('.splash-box').fadeOut(500);
+      if(moon_button){
+        $('.bubble-moon').fadeOut(500);
+        $('.bubble-satellite').delay(500).fadeIn(500);
+        $('.body__image').css("z-index", 11)
+        $('.filled_circle2').css("display", "inline-block");
+        $('.filled_circle2').show(0);
         $('.filled_circle').hide(0);
+        $('.body__help-box').css("z-index", 9);
+      }
+
+      if(moon || screen_overlay || satellite_button){
+        $('.screen-overlay').fadeOut(500);
+        $('.bubble-moon').fadeOut(500);
+        $('.bubble-satellite').fadeOut(500);
+        $('.filled_circle').hide(0);
+        $('.filled_circle2').hide(0);
         $('.saved-info').fadeOut(500);
         Shiny.setInputValue('splash_close', 1, {priority: "event"});
       };

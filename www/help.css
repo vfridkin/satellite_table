@@ -19,12 +19,25 @@
   background-color: rgba(var(--colour-black-rgb), var(--alpha-med));
 }
 
-.splash-box {
+.bubble-moon {
   text-align: center;
-  width: 420px;
+  width: 340px;
   position: fixed;
   display: none;
   right: 100px;
+  top: 15px;
+  z-index: 11;
+  box-shadow: inset -4px 1px 15px 0px #c0c0c0;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.bubble-satellite {
+  text-align: center;
+  width: 440px;
+  position: fixed;
+  display: none;
+  left: 100px;
   top: 15px;
   z-index: 11;
   box-shadow: inset -4px 1px 15px 0px #c0c0c0;

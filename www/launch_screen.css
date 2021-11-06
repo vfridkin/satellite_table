@@ -122,6 +122,18 @@
   display: inline-block;
 }
 
+.filled_circle2 {
+  position: fixed;
+  z-index: 10;
+  left: -10px;
+  top: 0;
+  height: 100px;
+  width: 100px;
+  background-color: var(--colour-white);
+  border-radius: 50%;
+  display: none;
+}
+
 .launch-btn:link,
 .launch-btn:visited {
   text-transform: uppercase;

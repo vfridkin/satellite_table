@@ -25,6 +25,9 @@ header_element <- function(title, subtitle, sublink){
 image_element <- function(file, alt){
   div(
     class = "body__image-box"
+    , span(
+      class = "filled_circle2 ping"
+    )
     , style = "width: 50px; height: 50px; top: 6vh; left: 1vw; background: transparent;"
     , img(
       class = "body__image"
@@ -67,31 +70,53 @@ screen_overlay <- function(){
   )
 }
 
-help_splash <- function(){
+bubble_moon <- function(){
   div(
-    class = "splash-box"
+    class = "bubble-moon"
     , h3("Click the moon for a tour"
          , icon("angle-double-right")
          , style = "padding: 10px 0 10px 0; margin: 0;"
     )
     , div(
-      style = "display: inline-block"
-      , checkboxInput(
-        inputId = "dont_show_splash_again_check"
-        , label = "Don't show again"
-        , value = FALSE
-      )
+      style = "display: inline-block; width: 220px; padding: 0px 10px 15px 10px;"
     )
     , div(
-      style = "display: inline-block"
-      , class = "splash-button"
+      style = "display: inline-block; padding: 0px 10px 15px 10px;"
+      , class = "moon-button"
       , actionButton(
-        inputId = "splash_ok_button"
+        inputId = "moon_button"
         , label = "Got it"
       )
     )
   )
 }
+
+bubble_satellite <- function(){
+  div(
+    class = "bubble-satellite"
+    , h3(icon("angle-double-left")
+         , "Click the satellite for saved views"
+         , style = "padding: 10px 0 10px 0; margin: 0;"
+    )
+    , div(
+      style = "display: inline-block; padding: 0px 10px 15px 10px;"
+      , checkboxInput(
+        inputId = "dont_show_splash_again_check"
+        , label = "Don't show us again"
+        , value = FALSE
+      )
+    )
+    , div(
+      style = "display: inline-block; padding: 0px 10px 15px 10px;"
+      , class = "satellite-button"
+      , actionButton(
+        inputId = "satellite_button"
+        , label = "Got it"
+      )
+    )
+  )
+}
+
 
 footer_element <- function(){
   div(
