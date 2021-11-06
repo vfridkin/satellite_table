@@ -78,15 +78,15 @@ bubble_moon <- function(){
          , style = "padding: 10px 0 10px 0; margin: 0;"
     )
     , div(
-      style = "display: inline-block; width: 220px; padding: 0px 10px 15px 10px;"
-    )
-    , div(
-      style = "display: inline-block; padding: 0px 10px 15px 10px;"
+      style = "display: inline-block; padding: 0 0 15px 0;"
       , class = "moon-button"
       , actionButton(
         inputId = "moon_button"
         , label = "Got it"
       )
+    )
+    , div(
+      style = "display: inline-block; width: 230px; padding: 0px 10px 15px 10px;"
     )
   )
 }
@@ -99,19 +99,19 @@ bubble_satellite <- function(){
          , style = "padding: 10px 0 10px 0; margin: 0;"
     )
     , div(
+      style = "display: inline-block; padding: 0px 10px 15px 15px;"
+      , class = "satellite-button"
+      , actionButton(
+        inputId = "satellite_button"
+        , label = "Got it"
+      )
+    )
+    , div(
       style = "display: inline-block; padding: 0px 10px 15px 10px;"
       , checkboxInput(
         inputId = "dont_show_splash_again_check"
         , label = "Don't show us again"
         , value = FALSE
-      )
-    )
-    , div(
-      style = "display: inline-block; padding: 0px 10px 15px 10px;"
-      , class = "satellite-button"
-      , actionButton(
-        inputId = "satellite_button"
-        , label = "Got it"
       )
     )
   )

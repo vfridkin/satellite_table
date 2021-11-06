@@ -48,7 +48,7 @@ get_data <- function(){
   # }
 
   # Read and replace column names
-  df <- readxl::read_excel("data/UCS-Satellite-Database-5-1-2021.xls") %>%
+  df <- readxl::read_excel("data/UCS-Satellite-Database-9-1-2021.xls") %>%
     setDT() %>%
     janitor::remove_empty(which = "cols") %>%
     replace_col_names() %>%
