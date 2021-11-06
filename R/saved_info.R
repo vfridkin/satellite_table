@@ -20,7 +20,7 @@ saved_info_ui <- function(id){
             )
             , checkboxInput(
               ns("splash_check")
-              , "Indicate moon and satellite at start"
+              , "Hide moon/satellite help at start"
               , value = TRUE
             )
           )
@@ -60,6 +60,12 @@ saved_info_server <- function(id){
 
           current_id <- ls[[9]]$setting_circle
           splash_check <- ls[[10]]
+
+          updateCheckboxInput(
+            session
+            , inputId = "splash_check"
+            , value = splash_check
+          )
 
           # Unused row definition
           empty_row <- function(i){
@@ -203,8 +209,17 @@ saved_info_server <- function(id){
         }
       )
 
+      # Splash check ------------------------------------------------------------------------------
 
+      observeEvent(
+        input$splash_check
+        , {
+          splash_check <- input$splash_check
+          set_local_storage("splash_check", splash_check, session)
+        }, ignoreInit = TRUE
+      )
 
+    # End
 
     }
   )
