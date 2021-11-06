@@ -29,5 +29,5 @@ norad_number,NORAD Number,identifier,0,,,char,,
 comments,Comments,description,1,,,char,,
 source_used_for_orbital_data,Source Used for Orbital Data,description,0,,,char,,
 source,Source,description,1,,,char,,
-count,Count,calc,0,0,1,decimal,#7aa2e7,#2e3b53
-count_prop,Proportion (%),calc,0,0,1,decimal,#7aa2e7,#2e3b53
+count,Count,calc,0,0,1,decimal,#c0c0c0,#414141
+count_prop,Proportion (%),calc,0,0,1,decimal,#c0c0c0,#414141
