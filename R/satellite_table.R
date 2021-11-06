@@ -581,6 +581,19 @@ satellite_table_server <- function(id, init, data){
         dfc <- dfc %>%
           add_html_to_cells(settings, selected)
 
+        # Column groups
+        col_grp_summary <- list(
+          colGroup_or_null(name = "Factors", selected$factor)
+          , colGroup_or_null(name = "Measures", selected$measure)
+        ) %>%
+          compact()
+
+        col_grp_detail <- list(
+            colGroup_or_null(name = "Identifiers", id_cols)
+          ) %>%
+          compact() %>%
+          c(col_grp_summary)
+
         # Add count total to count column heading
         col_def_summary <- k$column_definitions[names(dfc)]
         col_def_summary$count %<>% list_modify(
@@ -615,6 +628,10 @@ satellite_table_server <- function(id, init, data){
         list(
           summary = dfc
           , detail = df
+          , columnGroups = list(
+            summary = col_grp_summary
+            , detail = col_grp_detail
+          )
           , columns = list(
             summary = col_def_summary
             , detail = k$column_definitions[names(df)]
@@ -868,10 +885,12 @@ satellite_table_server <- function(id, init, data){
 
         view <- m$table_view
         df <- rt[[view]]
+        columnGroups <- rt$columnGroups[[view]]
         columns <- rt$columns[[view]]
 
         reactable(
           df
+          , columnGroups = columnGroups
           , columns = columns
           , striped = TRUE
           , highlight = TRUE
@@ -879,6 +898,7 @@ satellite_table_server <- function(id, init, data){
           # , searchable = TRUE
           , rowClass = JS("function(rowInfo){return rowInfo}")
         )
+
 
       })
 

@@ -467,8 +467,15 @@ selectInputWithIcons <- function(
   attachDependencies(widget, fa_html_dependency(), append = TRUE)
 }
 
+# Icon with a link
 icon_link <- function(name, link){
   a(href = link, target="_blank", rel="noopener noreferrer", icon(name))
+}
+
+# colGroup but return NULL if columns are NULL
+colGroup_or_null <- function(name, columns){
+  if(is.null(columns)) return(NULL)
+  colGroup(name = name, columns = columns)
 }
 
 # TABLE FILTERS -----------------------------------------------------------------------------------

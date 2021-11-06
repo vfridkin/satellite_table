@@ -228,6 +228,12 @@ div#main-measure_statistic .control-label {
 
 /* Table styling --------------------------------------------------------------------------------*/
 
+div.rt-thead.-headerGroups div {
+  color: rgba(var(--colour-white-rgb), var(--alpha-low));
+  font-style: italic;
+  font-size: small;
+}
+
 .ReactTable {
   background-color: transparent;
   color: inherit;
