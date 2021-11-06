@@ -70,7 +70,7 @@ screen_overlay <- function(){
 help_splash <- function(){
   div(
     class = "splash-box"
-    , h3("Click the moon for help - anytime "
+    , h3("Click the moon for a tour"
          , icon("angle-double-right")
          , style = "padding: 10px 0 10px 0; margin: 0;"
     )

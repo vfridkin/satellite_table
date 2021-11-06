@@ -49,7 +49,7 @@ $(function(){
 
       if(satellite){
         $('.screen-overlay').fadeIn(250);
-        $('.saved-info').show(250);
+        $('.saved-info').fadeIn(250);
         Shiny.setInputValue('saved-refresh_table', 1, {priority: "event"});
         return;
       }

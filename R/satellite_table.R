@@ -273,6 +273,7 @@ satellite_table_server <- function(id, init, data){
             , measure_select = NULL
             , factor_filter_select = NULL
             , slider_field = init$slider_field$name
+            , is_slider_filtering = FALSE
             , measure_slider = NULL
             , sort_by = "count"
             , sort_order = -1
@@ -339,6 +340,7 @@ satellite_table_server <- function(id, init, data){
 
             # Update slider
             m$slider_field <- stored$slider_field
+            m$is_slider_filtering <- stored$is_slider_filtering
             m$measure_slider <- stored$measure_slider
 
             # Update drop down settings
@@ -364,6 +366,7 @@ satellite_table_server <- function(id, init, data){
           , m$measure_select
           , m$factor_filter_select
           , m$slider_field
+          , m$is_slider_filtering
           , input$measure_slider
           , rt_settings()
         )
@@ -382,6 +385,7 @@ satellite_table_server <- function(id, init, data){
               , measure_select = m$measure_select
               , factor_filter_select = m$factor_filter_select
               , slider_field = m$slider_field
+              , is_slider_filtering = m$is_slider_filtering
               , measure_slider = input$measure_slider
             ) %>%
               c(rt_settings())

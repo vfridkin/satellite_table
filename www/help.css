@@ -51,7 +51,16 @@
   padding-left: 20px;
 }
 
+.used-tag {
+  display: inline-block;
+  padding: 3px 7px;
+  border-radius: 6px;
+  background-color: var(--colour-desat-blue);
+  color: rgba(var(--colour-white-rgb), var(--alpha-med));
+}
 
-
+.saved-info-controls {
+  padding: 20px 10px;
+}
 
 
