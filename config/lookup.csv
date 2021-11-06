@@ -2,3 +2,4 @@ name,value,value_description
 class_of_orbit,LEO,Low Earth Orbit
 class_of_orbit,MEO,Medium Earth Orbit
 class_of_orbit,GEO,Geosynchronous Orbit
+class_of_orbit,Elliptical,Elliptical Orbit

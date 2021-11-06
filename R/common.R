@@ -29,11 +29,13 @@ load_config <- function(){
 
   field_df <- fread("config/fields.csv")
   field <- field_df %>% {set_names(purrr::transpose(.), .$name)}
+  lookup_df <- fread("config/lookup.csv")
 
   config %>%
     list_modify(
-      field = field
-      , field_df = field_df
+      field_df = field_df
+      , field = field
+      , lookup_df = lookup_df
     )
 }
 
@@ -90,9 +92,10 @@ get_column_definitions <- function(ac){
 
   df <- ac$field_df
 
-  df[, .(display_name)] %>%
+  df[, .(name, display_name)] %>%
     pmap(
-      function(display_name){
+      function(name, display_name){
+
         colDef(
           name = display_name
           , filterable = FALSE
@@ -101,6 +104,7 @@ get_column_definitions <- function(ac){
       }
     ) %>%
     set_names(df$name)
+
 }
 
 get_choices <- function(){
@@ -310,7 +314,26 @@ circle_icon <- function(id, fill = FALSE){
 
 # Add column name to cells in column
 add_col_name <- function(col, col_name){
+
+  lookup <- ac$lookup_df
+  lookup_cols <- lookup$name %>% unique()
+  if(col_name %in% lookup_cols){
+    df <- lookup[name == col_name, .(value, value_description)] %>%
+     .[,
+      col_with_desc := paste0('<div style = "color: inherit;">'
+          ,value
+          ,'<div style="font-size: 10px; color: inherit;">'
+          ,value_description
+          ,'</div></div>')
+      ]
+
+    col <- data.table(value = col) %>%
+      merge(df, by = "value", all.x = TRUE) %>%
+      '$'("col_with_desc")
+  }
+
   paste0('<div data-col-name="',col_name ,'">',col ,'</div>')
+
 }
 
 # Add bars to column cells
