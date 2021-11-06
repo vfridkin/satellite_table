@@ -139,7 +139,7 @@ satellite_table_ui <- function(id, field_df){
               )
               , div(
                 class = "more_settings"
-                , style = "position: absolute; bottom: 5px; right: 25px;"
+                , style = "position: absolute; bottom: -5px; right: 25px;"
                 , more_settings_ui(ns("more_settings"), settings_init)
               )
             )

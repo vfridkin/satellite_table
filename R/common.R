@@ -320,16 +320,24 @@ add_bars <- function(col, col_name){
 
     sort_value <- formatC(col, width = pad_width, format = "d", flag = "0")
 
+    # Get bar colours
+    field_def <- ac$field_df[name == col_name]
+    bar_color <- list(
+      left = field_def$bar_colour_left
+      , right = field_def$bar_colour_right
+    )
+
     paste0('<div class="rt-td rt-align-right"
 sort-value="', sort_value,'"
 role="cell"
 style="
 flex: 100 0 auto;
 background-image: linear-gradient(to right
-, #ff7a14, #8a3c00 '
-           , percent, '%
+, ', bar_color$left, '
+, ', bar_color$right, ' '
+, percent, '%
 , transparent '
-           , percent, '%);
+, percent, '%);
 transition: all 1s;
 background-size: 100% 75%;
 border-top: transparent;
