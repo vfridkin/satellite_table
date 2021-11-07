@@ -92,6 +92,20 @@ get_column_definitions <- function(ac){
 
   df <- ac$field_df
 
+  with_tooltip <- function(col_name, display_name) {
+    description <- df[name == col_name]$description
+    HTML(paste0('<div style="cursor: help;" data-tooltip="'
+                , description
+                ,'">'
+                , display_name
+                ,'</div>
+    ')
+    )
+
+    # tags$abbr(style = "cursor: help",
+    #           dataTooltip = description, display_name)
+  }
+
   df[, .(name, display_name)] %>%
     pmap(
       function(name, display_name){
@@ -100,6 +114,7 @@ get_column_definitions <- function(ac){
           name = display_name
           , filterable = FALSE
           , html = TRUE
+          , header = with_tooltip(name, display_name)
         )
       }
     ) %>%
@@ -319,12 +334,12 @@ add_col_name <- function(col, col_name){
   lookup_cols <- lookup$name %>% unique()
   if(col_name %in% lookup_cols){
     df <- lookup[name == col_name, .(value, value_description)] %>%
-     .[,
-      col_with_desc := paste0('<div style = "color: inherit;">'
-          ,value
-          ,'<div style="font-size: 10px; color: inherit;">'
-          ,value_description
-          ,'</div></div>')
+      .[,
+        col_with_desc := paste0('<div style = "color: inherit;">'
+                                ,value
+                                ,'<div style="font-size: 10px; color: inherit;">'
+                                ,value_description
+                                ,'</div></div>')
       ]
 
     col <- data.table(value = col) %>%
@@ -358,9 +373,9 @@ flex: 100 0 auto;
 background-image: linear-gradient(to right
 , ', bar_color$left, '
 , ', bar_color$right, ' '
-, percent, '%
+           , percent, '%
 , transparent '
-, percent, '%);
+           , percent, '%);
 transition: all 1s;
 background-size: 100% 75%;
 border-top: transparent;

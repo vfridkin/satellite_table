@@ -301,3 +301,49 @@ div.rt-thead.-headerGroups div {
 .footer__text-box > div:hover {
   color: rgba(var(--colour-white-rgb), var(--alpha-high));
 }
+
+/* Table tool tips */
+/* based on http://jsfiddle.net/AndreaLigios/jtLbpy62/2281/ */
+
+[data-tooltip]:before {
+    /* needed - do not touch */
+    content: attr(data-tooltip);
+    position: absolute;
+    opacity: 0;
+    z-index: 11;
+
+    /* customizable */
+    transition: all 0.15s ease;
+    padding: 10px;
+    color: rgba(var(--colour-white-rgb), var(--alpha-med));
+    border-radius: 10px;
+    box-shadow: 2px 2px 1px silver;
+    white-space: pre-wrap;
+    line-height: 150%;
+}
+
+[data-tooltip]:hover:before {
+    /* needed - do not touch */
+    opacity: 1;
+    position: absolute;
+    z-index: 11;
+
+    /* customizable */
+    background: var(--colour-desat-blue);
+    margin-top: 20px;
+    margin-left: 10px;
+    min-width: 200px;
+    max-width: 500px;
+    box-shadow: inset -4px 1px 15px 0px #c0c0c0;
+    border-radius: 10px;
+    padding: 15px;
+
+}
+
+[data-tooltip]:not([data-tooltip-persistent]):before {
+    pointer-events: none;
+}
+
+div.-cursor-pointer.rt-th {
+  overflow: visible;
+}

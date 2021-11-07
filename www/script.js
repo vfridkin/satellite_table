@@ -8,7 +8,7 @@ $(function(){
         $('.body__image').addClass('image-up saved-info-opener');
         $('.header__text-box').addClass('header-up');
         $('#launch_button').fadeOut(2000);
-        $('.main_container').addClass('fade-in');
+        $('.main_container').addClass('fade-in')
         $('.body__help-box').addClass('fade-in');
         $('.body__help-image').addClass('btn');
 
