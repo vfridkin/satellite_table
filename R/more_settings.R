@@ -81,15 +81,6 @@ more_settings_server <- function(id, init){
         choices = get_choices()
       )
 
-      # # Local functions ---------------------------------------------------------------------------
-      # set_sort_order <- function(sort_message){
-      #   session$sendCustomMessage("set_sort_order", sort_message)
-      # }
-      #
-      # get_sort_order <- function(){
-      #   session$sendCustomMessage("get_sort_order", 0)
-      # }
-
       # Local reactives ---------------------------------------------------------------------------
       m <- reactiveValues(
         run_once = FALSE
@@ -124,13 +115,6 @@ more_settings_server <- function(id, init){
             )
           )
 
-          # sort_message <- list(
-          #   selected = stored$sort_by
-          #   , order = stored$sort_order
-          # )
-
-          # set_sort_order(sort_message)
-
           c(
             "slider_handles"
           ) %>% walk(
@@ -159,33 +143,6 @@ more_settings_server <- function(id, init){
         }
       )
 
-      # Sort order from JS ------------------------------------------------------------------------
-
-      # observeEvent(
-      #   input$sort_item_change
-      #   , {
-      #     change <- input$sort_item_change
-      #     message(change$item, " ", change$order)
-      #     get_sort_order()
-      #   }
-      # )
-
-      # observeEvent(
-      #   m$sort_by
-      #   , get_sort_order()
-      # )
-
-      # observeEvent(
-      #   input$sort_order
-      #   , {
-      #     m$sort_order <- input$sort_order %>% map_int(
-      #       function(x){
-      #         if(x == "up") 1L else -1L
-      #       }
-      #     )
-      #   }
-      # )
-
       # Settings reactive -------------------------------------------------------------------------
       settings <- reactive({
 
@@ -206,10 +163,6 @@ more_settings_server <- function(id, init){
         }
 
         m$last_identifier_select <- identifier_select
-
-        # Ensure sort_by and sort_order are same dimensions
-        # valid_sort <- length(m$sort_by) == length(m$sort_order)
-        # if(!valid_sort) return()
 
         list(
           identifier_select = identifier_select

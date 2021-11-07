@@ -117,7 +117,6 @@ bubble_satellite <- function(){
   )
 }
 
-
 footer_element <- function(){
   div(
     class = "footer"

@@ -12,6 +12,9 @@
 function(input, output, session){
 
   # Satellite table -------------------------------------------------------------------------------
+
+  # Set up initialisation for satellite server
+  # It is used if stored data does not exist
   init <- tibble::lst(
     factor_select = "class_of_orbit"
     , measure_slider_field = ac$field$date_of_launch
@@ -29,13 +32,15 @@ function(input, output, session){
     , max_factor_filter_choices = 10
     , field = ac$field
   )
+
+  # Get satellite data and start the main server
   data <- get_data()
   satellite_table_server("main", init, data)
 
-  # Saved info ------------------------------------------------------------------------------------
+  # Saved info - opened by clicking on the satellite ----------------------------------------------
   saved_info_server("saved")
 
-  # Help splash -----------------------------------------------------------------------------------
+  # Help splash - for new users to understand to click the moon and satellite ---------------------
   observeEvent(
     input$splash_close
     , {
@@ -44,7 +49,7 @@ function(input, output, session){
     }
   )
 
-  # Help main -------------------------------------------------------------------------------------
+  # The main tour of the app - activated by the moon ----------------------------------------------
   observeEvent(
     input$start_help
     , {
@@ -56,7 +61,7 @@ function(input, output, session){
         , value = TRUE
       )
 
-      # Start guide
+      # Start tour
       introjs(
         session
         , options = list(

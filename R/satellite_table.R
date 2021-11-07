@@ -1,4 +1,11 @@
-# Satellite table
+# Satellite table ---------------------------------------------------------------------------------
+
+# This is the main table in the app
+# It comes with concealable table controls
+# Additional controls are in 'more_settings' module
+# User changes are saved in local storage
+# A summary of these changes is in 'saved_info' module
+
 satellite_table_ui <- function(id, field_df){
 
   ns <- NS(id)

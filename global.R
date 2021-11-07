@@ -28,9 +28,9 @@ library(htmltools)
 library(rintrojs)
 
 # Load files
-list.files("R", full.names = TRUE) |> walk(source)
+list.files("R", full.names = TRUE) %>% walk(source)
 
-# Load app config
+# Load app config - sources YAML and CSV files
 ac <- load_config()
 
 # Remove scientific notation

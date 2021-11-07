@@ -41,14 +41,6 @@ load_config <- function(){
 
 get_data <- function(){
 
-  # # Text version - is an older version so using XL below instead
-  # if(FALSE){
-  #   df <- fread("data/UCS-Satellite-Database-1-1-2021.txt", colClasses = "character") %>%
-  #     janitor::remove_empty(which = "cols") %>%
-  #     replace_col_names() %>%
-  #     janitor::clean_names()
-  # }
-
   # Read and replace column names
   df <- readxl::read_excel("data/UCS-Satellite-Database-9-1-2021.xls") %>%
     setDT() %>%
@@ -458,63 +450,6 @@ add_html_to_cells <- function(df, settings, selected){
   )
 
   df
-}
-
-# Modified from:
-#https://stackoverflow.com/questions/68509486/shiny-dropdown-input-selectizeinput-with-fontawesome-icons
-selectInputWithIcons <- function(
-  inputId
-  , inputLabel
-  , labels
-  , values
-  , icons
-  , iconStyle = NULL
-  , selected = NULL
-  , multiple = FALSE
-  , width = NULL
-){
-  options <- data.frame(
-    label = labels
-    , value = values
-    , icon = icons
-  ) %>% pmap(
-    function(label, value, icon){
-      list(
-        "label" = label,
-        "value" = value,
-        "icon"  = as.character(fa_i(icon, style = iconStyle))
-      )
-    }
-  )
-
-  render <- paste0(
-    "{",
-    "  item: function(item, escape) {",
-    "    return '<div class = \"item\">' + item.icon + '&nbsp;' + item.label + '</div>';",
-    "  },",
-    "  option: function(item, escape) {",
-    "    return '<div>' + item.label + '</div>';",
-    "  }",
-    "}"
-  )
-
-  widget <- selectizeInput(
-    inputId  = inputId,
-    label    = inputLabel,
-    choices  = NULL,
-    selected = selected,
-    multiple = multiple,
-    width    = width,
-    options  = list(
-      plugins = list('drag_drop'),
-      "options"    = options,
-      "valueField" = "value",
-      "labelField" = "label",
-      "render"     = I(render),
-      "items"     = as.list(selected)
-    )
-  )
-  attachDependencies(widget, fa_html_dependency(), append = TRUE)
 }
 
 # Icon with a link
