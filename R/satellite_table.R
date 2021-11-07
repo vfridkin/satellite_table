@@ -688,6 +688,9 @@ satellite_table_server <- function(id, init, data){
           # Exit if cell has no column name
           if(!has_col_name) return()
 
+          # Remove subtext
+          value <- cell$value %>% str_split("\n") %>% pluck(1, 1)
+
           # Seperate factor and measure cell dblclicks
           group_as <- init$field[[cell$col_name]]$group_as
 
@@ -696,7 +699,7 @@ satellite_table_server <- function(id, init, data){
             update_factor_filter(
               session
               , cell$col_name
-              , cell$value
+              , value
               , init$field
             )
           }
