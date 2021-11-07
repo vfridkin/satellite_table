@@ -235,7 +235,6 @@ Shiny.addCustomMessageHandler(
   'control_visibility'
   , function(input){
       const id = `#${input.id}`;
-      console.log(id, input.visible);
       if(input.visible){
         $(id).show(100)
       } else {
@@ -271,7 +270,6 @@ Shiny.addCustomMessageHandler(
       const message = ids.map(
         function(id){
           const res = localStorage.getItem(id);
-          console.log(res);
           return res ? res : 0;
         }
       )

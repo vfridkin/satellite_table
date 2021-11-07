@@ -347,9 +347,8 @@ add_col_name <- function(col, col_name){
                                 ,'</div></div>')
       ]
 
-    col <- data.table(value = col) %>%
-      merge(df, by = "value", all.x = TRUE) %>%
-      '$'("col_with_desc")
+    col <- data.table(value = col)[df, on = "value", desc := i.col_with_desc]$desc
+
   }
 
   paste0('<div data-col-name="',col_name ,'">',col ,'</div>')

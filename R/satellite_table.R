@@ -326,7 +326,6 @@ satellite_table_server <- function(id, init, data){
             return()
           }
 
-          message("local storage - loading: ", id)
           stored <- local_storage %>% fromJSON()
 
           if(id == 0){
@@ -545,42 +544,7 @@ satellite_table_server <- function(id, init, data){
         }
 
         # Narrow detail data: df
-        tryCatch(
-          {df <- df[, ..detail_cols]}
-          , error = function(e){
-            browser()
-          }
-        )
-
-        ## Sort
-        # Restrict sort columns to those in selected measures +
-        sort_measures <- c("count", selected$measure, m$measure_slider_field) %>% unique()
-        in_sort_measures <- settings$sort_by %in% sort_measures
-
-        sort_by <- settings$sort_by[in_sort_measures]
-        sort_order <- settings$sort_order[in_sort_measures]
-
-        is_sort_by <- !is.null(sort_by) && length(sort_by) > 0
-
-        if(is_sort_by){
-          in_df <- sort_by %in% names(df)
-          in_dfc <- sort_by %in% names(dfc)
-
-          tryCatch(
-            {
-              df <- df %>% setorderv(sort_by[in_df], sort_order[in_df])
-              dfc <- dfc %>% setorderv(sort_by[in_dfc], sort_order[in_dfc])
-
-            }, error = function(e){
-              browser()
-            }
-
-
-          ) # TC
-        } else {
-          dfc <- dfc %>% setorder(-count)
-          df <- df %>% setorderv(id_cols)
-        }
+        df <- df[, ..detail_cols]
 
         # Apply column definitions
         df <- df %>%
@@ -938,7 +902,6 @@ satellite_table_server <- function(id, init, data){
       observeEvent(
         input$sort_state_change
         , {
-          message("Sort state changed")
           session$sendCustomMessage("get_sort_order", 1)
         }
       )
