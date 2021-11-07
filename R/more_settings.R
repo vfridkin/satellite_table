@@ -4,27 +4,23 @@ more_settings_ui <- function(id, init){
 
   ns <- NS(id)
 
-  sort_choices <- init$choices$sort_by
-  # %>% add_command_choices("Measure", "count", "clear")
-
-  icons <- rep("arrow-down", length(sort_choices))
-
+  # Main UI ---------------------------------------------------------------------------------------
   div(
     dropdown(
       inputId = ns("settings_dropdown")
       , fluidRow(
         column(
           width = 12
-          , selectInputWithIcons(
-              inputId = ns("sort_by")
-              , div(icon("sort"), "Sort by")
-              , labels = names(sort_choices)
-              , values = sort_choices
-              , icons = icons
-              , iconStyle = "font-size: 14px; background-color: transparent;"
-              , selected = "count"
-              , multiple = TRUE
-              , width = '100%'
+          , selectizeInput(
+            inputId = ns("identifier_select")
+            , label = div(icon("satellite"), "Identifiers (Details view only)")
+            , choices = init$choices$identifier
+            , selected = init$choices$identifier[1]
+            , multiple = TRUE
+            , width = '100%'
+            , options = list(
+              plugins = list('drag_drop')
+            )
           )
         )
       )
@@ -39,22 +35,6 @@ more_settings_ui <- function(id, init){
             , selected = "count"
             , multiple = TRUE
             , width = '100%'
-          )
-        )
-      )
-      , fluidRow(
-        column(
-          width = 12
-          , selectizeInput(
-            inputId = ns("identifier_select")
-            , label = div(icon("satellite"), "Identifiers (Details view only)")
-            , choices = init$choices$identifier
-            , selected = init$choices$identifier[1]
-            , multiple = TRUE
-            , width = '100%'
-            , options = list(
-              plugins = list('drag_drop')
-            )
           )
         )
       )
@@ -91,7 +71,6 @@ more_settings_ui <- function(id, init){
   )
 }
 
-
 more_settings_server <- function(id, init){
   moduleServer(
     id
@@ -102,23 +81,20 @@ more_settings_server <- function(id, init){
         choices = get_choices()
       )
 
-      # Local functions ---------------------------------------------------------------------------
-      set_sort_order <- function(sort_message){
-        session$sendCustomMessage("set_sort_order", sort_message)
-      }
-
-      get_sort_order <- function(){
-        session$sendCustomMessage("get_sort_order", 0)
-      }
+      # # Local functions ---------------------------------------------------------------------------
+      # set_sort_order <- function(sort_message){
+      #   session$sendCustomMessage("set_sort_order", sort_message)
+      # }
+      #
+      # get_sort_order <- function(){
+      #   session$sendCustomMessage("get_sort_order", 0)
+      # }
 
       # Local reactives ---------------------------------------------------------------------------
       m <- reactiveValues(
         run_once = FALSE
 
-        , sort_by = NULL
-        , sort_order = NULL
         , bar_option = NULL
-
         , last_factor_select = NULL
       )
 
@@ -137,9 +113,8 @@ more_settings_server <- function(id, init){
           stored <- init()
 
           # Update selectize inputs
-          c("sort_by"
+          c("identifier_select"
             , "bar_option"
-            , "identifier_select"
             , "max_factor_filter_choices"
           ) %>% walk(
             ~updateSelectInput(
@@ -149,12 +124,12 @@ more_settings_server <- function(id, init){
             )
           )
 
-          sort_message <- list(
-            selected = stored$sort_by
-            , order = stored$sort_order
-          )
+          # sort_message <- list(
+          #   selected = stored$sort_by
+          #   , order = stored$sort_order
+          # )
 
-          set_sort_order(sort_message)
+          # set_sort_order(sort_message)
 
           c(
             "slider_handles"
@@ -174,44 +149,42 @@ more_settings_server <- function(id, init){
       # Process command selections and store result in reactive values
       observeEvent(
         list(
-          input$sort_by
-          , input$bar_option
+          # input$sort_by
+          input$bar_option
         )
         , {
-          if(command_select(session, "sort_by", k$choices)) return()
           if(command_select(session, "bar_option", k$choices)) return()
 
-          m$sort_by <- input$sort_by
           m$bar_option <- input$bar_option
         }
       )
 
       # Sort order from JS ------------------------------------------------------------------------
 
-      observeEvent(
-        input$sort_item_change
-        , {
-          change <- input$sort_item_change
-          message(change$item, " ", change$order)
-          get_sort_order()
-        }
-      )
+      # observeEvent(
+      #   input$sort_item_change
+      #   , {
+      #     change <- input$sort_item_change
+      #     message(change$item, " ", change$order)
+      #     get_sort_order()
+      #   }
+      # )
 
-      observeEvent(
-        m$sort_by
-        , get_sort_order()
-      )
+      # observeEvent(
+      #   m$sort_by
+      #   , get_sort_order()
+      # )
 
-      observeEvent(
-        input$sort_order
-        , {
-          m$sort_order <- input$sort_order %>% map_int(
-            function(x){
-              if(x == "up") 1L else -1L
-            }
-          )
-        }
-      )
+      # observeEvent(
+      #   input$sort_order
+      #   , {
+      #     m$sort_order <- input$sort_order %>% map_int(
+      #       function(x){
+      #         if(x == "up") 1L else -1L
+      #       }
+      #     )
+      #   }
+      # )
 
       # Settings reactive -------------------------------------------------------------------------
       settings <- reactive({
@@ -235,14 +208,12 @@ more_settings_server <- function(id, init){
         m$last_identifier_select <- identifier_select
 
         # Ensure sort_by and sort_order are same dimensions
-        valid_sort <- length(m$sort_by) == length(m$sort_order)
-        if(!valid_sort) return()
+        # valid_sort <- length(m$sort_by) == length(m$sort_order)
+        # if(!valid_sort) return()
 
         list(
-          sort_by = m$sort_by
-          , sort_order = m$sort_order
+          identifier_select = identifier_select
           , bar_option = m$bar_option
-          , identifier_select = identifier_select
           , slider_handles = input$slider_handles
           , max_factor_filter_choices = input$max_factor_filter_choices %>% as.integer()
         )

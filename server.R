@@ -12,10 +12,18 @@
 function(input, output, session){
 
   # Satellite table -------------------------------------------------------------------------------
-  init <- list(
+  init <- tibble::lst(
     factor_select = "class_of_orbit"
-    , slider_field = ac$field$date_of_launch
+    , measure_slider_field = ac$field$date_of_launch
     , identifier_select = "current_official_name_of_satellite"
+    , sort_select = list(
+      summary = "count"
+      , detail = identifier_select
+    )
+    , sort_order = list(
+      summary = "desc"
+      , detail = "asc"
+    )
     , slider_handles = "one"
     , bar_option = "count"
     , max_factor_filter_choices = 10

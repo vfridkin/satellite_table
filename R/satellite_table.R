@@ -190,13 +190,15 @@ satellite_table_server <- function(id, init, data){
         , factor_select = NULL
         , last_factor_select = NULL
         , measure_select = NULL
-        , slider_field = NULL
-        , slider_range = NULL
+        , measure_slider_field = NULL
+        , measure_slider_range = NULL
         , is_slider_filtering = NULL # Boolean: set to false if entire range selected
         , measure_slider = NULL
         , factor_filter = NULL
         , measure_filter = NULL
         , factor_filter_choices = NULL
+        , sort_select = NULL
+        , sort_order = NULL
 
         # From settings dropdown
         , settings_init = NULL # input to settings module
@@ -210,7 +212,7 @@ satellite_table_server <- function(id, init, data){
         m$setting_circle_count <- 8
         m$id <- 0
         m$last_factor_select <- input$factor_select
-        m$slider_field <- init$slider_field$name
+        m$measure_slider_field <- init$measure_slider_field$name
         m$is_slider_filtering <- FALSE
         m$slider_handles <- "one"
         m$factor_filter <- data.table(
@@ -226,6 +228,8 @@ satellite_table_server <- function(id, init, data){
           , value = numeric(0)
         )
         m$factor_filter_choices <- m$factor_filter %>% copy()
+        m$sort_select = init$sort_select
+        m$sort_order = init$sort_order
 
         m$run_once <- TRUE
 
@@ -291,11 +295,11 @@ satellite_table_server <- function(id, init, data){
             , factor_select = init$factor_select
             , measure_select = NULL
             , factor_filter_select = NULL
-            , slider_field = init$slider_field$name
+            , measure_slider_field = init$measure_slider_field$name
             , is_slider_filtering = FALSE
             , measure_slider = NULL
-            , sort_by = "count"
-            , sort_order = -1
+            , sort_select = init$sort_select
+            , sort_order = init$sort_order
             , bar_option = init$bar_option
             , identifier_select = init$identifier_select
             , slider_handles = init$slider_handles
@@ -358,16 +362,18 @@ satellite_table_server <- function(id, init, data){
             )
 
             # Update slider
-            m$slider_field <- stored$slider_field
+            m$measure_slider_field <- stored$measure_slider_field
             m$is_slider_filtering <- stored$is_slider_filtering
             m$measure_slider <- stored$measure_slider
 
+            # Update sort
+            m$sort_select = stored$sort_select
+            m$sort_order = stored$sort_order
+
             # Update drop down settings
             m$settings_init <- list(
-              sort_by = stored$sort_by
-              , sort_order = stored$sort_order
+              identifier_select = stored$identifier_select
               , bar_option = stored$bar_option
-              , identifier_select = stored$identifier_select
               , slider_handles = stored$slider_handles
               , max_factor_filter_choices = stored$max_factor_filter_choices
             )
@@ -384,9 +390,11 @@ satellite_table_server <- function(id, init, data){
           , m$factor_select
           , m$measure_select
           , m$factor_filter_select
-          , m$slider_field
+          , m$measure_slider_field
           , m$is_slider_filtering
           , input$measure_slider
+          , m$sort_select
+          , m$sort_order
           , rt_settings()
         )
         , {
@@ -403,9 +411,11 @@ satellite_table_server <- function(id, init, data){
               , factor_select = m$factor_select
               , measure_select = m$measure_select
               , factor_filter_select = m$factor_filter_select
-              , slider_field = m$slider_field
+              , measure_slider_field = m$measure_slider_field
               , is_slider_filtering = m$is_slider_filtering
               , measure_slider = input$measure_slider
+              , sort_select = m$sort_select
+              , sort_order = m$sort_order
             ) %>%
               c(rt_settings())
           }
@@ -478,7 +488,7 @@ satellite_table_server <- function(id, init, data){
         )
         slider <- list(
           handles = m$slider_handles
-          , field = m$slider_field
+          , field = m$measure_slider_field
         )
 
         is_selected <- selected %>% map(~!is.null(.x))
@@ -489,7 +499,7 @@ satellite_table_server <- function(id, init, data){
         detail_cols <- c(id_cols
                          , selected$factor
                          , selected$measure
-                         , m$slider_field) %>% unique()
+                         , m$measure_slider_field) %>% unique()
 
         # Ensure group selection always has one element
         if(!is_selected$factor){
@@ -535,11 +545,16 @@ satellite_table_server <- function(id, init, data){
         }
 
         # Narrow detail data: df
-        df <- df[, ..detail_cols]
+        tryCatch(
+          {df <- df[, ..detail_cols]}
+          , error = function(e){
+            browser()
+          }
+        )
 
         ## Sort
         # Restrict sort columns to those in selected measures +
-        sort_measures <- c("count", selected$measure, m$slider_field) %>% unique()
+        sort_measures <- c("count", selected$measure, m$measure_slider_field) %>% unique()
         in_sort_measures <- settings$sort_by %in% sort_measures
 
         sort_by <- settings$sort_by[in_sort_measures]
@@ -668,7 +683,7 @@ satellite_table_server <- function(id, init, data){
 
           if(item$container %>% str_detect("measure_select")){
             message("selected measure: ", item$value)
-            m$slider_field <- item$value
+            m$measure_slider_field <- item$value
             m$measure_slider <- NULL
           }
 
@@ -706,7 +721,7 @@ satellite_table_server <- function(id, init, data){
 
           # Send measure cell double clicks to measure slider
           if(group_as %in% c("date", "measure")){
-            m$slider_field <- cell$col_name
+            m$measure_slider_field <- cell$col_name
           }
         }
       )
@@ -782,21 +797,21 @@ satellite_table_server <- function(id, init, data){
 
       # Slider UI ---------------------------------------------------------------------------------
       observeEvent(
-        m$slider_field
+        m$measure_slider_field
         , {
-          m$slider_range <- data[[m$slider_field]] %>% range(na.rm = TRUE)
+          m$measure_slider_range <- data[[m$measure_slider_field]] %>% range(na.rm = TRUE)
         }
       )
 
       output$measure_slider_ui <- renderUI({
 
         # Get range
-        slider_step <- init$field[[m$slider_field]]$slider_step
-        slider_range <- m$slider_range
-        slider_label <- init$field[[m$slider_field]]$display_name %>%
+        slider_step <- init$field[[m$measure_slider_field]]$slider_step
+        measure_slider_range <- m$measure_slider_range
+        slider_label <- init$field[[m$measure_slider_field]]$display_name %>%
           paste("(range)")
 
-        range_class <- slider_range[1] %>% class()
+        range_class <- measure_slider_range[1] %>% class()
         # It seems step is in milliseconds for time (hence large number for year step)
         time_format <- if(range_class == "Date") "%Y" else NULL
         decimal_count <- nchar(slider_step)
@@ -808,9 +823,9 @@ satellite_table_server <- function(id, init, data){
 
         # Settings - one or two handles
         if(m$slider_handles == "one"){
-          value <- slider_range[2]
+          value <- measure_slider_range[2]
         } else {
-          value <- slider_range
+          value <- measure_slider_range
         }
 
         # Update slider value if exists (i.e. from storage)
@@ -827,8 +842,8 @@ satellite_table_server <- function(id, init, data){
           inputId = ns("measure_slider")
           , label = div(icon("filter"), slider_label)
           , value = value
-          , min = slider_range[1]
-          , max = slider_range[2] %>% ceiling_dec(digits = decimal_count)
+          , min = measure_slider_range[1]
+          , max = measure_slider_range[2] %>% ceiling_dec(digits = decimal_count)
           , step = slider_step
           , timeFormat = time_format
           , ticks = FALSE
@@ -857,18 +872,18 @@ satellite_table_server <- function(id, init, data){
           slider <- input$measure_slider
 
           m$is_slider_filtering <- if(length(slider) == 1){
-            slider < m$slider_range[2]
+            slider < m$measure_slider_range[2]
           } else {
-            slider != m$slider_range
+            slider != m$measure_slider_range
           }
 
-          if(init$field[[m$slider_field]]$group_as == "date"){
+          if(init$field[[m$measure_slider_field]]$group_as == "date"){
             slider <- slider %>% format("%Y") %>% as.numeric()
           }
 
           df <- data.table(
-            name = m$slider_field
-            , display = init$field[[m$slider_field]]$display_name
+            name = m$measure_slider_field
+            , display = init$field[[m$measure_slider_field]]$display_name
             , value = slider
           )
 
@@ -891,6 +906,21 @@ satellite_table_server <- function(id, init, data){
         columnGroups <- rt$columnGroups[[view]]
         columns <- rt$columns[[view]]
 
+        # Set up sort order
+        sort_select <- m$sort_select[[view]]
+        sort_order <- m$sort_order[[view]]
+
+        # Ensure sort cols are present
+        cols_select <- names(df)
+
+        in_sort <- sort_select %in% cols_select
+        sort_select <- sort_select[in_sort]
+        sort_order <- sort_order[in_sort]
+
+        defaultSorted <- sort_order %>%
+          as.list() %>%
+          set_names(sort_select)
+
         reactable(
           df
           , columnGroups = columnGroups
@@ -900,10 +930,37 @@ satellite_table_server <- function(id, init, data){
           , minRows = 10
           # , searchable = TRUE
           , rowClass = JS("function(rowInfo){return rowInfo}")
+          , defaultSorted = defaultSorted
         )
-
-
       })
+
+      # Observe sort state changed by mouse click event
+      observeEvent(
+        input$sort_state_change
+        , {
+          message("Sort state changed")
+          session$sendCustomMessage("get_sort_order", 1)
+        }
+      )
+
+      # Get sort order
+      observeEvent(
+        input$sort_order
+        , {
+          view <- m$table_view
+          cols_sort <- input$sort_order
+          cols <- rt_container()[[view]] %>% names()
+
+          is_sorted <- cols_sort != "none"
+
+          m$sort_select[[view]] <- cols[is_sorted]
+          m$sort_order[[view]] <- cols_sort[is_sorted] %>%
+            str_replace("ascending", "asc") %>%
+            str_replace("descending", "desc")
+
+        }
+      )
+
 
     }
   )

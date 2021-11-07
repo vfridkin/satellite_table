@@ -127,6 +127,24 @@ $(function(){
     }
   );
 
+  // Detect changes in sort order in main table
+  $("#main-main_rt").on("click",
+    function(event){
+      const el = event.target.closest("[role='columnheader']");
+      // Return sort order of all columns
+      if(el){
+          Shiny.setInputValue(
+            'main-sort_state_change'
+            , 1
+            , {priority: "event"}
+        );
+      }
+    }
+  );
+
+
+/*
+  // Change sort order of item in more settings - deprecated
   $("#sw-content-main-more_settings-settings_dropdown").on('dblclick'
     , function(event){
       const item = event.target.closest('.item');
@@ -153,9 +171,10 @@ $(function(){
       }
     }
   )
+*/
 
-
-  // Set sort order
+/*
+  // Set sort order - deprecated
   Shiny.addCustomMessageHandler(
     'set_sort_order'
     , function(sort_message) {
@@ -190,9 +209,13 @@ $(function(){
         );
 
   });
+*/
 
 
 });
+
+
+
 
 // Hide/show table controls
 Shiny.addCustomMessageHandler(
@@ -268,7 +291,8 @@ Shiny.addCustomMessageHandler(
 });
 
 
-// Get sort order
+/*
+// Get sort order - deprecated
 Shiny.addCustomMessageHandler(
   'get_sort_order'
   , function(x) {
@@ -283,4 +307,25 @@ Shiny.addCustomMessageHandler(
         , sort_orders
         , {priority: "event"}
       );
+});
+*/
+
+// Get sort order
+Shiny.addCustomMessageHandler(
+  'get_sort_order'
+  , function(input) {
+      const headers = $("#main-main_rt").find(".-header [ role='columnheader']").get();
+      const sort_order = headers.map(
+        function(el){
+          return el.getAttribute("aria-sort");
+        }
+      );
+
+      Shiny.setInputValue(
+        'main-sort_order'
+        , sort_order
+        , {priority: "event"}
+      );
+
+
 });
