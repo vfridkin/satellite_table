@@ -34,7 +34,7 @@ longitude_of_geo_degrees,Longitude of GEO (degrees),measure,0,2,1,decimal,#7ae7b
   The column is blank for satellites in non-GEO orbits. "
 perigee_km,Perigee (km),measure,0,0,100,decimal,#e7bf7a,#533a0f,"The altitude above the Earth’s surface of the satellite’s perigee, which is the point of the orbit closest to the Earth’s center of mass, given in kilometers."
 apogee_km,Apogee (km),measure,0,0,100,decimal,#e7bf7a,#533a0f,"The altitude above the Earth’s surface of the satellite’s apogee, which is the point of the orbit farthest from the Earth’s center of mass, given in kilometers. "
-eccentricity,Eccentricity (%),measure,0,1,0.01,percent,#7ae7bf,#0f533a,"The eccentricity, ? , of a satellite’s orbit describes how strongly the orbit deviates from a circle. 
+eccentricity,Eccentricity (%),measure,0,1,0.01,percent,#7ae7bf,#0f533a,"The eccentricity of a satellite’s orbit describes how strongly the orbit deviates from a circle. 
   An orbit with eccentricity of zero is a circle. "
 inclination_degrees,Inclination (degrees),measure,0,2,1,decimal,#7ae7bf,#0f533a,"The angle between the orbital plane of the satellite and equatorial plane of the Earth, measured in degrees."
 period_minutes,Period (minutes),measure,0,1,1,decimal,#d9e77a,#4a530f,"The time required for the satellite to complete one full orbit of the Earth, given in minutes."

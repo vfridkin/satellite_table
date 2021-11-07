@@ -612,14 +612,14 @@ satellite_table_server <- function(id, init, data){
 
           selected$measure %>% walk(
             function(col_name){
+
               col_def_summary[[col_name]] <<- col_def_summary[[col_name]] %>%
-                list_modify(header = JS(paste0("
-                function(colInfo) {
-                  return colInfo.column.name + '<div class=\"measure-statistic-subheader\">"
-                                               , measure_statistic_name
-                                               ,"</div>'
-                }
-              ")))
+                list_modify(
+                  header = with_tooltip(
+                    col_name
+                    , ac$field_df
+                    , measure_statistic_name)
+                  )
             }
           )
         }

@@ -92,20 +92,6 @@ get_column_definitions <- function(ac){
 
   df <- ac$field_df
 
-  with_tooltip <- function(col_name, display_name) {
-    description <- df[name == col_name]$description
-    HTML(paste0('<div style="cursor: help;" data-tooltip="'
-                , description
-                ,'">'
-                , display_name
-                ,'</div>
-    ')
-    )
-
-    # tags$abbr(style = "cursor: help",
-    #           dataTooltip = description, display_name)
-  }
-
   df[, .(name, display_name)] %>%
     pmap(
       function(name, display_name){
@@ -114,13 +100,32 @@ get_column_definitions <- function(ac){
           name = display_name
           , filterable = FALSE
           , html = TRUE
-          , header = with_tooltip(name, display_name)
+          , header = with_tooltip(name, df)
         )
       }
     ) %>%
     set_names(df$name)
 
 }
+
+with_tooltip <- function(col_name, field_df, sub_heading = NULL) {
+  display_name <- field_df[name == col_name]$display_name
+  description <- field_df[name == col_name]$description
+  value <- display_name
+  if(!is.null(sub_heading)){
+    value <- paste0(value, '<div class="measure-statistic-subheader">'
+                    , sub_heading
+                    ,'</div>')
+  }
+  HTML(paste0('<div style="cursor: help;" data-tooltip="'
+              , description
+              ,'">'
+              , value
+              ,'</div>
+    ')
+  )
+}
+
 
 get_choices <- function(){
 
