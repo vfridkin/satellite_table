@@ -75,7 +75,7 @@ bubble_moon <- function(){
     class = "bubble-moon"
     , h3("Click the moon for a tour"
          , icon("angle-double-right")
-         , style = "padding: 10px 0 10px 0; margin: 0;"
+         , style = "padding: 10px 0 10px 0; margin: 0; background: transparent;"
     )
     , div(
       style = "display: inline-block; padding: 0 0 15px 0;"
@@ -96,7 +96,7 @@ bubble_satellite <- function(){
     class = "bubble-satellite"
     , h3(icon("angle-double-left")
          , "Click the satellite for saved views"
-         , style = "padding: 10px 0 10px 0; margin: 0;"
+         , style = "padding: 10px 0 10px 0; margin: 0; background: transparent;"
     )
     , div(
       style = "display: inline-block; padding: 0px 10px 15px 15px;"

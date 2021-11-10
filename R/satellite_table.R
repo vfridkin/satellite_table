@@ -971,7 +971,7 @@ satellite_table_server <- function(id, init, data){
           , columns = columns
           , striped = TRUE
           , highlight = TRUE
-          , minRows = 10
+          , minRows = 3
           , rowClass = JS("function(rowInfo){return rowInfo}")
           , defaultSorted = defaultSorted
         )

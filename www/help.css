@@ -74,6 +74,10 @@
 
 .saved-info-controls {
   padding: 20px 10px;
+  background: transparent;
 }
 
-
+#saved-table {
+  padding: 10px;
+  background: transparent;
+}

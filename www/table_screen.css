@@ -347,3 +347,8 @@ div.rt-thead.-headerGroups div {
 div.-cursor-pointer.rt-th {
   overflow: visible;
 }
+
+.ReactTable .rt-table {
+  overflow: hidden;
+}
+
