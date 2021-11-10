@@ -514,7 +514,7 @@ apply_measure_filter <- function(df, filtered, ac){
 }
 
 # Converts string representation of filter to datatable
-convert_factor_filter_to_df <- function(this_filter, init_df){
+convert_factor_filter_to_df <- function(this_filter, init_field, init_df){
 
   is_not_filtered <- is.null(this_filter) || (length(this_filter) == 0)
   if(is_not_filtered) return(init_df)
@@ -522,7 +522,18 @@ convert_factor_filter_to_df <- function(this_filter, init_df){
   this_filter %>% map(
     function(x){
       x_split <- x %>% str_split("=", simplify = TRUE) %>% str_trim()
-      data.table(name = x_split[1], value = x_split[2])
+      col_name <- x_split[1]
+      value <- x_split[2]
+
+      this <- init_field[[col_name]]
+
+      data.table(
+        name = col_name
+        , display = this$display_name
+        , value = value
+        , input_name = paste(col_name, "=", value)
+        , input_display = paste(this$display_name, "=", value)
+      )
     }
   ) %>%
     rbindlist()

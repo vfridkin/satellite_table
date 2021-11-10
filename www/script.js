@@ -214,6 +214,22 @@ Shiny.addCustomMessageHandler(
       localStorage.removeItem(input);
 });
 
+// Change filter icon class if filters applied
+Shiny.addCustomMessageHandler(
+  'filters_applied'
+  , function(filter_count){
+    filter_count.factor > 0
+    ? $(".factor-filter-select i").addClass("active")
+    : $(".factor-filter-select i").removeClass("active");
+
+    console.log("filter_count.measure: ", filter_count.measure)
+    filter_count.measure > 0
+    ? $(".measure-filter-select i").addClass("active")
+    : $(".measure-filter-select i").removeClass("active");
+  }
+)
+
+
 // Get sort order
 Shiny.addCustomMessageHandler(
   'get_sort_order'
@@ -230,6 +246,4 @@ Shiny.addCustomMessageHandler(
         , sort_order
         , {priority: "event"}
       );
-
-
 });

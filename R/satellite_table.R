@@ -130,7 +130,10 @@ satellite_table_ui <- function(id, field_df){
               , column(
                 width = 6
                 , style = "padding: 0"
-                , uiOutput(ns("measure_slider_ui"))
+                , div(
+                  class = "measure-filter-select"
+                  , uiOutput(ns("measure_slider_ui"))
+                )
               )
               , column(
                 width = 6
@@ -161,7 +164,7 @@ satellite_table_ui <- function(id, field_df){
         column(
           width = 12
           , div(
-            style = "position: absolute; left: -5px; top: 5px;"
+            style = "position: absolute; left: -5px; top: 1px;"
             , uiOutput(ns("filters_applied_ui"))
           )
           , reactableOutput(
@@ -232,6 +235,9 @@ satellite_table_server <- function(id, init, data){
 
         # Measure statistic
         , measure_statistic_select = NULL
+
+        # Overall filter
+        , is_table_filtered = NULL
 
         # Sorting
         , sort_select = NULL
@@ -502,7 +508,7 @@ satellite_table_server <- function(id, init, data){
         m$factor_filter_select
         , {
           m$factor_filter_select_df <- m$factor_filter_select %>%
-            convert_factor_filter_to_df(k$init_factor_filter_df)
+            convert_factor_filter_to_df(init$field, k$init_factor_filter_df)
 
         }, ignoreNULL = FALSE
       )
@@ -511,7 +517,7 @@ satellite_table_server <- function(id, init, data){
         m$factor_filter_choices
         , {
           m$factor_filter_choices_df <- m$factor_filter_choices %>%
-            convert_factor_filter_to_df(k$init_factor_filter_df)
+            convert_factor_filter_to_df(init$field, k$init_factor_filter_df)
 
         }, ignoreNULL = FALSE
       )
@@ -557,13 +563,21 @@ satellite_table_server <- function(id, init, data){
             is_new_choice <- !new_row$input_name %in% choices_df$input_name
             if(is_new_choice){
               # Add to choices and reduce choices if over max
-              choices_df <-  list(new_row, choices_df) %>%
-                rbindlist() %>%
-                .[1:min(init$max_factor_filter_choices, nrow(.))]
+              tryCatch(
+                {
+                  choices_df <-  list(new_row, choices_df) %>%
+                  rbindlist() %>%
+                  .[1:min(init$max_factor_filter_choices, nrow(.))]
+                }
+                , error = function(e) browser()
+              )
             }
 
             # Add to currently selected
-            select_df <- list(select_df, new_row) %>% rbindlist()
+            tryCatch(
+              {select_df <- list(select_df, new_row) %>% rbindlist()}
+              , error = function(e) browser()
+            )
 
             # Convert dataframes to nameed vectors for updaing selectize input
             choices <- choices_df$input_name %>% set_names(choices_df$input_display)
@@ -705,15 +719,29 @@ satellite_table_server <- function(id, init, data){
       # More settings ----------------------------------------------------------------------------
 
       rt_settings <- more_settings_server("more_settings", reactive(m$settings_init))
-      # Filters applied ---------------------------------------------------------------------------
+      # Table filters applied ---------------------------------------------------------------------
+
+      observeEvent(
+        list(
+          m$factor_filter_select_df
+          , m$is_slider_filtering
+          , input$measure_slider
+        )
+        , {
+          filter_count <- list(
+            factor = nrow(m$factor_filter_select_df)
+            , measure = m$is_slider_filtering %>% as.integer()
+          )
+
+          session$sendCustomMessage("filters_applied", filter_count)
+
+          filter_sum <- filter_count %>% unlist() %>% sum()
+          m$is_table_filtered <- filter_sum > 0
+        }
+      )
 
       output$filters_applied_ui <- renderUI({
-
-        factor_filters <- nrow(m$factor_filter_select_df)
-        measure_filters <- m$is_slider_filtering %>% as.integer()
-
-        filter_count <- factor_filters + measure_filters
-        if(filter_count > 0) icon("filter") else ""
+        if(m$is_table_filtered) icon("filter", class = "active") else ""
       })
 
       # Double click selectize item ---------------------------------------------------------------

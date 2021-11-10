@@ -74,6 +74,10 @@ i {
   padding-right: 3px;
 }
 
+i.active {
+  color: var(--colour-sun)
+}
+
 strong {
   color: rgba(var(--colour-white-rgb), var(--alpha-high));
 }
