@@ -895,14 +895,10 @@ satellite_table_server <- function(id, init, data){
 
         # Add count total to count column heading
         col_def_summary <- k$column_definitions[names(dfc)]
-        col_def_summary$count %<>% list_modify(
-          name = HTML(paste0('
-                    Count
-                    <span style = "position: absolute; right: 15px; bottom: 6px;">
-                      ', count_total,'
-                    </span>
-                  '))
-        )
+        col_def_summary$count <- col_def_summary$count %>% list_modify(
+          header = paste0('Count<span style = "position: absolute; right: 15px; bottom: 6px;">'
+              , count_total
+              ,'</span>'))
 
         # Add measure statistic to column headers
         if(is_selected$measure){
@@ -976,7 +972,6 @@ satellite_table_server <- function(id, init, data){
           , striped = TRUE
           , highlight = TRUE
           , minRows = 10
-          # , searchable = TRUE
           , rowClass = JS("function(rowInfo){return rowInfo}")
           , defaultSorted = defaultSorted
         )

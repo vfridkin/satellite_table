@@ -48,6 +48,9 @@ get_data <- function(){
     replace_col_names() %>%
     janitor::clean_names()
 
+  # Remove entries without class of orbit
+  df <- df[!is.na(class_of_orbit),]
+
   field_df <- ac$field_df[name %in% names(df)]
 
   measure_fields <- field_df[group_as == "measure"]$name
