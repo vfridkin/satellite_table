@@ -151,6 +151,9 @@ get_choices <- function(){
 
 add_command_choices <- function(choices, choices_name, ...){
 
+  has_no_choices <- is.null(choices) || length(choices) == 0 || choices == ""
+  if(has_no_choices) return(character(0))
+
   command <- c(...)
 
   command_choices <- c(
@@ -487,9 +490,9 @@ apply_factor_filter <- function(df, filtered){
 }
 
 # Subset df by measure filter from slider definition and value
-apply_measure_filter <- function(df, slider, filtered, ac){
+apply_measure_filter <- function(df, filtered, ac){
 
-  comparison <- if(slider$handles == "one") "<=" else "%between%"
+  comparison <- "<="
   filter <- filtered$measure[1]
 
   filter_col <- filter$name
@@ -509,6 +512,22 @@ apply_measure_filter <- function(df, slider, filtered, ac){
 
   df[eval(filter_expression)]
 }
+
+# Converts string representation of filter to datatable
+convert_factor_filter_to_df <- function(this_filter, init_df){
+
+  is_not_filtered <- is.null(this_filter) || (length(this_filter) == 0)
+  if(is_not_filtered) return(init_df)
+
+  this_filter %>% map(
+    function(x){
+      x_split <- x %>% str_split("=", simplify = TRUE) %>% str_trim()
+      data.table(name = x_split[1], value = x_split[2])
+    }
+  ) %>%
+    rbindlist()
+}
+
 
 # DATA WRANGLING ----------------------------------------------------------------------------------
 

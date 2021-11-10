@@ -38,29 +38,6 @@ more_settings_ui <- function(id, init){
           )
         )
       )
-      , fluidRow(
-        style = "display: none;" # TODO: Complete multi slider handle option
-        , column(
-          width = 6
-          , radioGroupButtons(
-            inputId = ns("slider_handles")
-            , label = div(icon("arrows-alt-h"), "Slider handles")
-            , choices = c("one", "two") %>%
-              set_names(c("One", "Two"))
-            , selected = "one"
-            , justified = TRUE
-          )
-        )
-        , column(
-          width = 6
-          , selectInput(
-            inputId = ns("max_factor_filter_choices")
-            , label = div(icon("filter"), "Factor history limit")
-            , choices = 1:50
-            , selected = 10
-          )
-        )
-      )
 
       , style = "simple"
       , icon = div(class = "more_settings_button", "...more")
@@ -106,19 +83,8 @@ more_settings_server <- function(id, init){
           # Update selectize inputs
           c("identifier_select"
             , "bar_option"
-            , "max_factor_filter_choices"
           ) %>% walk(
             ~updateSelectInput(
-              session = session
-              , inputId = .x
-              , selected = stored[[.x]]
-            )
-          )
-
-          c(
-            "slider_handles"
-          ) %>% walk(
-            ~updateRadioGroupButtons(
               session = session
               , inputId = .x
               , selected = stored[[.x]]
@@ -167,8 +133,6 @@ more_settings_server <- function(id, init){
         list(
           identifier_select = identifier_select
           , bar_option = m$bar_option
-          , slider_handles = input$slider_handles
-          , max_factor_filter_choices = input$max_factor_filter_choices %>% as.integer()
         )
       })
 

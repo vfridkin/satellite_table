@@ -18,6 +18,7 @@ function(input, output, session){
   init <- tibble::lst(
     factor_select = "class_of_orbit"
     , measure_slider_field = ac$field$date_of_launch
+    , measure_statistic_select = "mean"
     , identifier_select = "current_official_name_of_satellite"
     , sort_select = list(
       summary = "count"
@@ -27,7 +28,6 @@ function(input, output, session){
       summary = "desc"
       , detail = "asc"
     )
-    , slider_handles = "one"
     , bar_option = "count"
     , max_factor_filter_choices = 10
     , field = ac$field

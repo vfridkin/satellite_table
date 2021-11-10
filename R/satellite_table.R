@@ -4,7 +4,7 @@
 # It comes with concealable table controls
 # Additional controls are in 'more_settings' module
 # User changes are saved in local storage
-# A summary of these changes is in 'saved_info' module
+# A summary of these changes is displayed by 'saved_info' module
 
 satellite_table_ui <- function(id, field_df){
 
@@ -185,67 +185,114 @@ satellite_table_server <- function(id, init, data){
       k <- list(
         choices = get_choices()
         , column_definitions = get_column_definitions(ac)
-      )
-
-      # Local reactive values ---------------------------------------------------------------------
-      m <- reactiveValues(
-        run_once = FALSE
-        , table_view = NULL
-        , setting_circle_count = NULL
-        , id = NULL
-        , local_storage = NULL
-        , factor_select = NULL
-        , last_factor_select = NULL
-        , measure_select = NULL
-        , measure_slider_field = NULL
-        , measure_slider_range = NULL
-        , is_slider_filtering = NULL # Boolean: set to false if entire range selected
-        , measure_slider = NULL
-        , factor_filter = NULL
-        , measure_filter = NULL
-        , factor_filter_choices = NULL
-        , sort_select = NULL
-        , sort_order = NULL
-
-        # From settings dropdown
-        , settings_init = NULL # input to settings module
-        , slider_handles = NULL
-      )
-
-      # Initialize --------------------------------------------------------------------------------
-      observe({
-        if(m$run_once) return()
-
-        m$setting_circle_count <- 8
-        m$id <- 0
-        m$last_factor_select <- input$factor_select
-        m$measure_slider_field <- init$measure_slider_field$name
-        m$is_slider_filtering <- FALSE
-        m$slider_handles <- "one"
-        m$factor_filter <- data.table(
+        , setting_circle_count = 8
+        , init_factor_filter_df = data.table(
           name = character(0)
           , display = character(0)
           , value = character(0)
           , input_name = character(0)
           , input_display = character(0)
         )
-        m$measure_filter <- data.table(
+        , init_measure_filter_df = data.table(
           name = character(0)
           , display = character(0)
           , value = numeric(0)
         )
-        m$factor_filter_choices <- m$factor_filter %>% copy()
+      )
+
+      # Local reactive values ---------------------------------------------------------------------
+      m <- reactiveValues(
+        run_once = FALSE
+
+        # Summary vs details
+        , table_view = NULL
+
+        # Sun and planets
+        , view_controls_switch = NULL
+        , id = NULL # Active circle
+        , local_storage = NULL
+
+        # Selectors
+        , factor_select = NULL
+        , last_factor_select = NULL
+        , measure_select = NULL
+
+        # Factor filter
+        , factor_filter_select = NULL
+        , factor_filter_choices = NULL
+        , factor_filter_select_df = NULL
+        , factor_filter_choices_df = NULL
+
+        # Measure filter
+        , measure_slider_field = NULL
+        , measure_slider_range = NULL
+        , measure_slider = NULL
+        , is_slider_filtering = NULL # Boolean: set to false if entire range selected
+        , measure_filter_df = NULL
+
+        # Measure statistic
+        , measure_statistic_select = NULL
+
+        # Sorting
+        , sort_select = NULL
+        , sort_order = NULL
+
+        # From settings dropdown
+        , settings_init = NULL # input to settings module
+      )
+
+      # > Initialize ------------------------------------------------------------------------------
+      observe({
+        if(m$run_once) return()
+
+        m$id <- 0
+
+        m$last_factor_select <- input$factor_select
+
+        m$factor_filter_select_df <- k$init_factor_filter_df %>% copy()
+        m$factor_filter_choices_df <- k$init_factor_filter_df %>% copy()
+
+        m$measure_slider_field <- init$measure_slider_field$name
+        m$is_slider_filtering <- FALSE
+        m$measure_filter_df <- k$init_measure_filter_df %>% copy()
+
+        m$measure_statistic_select <- init$measure_statistic_select
+
         m$sort_select = init$sort_select
         m$sort_order = init$sort_order
 
         m$run_once <- TRUE
 
       })
+      # Table view -------------------------------------------------------------------------
+      observeEvent(
+        input$table_view
+        , {
+          m$table_view <- input$table_view
+        }
+      )
 
-      # Setting circles ---------------------------------------------------------------------------
+      # View controls switch (Sun) ----------------------------------------------------------------
+      observeEvent(
+        input$view_controls_switch
+        , {
+          m$view_controls_switch <- input$view_controls_switch
+        }
+      )
+
+
+      # > View/hide controls ------------------------------------------------------------------------
+      observeEvent(
+        input$view_controls_switch
+        , {
+          session$sendCustomMessage("view_controls_switch", input$view_controls_switch)
+        }
+      )
+
+      # Setting circles (planets) -----------------------------------------------------------------
 
       output$setting_circle_ui <- renderUI({
-        1:m$setting_circle_count %>% map(~circle_icon(.x, m$id == .x))
+        1:k$setting_circle_count %>% map(~circle_icon(.x, m$id == .x))
       })
 
       # Change to circle loads stored settings
@@ -270,17 +317,6 @@ satellite_table_server <- function(id, init, data){
         }
       )
 
-      # Filters applied ---------------------------------------------------------------------------
-
-      output$filters_applied_ui <- renderUI({
-
-        factor_filters <- nrow(m$factor_filter)
-        measure_filters <- m$is_slider_filtering %>% as.integer()
-
-        filter_count <- factor_filters + measure_filters
-        if(filter_count > 0) icon("filter") else ""
-      })
-
       # Local storage -----------------------------------------------------------------------------
 
       # Initialise with defaults - used when no local storage found for an id
@@ -299,18 +335,24 @@ satellite_table_server <- function(id, init, data){
           data <- list(
             table_view = "summary"
             , view_controls_switch = TRUE
+
             , factor_select = init$factor_select
             , measure_select = NULL
+
             , factor_filter_select = NULL
+            , factor_filter_choices = NULL
+            , factor_filter_choices_names = NULL
+
             , measure_slider_field = init$measure_slider_field$name
             , is_slider_filtering = FALSE
             , measure_slider = NULL
+
+            , measure_statistic_select = init$measure_statistic_select
+
             , sort_select = init$sort_select
             , sort_order = init$sort_order
             , bar_option = init$bar_option
             , identifier_select = init$identifier_select
-            , slider_handles = init$slider_handles
-            , max_factor_filter_choices = init$max_factor_filter_choices
           )
         }
 
@@ -330,6 +372,7 @@ satellite_table_server <- function(id, init, data){
             message("local storage - initialising: ", id)
             initialise_local_storage(id, session)
             get_local_storage(id, session)
+            message("initialise_local_storage")
             return()
           }
 
@@ -358,7 +401,6 @@ satellite_table_server <- function(id, init, data){
             # Update selectize inputs
             c("factor_select"
               , "measure_select"
-              , "factor_filter_select"
             ) %>% walk(
               ~updateSelectizeInput(
                 session = session
@@ -367,10 +409,31 @@ satellite_table_server <- function(id, init, data){
               )
             )
 
-            # Update slider
+            # Update factor filter selectize
+            m$factor_filter_select <- stored$factor_filter_select
+            m$factor_filter_choices <- stored$factor_filter_choices %>%
+              set_names(stored$factor_filter_choices_names)
+
+            updateSelectizeInput(
+              session = session
+              , inputId = "factor_filter_select"
+              , selected = m$factor_filter_select
+              , choices = m$factor_filter_choices %>% add_factor_filter_commands()
+            )
+
+            # Update measure slider
             m$measure_slider_field <- stored$measure_slider_field
             m$is_slider_filtering <- stored$is_slider_filtering
             m$measure_slider <- stored$measure_slider
+
+            # Update measure statistic
+            updateSelectizeInput(
+              session = session
+              , inputId = "measure_statistic_select"
+              , selected = stored$measure_statistic_select
+            )
+
+            m$measure_statistic_select <- stored$measure_statistic_select
 
             # Update sort
             m$sort_select = stored$sort_select
@@ -380,8 +443,6 @@ satellite_table_server <- function(id, init, data){
             m$settings_init <- list(
               identifier_select = stored$identifier_select
               , bar_option = stored$bar_option
-              , slider_handles = stored$slider_handles
-              , max_factor_filter_choices = stored$max_factor_filter_choices
             )
           }
 
@@ -392,13 +453,15 @@ satellite_table_server <- function(id, init, data){
       observeEvent(
         list(
           input$table_view
-          , input$view_controls_switch
+          , m$view_controls_switch
           , m$factor_select
           , m$measure_select
           , m$factor_filter_select
+          , m$factor_filter_choices
           , m$measure_slider_field
           , m$is_slider_filtering
           , input$measure_slider
+          , m$measure_statistic_select
           , m$sort_select
           , m$sort_order
           , rt_settings()
@@ -411,15 +474,19 @@ satellite_table_server <- function(id, init, data){
           }
 
           if(id > 0){
+
             data <- list(
               table_view = input$table_view
-              , view_controls_switch = input$view_controls_switch
+              , view_controls_switch = m$view_controls_switch
               , factor_select = m$factor_select
               , measure_select = m$measure_select
               , factor_filter_select = m$factor_filter_select
+              , factor_filter_choices = m$factor_filter_choices
+              , factor_filter_choices_names = names(m$factor_filter_choices)
               , measure_slider_field = m$measure_slider_field
               , is_slider_filtering = m$is_slider_filtering
               , measure_slider = input$measure_slider
+              , measure_statistic_select = m$measure_statistic_select
               , sort_select = m$sort_select
               , sort_order = m$sort_order
             ) %>%
@@ -430,7 +497,195 @@ satellite_table_server <- function(id, init, data){
         }
       )
 
-      # Toggle measure statistics -----------------------------------------------------------------
+      # Factor filter -----------------------------------------------------------------------------
+      observeEvent(
+        m$factor_filter_select
+        , {
+          m$factor_filter_select_df <- m$factor_filter_select %>%
+            convert_factor_filter_to_df(k$init_factor_filter_df)
+
+        }, ignoreNULL = FALSE
+      )
+
+      observeEvent(
+        m$factor_filter_choices
+        , {
+          m$factor_filter_choices_df <- m$factor_filter_choices %>%
+            convert_factor_filter_to_df(k$init_factor_filter_df)
+
+        }, ignoreNULL = FALSE
+      )
+
+      # > Double click table cell to filter -------------------------------------------------------
+
+      observeEvent(
+        input$double_click_cell
+        , {
+          cell <- input$double_click_cell %>% req()
+
+          has_col_name <- !is.null(cell$col_name)
+          col_name <- cell$col_name
+
+          # Exit if cell has no column name
+          if(!has_col_name) return()
+
+          # Remove subtext
+          value <- cell$value %>% str_split("\n") %>% pluck(1, 1)
+
+          # Get definition for selected field
+          this <- init$field[[col_name]]
+
+          # Send factor cell double clicks to factor filter
+          if(this$group_as == "factor"){
+
+            select_df <- m$factor_filter_select_df
+            choices_df <- m$factor_filter_choices_df
+
+            new_row <- data.table(
+              name = col_name
+              , display = this$display_name
+              , value = value
+              , input_name = paste(col_name, "=", value)
+              , input_display = paste(this$display_name, "=", value)
+            )
+
+            # Check if new row is already in selected
+            is_new_select <- !new_row$input_name %in% select_df$input_name
+            if(!is_new_select) return()
+
+            # Check if new row is already in choices
+            is_new_choice <- !new_row$input_name %in% choices_df$input_name
+            if(is_new_choice){
+              # Add to choices and reduce choices if over max
+              choices_df <-  list(new_row, choices_df) %>%
+                rbindlist() %>%
+                .[1:min(init$max_factor_filter_choices, nrow(.))]
+            }
+
+            # Add to currently selected
+            select_df <- list(select_df, new_row) %>% rbindlist()
+
+            # Convert dataframes to nameed vectors for updaing selectize input
+            choices <- choices_df$input_name %>% set_names(choices_df$input_display)
+            selected <- select_df$input_name %>% set_names(select_df$input_display)
+
+            updateSelectizeInput(
+              session = session
+              , inputId = "factor_filter_select"
+              , selected = selected
+              , choices = choices %>% add_factor_filter_commands()
+            )
+
+            m$factor_filter_select <- selected
+            m$factor_filter_choices <- choices
+          }
+
+          # Send measure cell double clicks to measure slider
+          if(this$group_as %in% c("date", "measure")){
+            m$measure_slider_field <- col_name
+          }
+        }
+      )
+
+      # Slider UI ---------------------------------------------------------------------------------
+      observeEvent(
+        m$measure_slider_field
+        , {
+          m$measure_slider_range <- data[[m$measure_slider_field]] %>% range(na.rm = TRUE)
+        }
+      )
+
+      output$measure_slider_ui <- renderUI({
+
+        # Get range
+        slider_step <- init$field[[m$measure_slider_field]]$slider_step
+        measure_slider_range <- m$measure_slider_range
+        slider_label <- init$field[[m$measure_slider_field]]$display_name %>%
+          paste("(range)")
+
+        range_class <- measure_slider_range[1] %>% class()
+        # It seems step is in milliseconds for time (hence large number for year step)
+        time_format <- if(range_class == "Date") "%Y" else NULL
+        decimal_count <- nchar(slider_step)
+
+        # Remove decimal point from decimal count
+        if(decimal_count > 1){
+          decimal_count <- decimal_count - 1
+        }
+
+        value <- measure_slider_range[2]
+
+        # Update slider value if exists (i.e. from storage)
+        load_slider_value <- m$measure_slider %>% {!is.null(.) && length(.) > 0}
+        if(load_slider_value){
+          value <- m$measure_slider
+          # Convert character to date class - occurs when loading from JSON
+          if(class(value) == "character"){
+            value <- value %>% as.Date()
+          }
+        }
+
+        sliderInput(
+          inputId = ns("measure_slider")
+          , label = div(icon("filter"), slider_label)
+          , value = value
+          , min = measure_slider_range[1]
+          , max = measure_slider_range[2] %>% ceiling_dec(digits = decimal_count)
+          , step = slider_step
+          , timeFormat = time_format
+          , ticks = FALSE
+          , sep = ","
+          , animate = TRUE
+          , width = '100%'
+        )
+
+      })
+
+      # > Change number of slider handles -----------------------------------------------------------
+
+      observeEvent(
+        rt_settings()
+        , {
+          settings <- rt_settings()
+        }
+      )
+
+      # > Change slider values ----------------------------------------------------------------------
+      observeEvent(
+        input$measure_slider
+        , {
+
+          slider <- input$measure_slider
+
+          m$is_slider_filtering <- if(length(slider) == 1){
+            slider < m$measure_slider_range[2]
+          } else {
+            slider != m$measure_slider_range
+          }
+
+          if(init$field[[m$measure_slider_field]]$group_as == "date"){
+            slider <- slider %>% format("%Y") %>% as.numeric()
+          }
+
+          df <- data.table(
+            name = m$measure_slider_field
+            , display = init$field[[m$measure_slider_field]]$display_name
+            , value = slider
+          )
+
+          m$measure_filter_df <- df
+
+        }, ignoreInit = TRUE
+      )
+
+      # Measure statistics ------------------------------------------------------------------------
+      observeEvent(
+        input$measure_statistic_select
+        , {
+          m$measure_statistic_select <- input$measure_statistic_select
+        }
+      )
+
       observeEvent(
         list(
           input$measure_select
@@ -447,9 +702,37 @@ satellite_table_server <- function(id, init, data){
         }, ignoreNULL = FALSE
       )
 
-      # Table settings ----------------------------------------------------------------------------
+      # More settings ----------------------------------------------------------------------------
 
       rt_settings <- more_settings_server("more_settings", reactive(m$settings_init))
+      # Filters applied ---------------------------------------------------------------------------
+
+      output$filters_applied_ui <- renderUI({
+
+        factor_filters <- nrow(m$factor_filter_select_df)
+        measure_filters <- m$is_slider_filtering %>% as.integer()
+
+        filter_count <- factor_filters + measure_filters
+        if(filter_count > 0) icon("filter") else ""
+      })
+
+      # Double click selectize item ---------------------------------------------------------------
+      observeEvent(
+        input$double_click_selectize_item
+        , {
+          item <- input$double_click_selectize_item %T>% req()
+
+          if(item$container %>% str_detect("factor_select")){
+            message("selected factor: ", item$value)
+          }
+
+          if(item$container %>% str_detect("measure_select")){
+            message("selected measure: ", item$value)
+            m$measure_slider_field <- item$value
+            m$measure_slider <- NULL
+          }
+        }
+      )
 
       # Command selections ------------------------------------------------------------------------
 
@@ -464,9 +747,9 @@ satellite_table_server <- function(id, init, data){
           if(command_select(session, "factor_select", k$choices, m$last_factor_select)) return()
           if(command_select(session, "measure_select", k$choices)) return()
 
-          result <- command_filter(session, "factor_filter_select", m$factor_filter_choices)
+          result <- command_filter(session, "factor_filter_select", m$factor_filter_choices_df)
           if(result$is_filtered){
-            m$factor_filter_choices <- result$choices_df
+            m$factor_filter_choices_df <- result$choices_df
             return()
           }
 
@@ -482,23 +765,25 @@ satellite_table_server <- function(id, init, data){
 
         settings <- rt_settings()
 
-        measure_statistic <- input$measure_statistic_select
+        measure_statistic <- m$measure_statistic_select
 
         selected <- list(
           factor = m$factor_select
           , measure = m$measure_select
         )
         filtered <- list(
-          factor = m$factor_filter
-          , measure = m$measure_filter
+          factor = m$factor_filter_select_df
+          , measure = m$measure_filter_df
         )
         slider <- list(
-          handles = m$slider_handles
-          , field = m$measure_slider_field
+          field = m$measure_slider_field
         )
 
         is_selected <- selected %>% map(~!is.null(.x))
         is_filtered <- filtered %>% map(~nrow(.x) > 0)
+
+        # Adjust for measure filter - slider having a value doesn't mean it is filtering
+        is_filtered$measure <- all(is_filtered$measure, m$is_slider_filtering)
 
         # Get selected id and detail columns
         id_cols <- settings$identifier_select
@@ -529,7 +814,7 @@ satellite_table_server <- function(id, init, data){
 
         # Apply measure filters
         if(is_filtered$measure){
-          df <- df %>% apply_measure_filter(slider, filtered, ac)
+          df <- df %>% apply_measure_filter(filtered, ac)
         }
 
         # Exit if filtered data has no rows
@@ -575,8 +860,8 @@ satellite_table_server <- function(id, init, data){
           compact()
 
         col_grp_detail <- list(
-            colGroup_or_null(name = "Identifiers", id_cols)
-          ) %>%
+          colGroup_or_null(name = "Identifiers", id_cols)
+        ) %>%
           compact() %>%
           c(col_grp_summary)
 
@@ -605,7 +890,7 @@ satellite_table_server <- function(id, init, data){
                     col_name
                     , ac$field_df
                     , measure_statistic_name)
-                  )
+                )
             }
           )
         }
@@ -626,242 +911,6 @@ satellite_table_server <- function(id, init, data){
 
       })
 
-      # Change table view -------------------------------------------------------------------------
-      observeEvent(
-        input$table_view
-        , {
-          m$table_view <- input$table_view
-        }
-      )
-
-      # View/hide controls ------------------------------------------------------------------------
-      observeEvent(
-        input$view_controls_switch
-        , {
-          session$sendCustomMessage("view_controls_switch", input$view_controls_switch)
-        }
-      )
-
-      # Double click item -------------------------------------------------------------------------
-      observeEvent(
-        input$double_click_selectize_item
-        , {
-          item <- input$double_click_selectize_item %T>% req()
-
-          if(item$container %>% str_detect("factor_select")){
-            message("selected factor: ", item$value)
-          }
-
-          if(item$container %>% str_detect("measure_select")){
-            message("selected measure: ", item$value)
-            m$measure_slider_field <- item$value
-            m$measure_slider <- NULL
-          }
-
-
-        }
-      )
-
-      # Double click factor cell ------------------------------------------------------------------
-
-      observeEvent(
-        input$double_click_cell
-        , {
-          cell <- input$double_click_cell %>% req()
-
-          has_col_name <- !is.null(cell$col_name)
-
-          # Exit if cell has no column name
-          if(!has_col_name) return()
-
-          # Remove subtext
-          value <- cell$value %>% str_split("\n") %>% pluck(1, 1)
-
-          # Seperate factor and measure cell dblclicks
-          group_as <- init$field[[cell$col_name]]$group_as
-
-          # Send factor cell double clicks to factor filter
-          if(group_as == "factor"){
-            update_factor_filter(
-              session
-              , cell$col_name
-              , value
-              , init$field
-            )
-          }
-
-          # Send measure cell double clicks to measure slider
-          if(group_as %in% c("date", "measure")){
-            m$measure_slider_field <- cell$col_name
-          }
-        }
-      )
-
-      update_factor_filter <- function(session, col_name, value, field){
-
-        display_name <- field[[col_name]]$display_name
-
-        settings <- rt_settings()
-
-        new_row <- data.table(
-          name = col_name
-          , display = display_name
-          , value = value
-          , input_name = paste(col_name, "=", value)
-          , input_display = paste(display_name, "=", value)
-        )
-
-        # Get current choices
-        choices_df <- m$factor_filter_choices
-
-        # Check if new row is already in choices
-        is_new_choice <- !new_row$input_name %in% choices_df$input_name
-        if(is_new_choice){
-          # Add to choices and reduce choices if over max
-          choices_df <- new_row %>% list(choices_df) %>% rbindlist() %>% unique()
-          choice_row_count <- min(settings$max_factor_filter_choices, nrow(choices_df))
-          choices_df <- choices_df[1:choice_row_count]
-        }
-
-        # Get currently selected
-        selected <- m$factor_filter_select
-        selected_df <- choices_df[input_name %in% selected]
-
-        # Check if new row is already in selected
-        is_new_select <- !new_row$input_name %in% selected_df$input_name
-
-        # Exit if already in selection (as it would also be in choices)
-        if(!is_new_select) return()
-
-        # Add to currently selected
-        selected_df <- new_row %>% list(selected_df) %>% rbindlist()
-
-        # Convert dataframes to nameed vectors for updaing selectize input
-        choices <- choices_df$input_name %>% set_names(choices_df$input_display)
-        selected <- selected_df$input_name %>% set_names(selected_df$input_display)
-
-        updateSelectizeInput(
-          session = session
-          , inputId = "factor_filter_select"
-          , choices = choices %>% add_factor_filter_commands()
-          , selected = selected
-        )
-
-        m$factor_filter_choices <- choices_df
-
-      }
-
-      observeEvent(
-        m$factor_filter_select
-        , {
-
-          m$factor_filter <- m$factor_filter_select %>% map(
-            function(x){
-              x_split <- x %>% str_split("=", simplify = TRUE) %>% str_trim()
-              data.table(name = x_split[1], value = x_split[2])
-            }
-          ) %>%
-            rbindlist()
-
-        }, ignoreNULL = FALSE
-      )
-
-      # Slider UI ---------------------------------------------------------------------------------
-      observeEvent(
-        m$measure_slider_field
-        , {
-          m$measure_slider_range <- data[[m$measure_slider_field]] %>% range(na.rm = TRUE)
-        }
-      )
-
-      output$measure_slider_ui <- renderUI({
-
-        # Get range
-        slider_step <- init$field[[m$measure_slider_field]]$slider_step
-        measure_slider_range <- m$measure_slider_range
-        slider_label <- init$field[[m$measure_slider_field]]$display_name %>%
-          paste("(range)")
-
-        range_class <- measure_slider_range[1] %>% class()
-        # It seems step is in milliseconds for time (hence large number for year step)
-        time_format <- if(range_class == "Date") "%Y" else NULL
-        decimal_count <- nchar(slider_step)
-
-        # Remove decimal point from decimal count
-        if(decimal_count > 1){
-          decimal_count <- decimal_count - 1
-        }
-
-        # Settings - one or two handles
-        if(m$slider_handles == "one"){
-          value <- measure_slider_range[2]
-        } else {
-          value <- measure_slider_range
-        }
-
-        # Update slider value if exists (i.e. from storage)
-        load_slider_value <- m$measure_slider %>% {!is.null(.) && length(.) > 0}
-        if(load_slider_value){
-          value <- m$measure_slider
-          # Convert character to date class - occurs when loading from JSON
-          if(class(value) == "character"){
-            value <- value %>% as.Date()
-          }
-        }
-
-        sliderInput(
-          inputId = ns("measure_slider")
-          , label = div(icon("filter"), slider_label)
-          , value = value
-          , min = measure_slider_range[1]
-          , max = measure_slider_range[2] %>% ceiling_dec(digits = decimal_count)
-          , step = slider_step
-          , timeFormat = time_format
-          , ticks = FALSE
-          , sep = ","
-          , animate = TRUE
-          , width = '100%'
-        )
-
-      })
-
-      # Change number of slider handles -----------------------------------------------------------
-
-      observeEvent(
-        rt_settings()
-        , {
-          settings <- rt_settings()
-          m$slider_handles <- settings$slider_handles
-        }
-      )
-
-      # Change slider values ----------------------------------------------------------------------
-      observeEvent(
-        input$measure_slider
-        , {
-
-          slider <- input$measure_slider
-
-          m$is_slider_filtering <- if(length(slider) == 1){
-            slider < m$measure_slider_range[2]
-          } else {
-            slider != m$measure_slider_range
-          }
-
-          if(init$field[[m$measure_slider_field]]$group_as == "date"){
-            slider <- slider %>% format("%Y") %>% as.numeric()
-          }
-
-          df <- data.table(
-            name = m$measure_slider_field
-            , display = init$field[[m$measure_slider_field]]$display_name
-            , value = slider
-          )
-
-          m$measure_filter <- df
-
-        }, ignoreInit = TRUE
-      )
 
 
       # Reactable ---------------------------------------------------------------------------------
@@ -930,6 +979,10 @@ satellite_table_server <- function(id, init, data){
 
         }
       )
+
+
+
+
 
 
     }
