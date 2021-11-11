@@ -1,6 +1,6 @@
-<img title="" src="www/satellite2.png" alt="Satellite" width="136" data-align="inline">
+# Satellites                  <img title="" src="www/satellite2.png" alt="Satellite" width="136" data-align="inline">
 
-# Satellites
+# 
 
 An interactive table of satellite data built with R Shiny.
 
