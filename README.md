@@ -34,4 +34,4 @@ The online version will be posted here soon.
 
 ## Getting help
 
-The app has a help system accessible by clicking on the moon (top right corner) - built with [rintrojs]([GitHub - carlganz/rintrojs: Wrapper for the Intro.js library](https://github.com/carlganz/rintrojs)).
+The app has a help system accessible by clicking on the moon (top right corner) - built with [rintrojs](https://github.com/carlganz/rintrojs).
