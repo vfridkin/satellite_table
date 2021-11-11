@@ -179,6 +179,7 @@ saved_info_server <- function(id){
             data = df
             , columnGroups = col_grp
             , columns = col_def
+            , current_id = current_id
           )
         })
 
@@ -206,6 +207,12 @@ saved_info_server <- function(id){
         , {
           selected <- getReactableState("table", "selected") %>% req()
           selected %>% walk(~remove_local_storage(.x, session))
+
+          # If current id is refreshed then reload page
+          current_id <- saved()$current_id
+          if(current_id %in% selected){
+            get_local_storage(current_id, session)
+          }
           get_saved()
         }
       )

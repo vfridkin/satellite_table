@@ -231,6 +231,7 @@ satellite_table_server <- function(id, init, data){
         , measure_slider_range = NULL
         , measure_slider = NULL
         , is_slider_filtering = NULL # Boolean: set to false if entire range selected
+        , force_slider_update = 0  # Force the slider to update
         , measure_filter_df = NULL
 
         # Measure statistic
@@ -431,6 +432,7 @@ satellite_table_server <- function(id, init, data){
             m$measure_slider_field <- stored$measure_slider_field
             m$is_slider_filtering <- stored$is_slider_filtering
             m$measure_slider <- stored$measure_slider
+            m$force_slider_update <- m$force_slider_update + 1
 
             # Update measure statistic
             updateSelectizeInput(
@@ -603,13 +605,15 @@ satellite_table_server <- function(id, init, data){
 
       # Slider UI ---------------------------------------------------------------------------------
       observeEvent(
-        m$measure_slider_field
+          m$measure_slider_field
         , {
           m$measure_slider_range <- data[[m$measure_slider_field]] %>% range(na.rm = TRUE)
         }
       )
 
       output$measure_slider_ui <- renderUI({
+
+        m$force_slider_update
 
         # Get range
         slider_step <- init$field[[m$measure_slider_field]]$slider_step
