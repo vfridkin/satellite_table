@@ -35,3 +35,5 @@ The online version will be posted here soon.
 ## Getting help
 
 The app has a help system accessible by clicking on the moon (top right corner) - built with [rintrojs](https://github.com/carlganz/rintrojs).
+
+Here's a [video demo](https://youtu.be/eA5F2t-BBwg). 
