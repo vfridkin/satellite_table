@@ -1,6 +1,6 @@
 # Satellites
 
-An interactive table of satellites built with R Shiny.
+An interactive table of satellites built with [R Shiny](https://github.com/rstudio/shiny) and [reactable](https://glin.github.io/reactable/).
 
 The satellites are currently orbiting the Earth. 
 
@@ -32,4 +32,6 @@ To run the app locally, you'll need [R](https://cran.r-project.org/) and [RStudi
 
 The online version will be posted here soon.
 
-## Usage
+## Getting help
+
+The app has a help system accessible by clicking on the moon (top right corner) - built with [rintrojs]([GitHub - carlganz/rintrojs: Wrapper for the Intro.js library](https://github.com/carlganz/rintrojs)).
