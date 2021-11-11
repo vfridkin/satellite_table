@@ -1,4 +1,4 @@
-# <img title="" src="file:///C:/Users/vladi/Documents/R/satellite_table/www/satellite2.png" alt="" width="136" data-align="inline">
+# <img title="" src="www/satellite2.png" alt="Satellite" width="136" data-align="inline">
 
 # Satellites
 
