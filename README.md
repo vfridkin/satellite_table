@@ -25,3 +25,9 @@ It is compiled by the Union of Concerned Scientists (UCS) [UCS Satellite Databas
 - Change the measure statistic
 
 - Save all the above in up to eight custom views
+
+
+
+## Getting started
+
+To run the app locally, you'll need [R](https://cran.r-project.org/) and [RStudio](https://www.rstudio.com/products/rstudio/) installed together with packages found in the `global.R` file.
