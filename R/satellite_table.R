@@ -171,7 +171,7 @@ satellite_table_ui <- function(id, field_df){
             outputId = ns("main_rt")
           )
           # Some fun
-          , space_man("spaceman2.png", "Shiny space man")
+          , space_man("spaceman3.png", "Shiny space man")
         )
       )
     )
