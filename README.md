@@ -1,4 +1,4 @@
-# Satellites <img title="" src="www/satellite2.png" alt="Satellite" width="136" data-align="inline">
+# Satellites
 
 An interactive table of satellites built with R Shiny.
 
