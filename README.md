@@ -1,4 +1,4 @@
-# <img title="" src="www/satellite2.png" alt="Satellite" width="136" data-align="inline">
+<img title="" src="www/satellite2.png" alt="Satellite" width="136" data-align="inline">
 
 # Satellites
 
@@ -8,7 +8,7 @@ The satellites are those currently orbiting the Earth.
 
 It is compiled by the Union of Concerned Scientists (UCS) [UCS Satellite Database]([Satellite Database | Union of Concerned Scientists](https://www.ucsusa.org/resources/satellite-database)) 
 
-# 
+
 
 ## Features
 
@@ -27,4 +27,3 @@ It is compiled by the Union of Concerned Scientists (UCS) [UCS Satellite Databas
 - Change the measure statistic
 
 - Save all the above in up to eight custom views
-  
