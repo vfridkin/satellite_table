@@ -45,6 +45,16 @@
   padding: 10px;
 }
 
+.space-man {
+  display: none;
+  background-color: transparent;
+  position: absolute;
+  left: 50vw;
+  top: -150px;
+  transform: translateX(-50%) scale(0.3);
+}
+
+
 #switch_for_help_container > div.form-group {
   margin-bottom: 0;
 }

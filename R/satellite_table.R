@@ -159,7 +159,7 @@ satellite_table_ui <- function(id, field_df){
     )
     , div(
       class = "main__table-box"
-      , style = "padding: 10px;"
+      , style = "padding: 10px; position: relative;"
       , fluidRow(
         column(
           width = 12
@@ -170,6 +170,8 @@ satellite_table_ui <- function(id, field_df){
           , reactableOutput(
             outputId = ns("main_rt")
           )
+          # Some fun
+          , space_man("spaceman2.png", "Shiny space man")
         )
       )
     )
@@ -850,8 +852,10 @@ satellite_table_server <- function(id, init, data){
         }
 
         # Exit if filtered data has no rows
+        has_data <- nrow(df) > 0
+        session$sendCustomMessage("spaceman", has_data)
         shiny::validate(
-          need({nrow(df) > 0}, "No results try removing filters")
+          need(has_data, "No results. Try removing filters...")
         )
 
         # Get count

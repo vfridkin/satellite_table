@@ -117,6 +117,17 @@ bubble_satellite <- function(){
   )
 }
 
+space_man <- function(file, alt){
+  div(
+    class = "space-man"
+    , img(
+      class = "space-man-image"
+      , src = file
+      , alt = alt
+    )
+  )
+}
+
 footer_element <- function(){
   div(
     class = "footer"

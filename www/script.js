@@ -247,3 +247,11 @@ Shiny.addCustomMessageHandler(
         , {priority: "event"}
       );
 });
+
+Shiny.addCustomMessageHandler(
+  'spaceman'
+  , function(has_data){
+    has_data ? $(".space-man").fadeOut(100) : $(".space-man").delay(1000).fadeIn(1000);
+  }
+)
+

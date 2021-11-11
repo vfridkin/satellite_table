@@ -11,7 +11,7 @@ saved_info_ui <- function(id){
         , div(
           class = "saved-info"
           , style = "padding: 10px;"
-          , h3("Saved views", style = "background: transparent;")
+          , h3("Saved views", style = "background: transparent; text-align: center;")
           , reactableOutput(ns("table"))
           , div(
             class = "saved-info-controls"
