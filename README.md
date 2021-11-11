@@ -4,7 +4,7 @@ An interactive table of satellite data built with R Shiny.
 
 The satellites are those currently orbiting the Earth. 
 
-It is compiled by the Union of Concerned Scientists (UCS) [UCS Satellite Database]([Satellite Database | Union of Concerned Scientists](https://www.ucsusa.org/resources/satellite-database)) 
+It is compiled by the Union of Concerned Scientists (UCS) [UCS Satellite Database](https://www.ucsusa.org/resources/satellite-database)
 
 
 
