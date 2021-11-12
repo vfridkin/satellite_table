@@ -137,7 +137,7 @@ footer_element <- function(){
         HTML("RStudio Table Contest 2021 &copy; Vlad Fridkin")
         , icon_link("linkedin", "https://www.linkedin.com/in/vfridkin/")
         , icon_link("github", "https://github.com/vfridkin")
-        , icon_link("youtube", "https://www.youtube.com/channel/UCl_LeQWtHsopscfKBg0wE1A")
+        , icon_link("youtube", "https://youtu.be/ADWZs0MQkek")
       )
     )
   )
