@@ -753,9 +753,14 @@ satellite_table_server <- function(id, init, data){
           }
 
           if(item$container %>% str_detect("measure_select")){
-            message("selected measure: ", item$value)
-            m$measure_slider_field <- item$value
-            m$measure_slider <- NULL
+            slider_field <- item$value
+            slider_range <- data[[slider_field]] %>% range(na.rm = TRUE)
+
+            m$measure_slider <- slider_range[2]
+            m$measure_slider_range <- slider_range
+            m$measure_slider_field <- slider_field
+            m$is_slider_filtering <- FALSE
+            m$force_slider_update <- m$force_slider_update + 1
           }
         }
       )
