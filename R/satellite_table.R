@@ -567,21 +567,13 @@ satellite_table_server <- function(id, init, data){
             is_new_choice <- !new_row$input_name %in% choices_df$input_name
             if(is_new_choice){
               # Add to choices and reduce choices if over max
-              tryCatch(
-                {
-                  choices_df <-  list(new_row, choices_df) %>%
-                  rbindlist() %>%
-                  .[1:min(init$max_factor_filter_choices, nrow(.))]
-                }
-                , error = function(e) browser()
-              )
+              choices_df <-  list(new_row, choices_df) %>%
+              rbindlist() %>%
+              .[1:min(init$max_factor_filter_choices, nrow(.))]
             }
 
             # Add to currently selected
-            tryCatch(
-              {select_df <- list(select_df, new_row) %>% rbindlist()}
-              , error = function(e) browser()
-            )
+            select_df <- list(select_df, new_row) %>% rbindlist()
 
             # Convert dataframes to nameed vectors for updaing selectize input
             choices <- choices_df$input_name %>% set_names(choices_df$input_display)
