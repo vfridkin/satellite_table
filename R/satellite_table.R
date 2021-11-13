@@ -175,6 +175,7 @@ satellite_table_ui <- function(id, field_df){
         )
       )
     )
+    , info_box_ui(ns("info_box"))
     , footer_element()
   )
 }
@@ -218,6 +219,7 @@ satellite_table_server <- function(id, init, data){
         , local_storage = NULL
 
         # Selectors
+        , identifier_select = NULL
         , factor_select = NULL
         , last_factor_select = NULL
         , measure_select = NULL
@@ -588,11 +590,43 @@ satellite_table_server <- function(id, init, data){
 
             m$factor_filter_select <- selected
             m$factor_filter_choices <- choices
+            return()
           }
 
-          # Send measure cell double clicks to measure slider
-          if(this$group_as %in% c("date", "measure")){
-            m$measure_slider_field <- col_name
+          # # Send measure cell double clicks to measure slider
+          # if(this$group_as %in% c("date", "measure")){
+          #   m$measure_slider_field <- col_name
+          # }
+
+        }
+      )
+
+      # > Single click table cell -----------------------------------------------------------------
+      observeEvent(
+        input$click_cell
+        , {
+          cell <- input$click_cell %>% req()
+
+          has_col_name <- !is.null(cell$col_name)
+          col_name <- cell$col_name
+
+          # Exit if cell has no column name
+          if(!has_col_name) return()
+
+          # Remove subtext
+          value <- cell$value %>% str_split("\n") %>% pluck(1, 1)
+
+          # Get definition for selected field
+          this <- init$field[[col_name]]
+
+          # Send identifier cell double clicks to info element
+          if(this$group_as == "identifier"){
+            m$identifier_select <- list(
+              col_name = col_name
+              , value = value
+            )
+            show_info_box(session, TRUE)
+            return()
           }
         }
       )
@@ -1003,10 +1037,8 @@ satellite_table_server <- function(id, init, data){
         }
       )
 
-
-
-
-
+      # Info box ----------------------------------------------------------------------------------
+      info_box_server("info_box", reactive(m$identifier_select), data, ac$field_df)
 
     }
   )

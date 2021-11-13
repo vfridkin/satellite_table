@@ -139,6 +139,16 @@ $(function(){
             , {priority: "event"}
         );
       }
+
+      // Single click on cell - used for info box
+      const cell = event.target.closest('.rt-td > div > div');
+      if(cell){
+          Shiny.setInputValue(
+            'main-click_cell'
+            , {col_name: cell.dataset.colName, value: cell.innerText}
+            , {priority: "event"}
+          );
+      }
     }
   );
 });
@@ -254,4 +264,16 @@ Shiny.addCustomMessageHandler(
     has_data ? $(".space-man").fadeOut(100) : $(".space-man").delay(1000).fadeIn(1000);
   }
 )
+
+Shiny.addCustomMessageHandler(
+  'show_info_box'
+  , function(is_visible){
+    console.log(is_visible);
+    is_visible
+    ? $('.info-box').fadeIn(250)
+    : $('.info-box').fadeOut(250);
+  }
+)
+
+
 

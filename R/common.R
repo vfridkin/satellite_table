@@ -469,6 +469,11 @@ colGroup_or_null <- function(name, columns){
   colGroup(name = name, columns = columns)
 }
 
+# Show satellite info box with comments and sources
+show_info_box <- function(session, is_visible){
+  session$sendCustomMessage("show_info_box", is_visible)
+}
+
 # TABLE FILTERS -----------------------------------------------------------------------------------
 
 # Subset df by factor filter
