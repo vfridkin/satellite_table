@@ -272,6 +272,11 @@ div.rt-thead.-headerGroups div {
   color: rgba(var(--colour-white-rgb), var(--alpha-high));
 }
 
+/* Page size options */
+.rt-page-jump, .rt-page-size-select {
+  background: transparent;
+}
+
 /* Footer ---------------------------------------------------------------------------------------*/
 
 .footer {

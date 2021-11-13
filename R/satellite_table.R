@@ -1006,6 +1006,9 @@ satellite_table_server <- function(id, init, data){
           , striped = TRUE
           , highlight = TRUE
           , minRows = 3
+          , pageSizeOptions = c(10, 12, 20, 50, 100)
+          , showPageSizeOptions = TRUE
+          , defaultPageSize = 10
           , rowClass = JS("function(rowInfo){return rowInfo}")
           , defaultSorted = defaultSorted
         )
