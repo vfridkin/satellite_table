@@ -31,6 +31,7 @@ info_box_ui <- function(id, init){
         width = 6
         , div(
           class = "measure-select"
+          , style = "margin-bottom: 0;"
           , selectizeInput(
             inputId = ns("measure_select")
             , label = NULL
@@ -39,7 +40,10 @@ info_box_ui <- function(id, init){
             , multiple = FALSE
             , width = '100%'
           )
-          , textOutput(ns("measure_text"))
+          , div(
+            style = "margin-top: -15px; padding-left: 15px;"
+            , textOutput(ns("measure_text"))
+          )
         )
         , echarts4rOutput(ns("chart"))
       )
@@ -105,16 +109,35 @@ info_box_server <- function(id, identifier_select, data, field_df){
 
         # Data for chart
         measure_col <- m$measure_select
-        marker_value <- this_row[[measure_col]]
+        config <- field_df[name == measure_col]
+
+        value <- this_row[[measure_col]] %>% as.numeric()
         measure_values <- data[[measure_col]] %>% as.numeric()
         marker_title <- this_row$current_official_name_of_satellite
         series_colour <- field_df[name == measure_col]$bar_colour_left
+
+        col_format <- config$format
+        display_decimals <- config$display_decimals
+        has_decimals <- !is.na(display_decimals)
+
+        display_value <- value
+
+        if(col_format == "percent"){
+          display_value <- 100*display_value
+        }
+
+        if(has_decimals){
+          display_value <- display_value %>% format(big.mark = ",", digits = display_decimals)
+        }
+
+        if(is.na(value)) display_value <- "Unknown"
 
         list(
           row = this_row
           , chart = list(
             data = data.table(value = measure_values)
-            , marker_value = marker_value
+            , value = value
+            , display_value = display_value
             , measure_col = measure_col
             , marker_title = marker_title
             , series_colour = series_colour
@@ -262,11 +285,7 @@ info_box_server <- function(id, identifier_select, data, field_df){
       output$measure_text <- renderText({
 
         this <- satellite()$chart
-
-        value <- this$marker_value
-        if(is.na(value)) value <- "Unknown"
-
-        "{this$marker_title}: {value}" %>% glue()
+        "{this$marker_title}: {this$display_value}" %>% glue()
 
       })
 
@@ -288,21 +307,32 @@ info_box_server <- function(id, identifier_select, data, field_df){
             , color = this$series_colour
           )  %>%
           e_hide_grid_lines() %>%
+          e_grid(left = 50) %>%
           e_color(background = "transparent")
 
         # Mark chart if satellite has a value
-        has_value <- !is.na(this$marker_value)
+        has_value <- !is.na(this$value)
 
         if(has_value){
           e <- e %>% e_mark_p(
             type = "line"
             , serie_index = 1
-            , data = list(xAxis = this$marker_value, label = list(formatter = this$marker_title))
+            , data = list(xAxis = this$value, label = list(formatter = this$marker_title))
             , lineStyle = list(type = "dashed", color = "white")
             , symbol = "none"
             , label = list(color = k$text_high)
             , animation = FALSE
           )
+        }
+
+        # Special format for years
+        if(this$measure_col == "year_of_launch"){
+
+          year_format <- JS('function (value) {return value}')
+          e <- e %>%
+            e_x_axis(
+              formatter = year_format
+            )
         }
 
         e
