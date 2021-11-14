@@ -51,6 +51,13 @@ get_data <- function(){
   # Remove entries without class of orbit
   df <- df[!is.na(class_of_orbit),]
 
+  # Add year and month of launch
+  df <- df[, c("year_of_launch", "month_of_launch", "month_num") := list(
+    date_of_launch %>% format("%Y")
+    , date_of_launch %>% format("%B")
+    , date_of_launch %>% format("%m")
+  )]
+
   field_df <- ac$field_df[name %in% names(df)]
 
   measure_fields <- field_df[group_as == "measure"]$name
@@ -349,7 +356,14 @@ add_col_name <- function(col, col_name){
 
   }
 
-  paste0('<div data-col-name="',col_name ,'">',col ,'</div>')
+  sort_attribute <- ""
+  if(col_name == "month_of_launch"){
+    sort_value <- match(col, month.name) %>%
+      formatC(width = 2, format = "d", flag = "0")
+    sort_attribute <- paste0('sort-value="', sort_value, '"')
+  }
+
+  paste0('<div ', sort_attribute, '  data-col-name="',col_name ,'">',col ,'</div>')
 
 }
 
@@ -467,6 +481,11 @@ icon_link <- function(name, link){
 colGroup_or_null <- function(name, columns){
   if(is.null(columns)) return(NULL)
   colGroup(name = name, columns = columns)
+}
+
+# Show satellite info box with comments and sources
+show_info_box <- function(session, is_visible){
+  session$sendCustomMessage("show_info_box", is_visible)
 }
 
 # TABLE FILTERS -----------------------------------------------------------------------------------

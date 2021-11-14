@@ -20,10 +20,10 @@
 }
 
 .bubble-moon {
+  display: none;
   text-align: center;
   width: 340px;
   position: fixed;
-  display: none;
   right: 100px;
   top: 15px;
   z-index: 11;
@@ -33,10 +33,10 @@
 }
 
 .bubble-satellite {
+  display: none;
   text-align: center;
   width: 440px;
   position: fixed;
-  display: none;
   left: 100px;
   top: 15px;
   z-index: 11;
@@ -99,3 +99,35 @@
   padding: 10px;
   background: transparent;
 }
+
+/* Info box -------------------------------------------------------------------------------------*/
+
+.info-box {
+  display: none;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  z-index: 11;
+  box-shadow: inset -4px 1px 15px 0px #c0c0c0;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.info-box div {
+  background: transparent;
+}
+
+.info-box-controls {
+  diplay: inline-block;
+  padding-top: 20px;
+  text-align: center;
+}
+
+canvas {
+  background: transparent;
+}
+
+
+

@@ -144,7 +144,18 @@ div.selectize-dropdown-content > div.option:hover {
   background-color: var(--colour-gray-dark);
 }
 
+/* Drop down options - active row */
+div.selectize-control > div.selectize-dropdown.single.form-control,
+div.selectize-control > div.selectize-dropdown.single.form-control .option.active {
+  color: rgba(var(--colour-white-rgb), var(--alpha-high));
+  background-color: var(--colour-gray-dark);
+}
 
+/* Drop down options - active row */
+div.selectize-control > div.selectize-dropdown.single.form-control .option {
+  color: rgba(var(--colour-white-rgb), var(--alpha-med));
+  background-color: var(--colour-gray-dark);
+}
 
 /* Select box - Button format */
 #main-table_view button {
@@ -180,6 +191,10 @@ div.table_controls span.pause > i {
   left: -5px;
 }
 
+.irs--shiny {
+  padding-right: 10px;
+}
+
 #main-measure_slider_ui > div {
   margin-bottom: 0;
 }
@@ -188,6 +203,7 @@ div.table_controls span.pause > i {
 .irs i {
   padding-right: 0px;
 }
+
 
 /* Measure statistic */
 div#main-measure_statistic .control-label {
@@ -270,6 +286,11 @@ div.rt-thead.-headerGroups div {
 
 #main-main_rt .rt-td:hover {
   color: rgba(var(--colour-white-rgb), var(--alpha-high));
+}
+
+/* Page size options */
+.rt-page-jump, .rt-page-size-select {
+  background: transparent;
 }
 
 /* Footer ---------------------------------------------------------------------------------------*/

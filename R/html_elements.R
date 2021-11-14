@@ -128,6 +128,14 @@ space_man <- function(file, alt){
   )
 }
 
+info_element <- function(identifier, data){
+
+
+
+
+}
+
+
 footer_element <- function(){
   div(
     class = "footer"

@@ -175,6 +175,7 @@ satellite_table_ui <- function(id, field_df){
         )
       )
     )
+    , info_box_ui(ns("info_box"))
     , footer_element()
   )
 }
@@ -218,6 +219,7 @@ satellite_table_server <- function(id, init, data){
         , local_storage = NULL
 
         # Selectors
+        , identifier_select = NULL
         , factor_select = NULL
         , last_factor_select = NULL
         , measure_select = NULL
@@ -588,14 +590,55 @@ satellite_table_server <- function(id, init, data){
 
             m$factor_filter_select <- selected
             m$factor_filter_choices <- choices
+            return()
           }
 
-          # Send measure cell double clicks to measure slider
-          if(this$group_as %in% c("date", "measure")){
-            m$measure_slider_field <- col_name
+          # # Send measure cell double clicks to measure slider
+          # if(this$group_as %in% c("date", "measure")){
+          #   m$measure_slider_field <- col_name
+          # }
+
+        }
+      )
+
+      # > Single click table cell -----------------------------------------------------------------
+      observeEvent(
+        input$click_cell
+        , {
+          cell <- input$click_cell %>% req()
+
+          has_col_name <- !is.null(cell$col_name)
+          col_name <- cell$col_name
+
+          # Exit if cell has no column name
+          if(!has_col_name) return()
+
+          # Remove subtext
+          value <- cell$value %>% str_split("\n") %>% pluck(1, 1)
+
+          # Get definition for selected field
+          this <- init$field[[col_name]]
+
+          # Send identifier cell double clicks to info element
+          if(this$group_as == "identifier"){
+            m$identifier_select <- list(
+              col_name = col_name
+              , value = value
+            )
+            show_info_box(session, TRUE)
+            return()
           }
         }
       )
+
+      # > Single click background -----------------------------------------------------------------
+      observeEvent(
+        input$click_background
+        , {
+          show_info_box(session, FALSE)
+        }
+      )
+
 
       # Slider UI ---------------------------------------------------------------------------------
       observeEvent(
@@ -653,16 +696,10 @@ satellite_table_server <- function(id, init, data){
 
       })
 
-      # > Change number of slider handles -----------------------------------------------------------
+      outputOptions(output, "measure_slider_ui", suspendWhenHidden = FALSE)
 
-      observeEvent(
-        rt_settings()
-        , {
-          settings <- rt_settings()
-        }
-      )
 
-      # > Change slider values ----------------------------------------------------------------------
+      # > Change slider values --------------------------------------------------------------------
       observeEvent(
         input$measure_slider
         , {
@@ -754,16 +791,23 @@ satellite_table_server <- function(id, init, data){
 
           if(item$container %>% str_detect("measure_select")){
             slider_field <- item$value
-            slider_range <- data[[slider_field]] %>% range(na.rm = TRUE)
-
-            m$measure_slider <- slider_range[2]
-            m$measure_slider_range <- slider_range
-            m$measure_slider_field <- slider_field
-            m$is_slider_filtering <- FALSE
-            m$force_slider_update <- m$force_slider_update + 1
+            m$measure_slider_field_new <- slider_field
           }
         }
       )
+
+      observeEvent(
+        m$measure_slider_field_new
+        , {
+          slider_field <- m$measure_slider_field_new
+          m$measure_slider_field <- slider_field
+          m$measure_slider_range <- data[[slider_field]] %>% range(na.rm = TRUE)
+          m$measure_slider <- m$measure_slider_range[2]
+          m$is_slider_filtering <- FALSE
+          m$force_slider_update <- m$force_slider_update + 1
+        }
+      )
+
 
       # Command selections ------------------------------------------------------------------------
 
@@ -977,6 +1021,9 @@ satellite_table_server <- function(id, init, data){
           , striped = TRUE
           , highlight = TRUE
           , minRows = 3
+          , pageSizeOptions = c(10, 20, 50, 100)
+          , showPageSizeOptions = TRUE
+          , defaultPageSize = 10
           , rowClass = JS("function(rowInfo){return rowInfo}")
           , defaultSorted = defaultSorted
         )
@@ -1008,10 +1055,8 @@ satellite_table_server <- function(id, init, data){
         }
       )
 
-
-
-
-
+      # Info box ----------------------------------------------------------------------------------
+      info_box_server("info_box", reactive(m$identifier_select), data, ac$field_df)
 
     }
   )

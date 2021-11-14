@@ -1,0 +1,13 @@
+name: Satellites
+title: Satellites
+username:
+account: vfridkin
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5107521
+bundleId: 5242725
+url: https://vfridkin.shinyapps.io/Satellites/
+when: 1636682364.08556
+lastSyncTime: 1636682364.08556
+asMultiple: FALSE
+asStatic: FALSE
