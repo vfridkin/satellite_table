@@ -132,7 +132,22 @@ satellite_table_ui <- function(id, field_df){
                 , style = "padding: 0"
                 , div(
                   class = "measure-filter-select"
-                  , uiOutput(ns("measure_slider_ui"))
+                  , div(
+                    class = "filter-icon"
+                    , icon("filter")
+                  )
+                  , sliderInput(
+                    inputId = ns("measure_slider")
+                    , label = "Loading..."
+                    , value = 10
+                    , min = 1
+                    , max = 10
+                    , step = 1
+                    , ticks = FALSE
+                    , sep = ","
+                    , animate = TRUE
+                    , width = '100%'
+                  )
                 )
               )
               , column(
@@ -235,7 +250,6 @@ satellite_table_server <- function(id, init, data){
         , measure_slider_range = NULL
         , measure_slider = NULL
         , is_slider_filtering = NULL # Boolean: set to false if entire range selected
-        , force_slider_update = 0  # Force the slider to update
         , measure_filter_df = NULL
 
         # Measure statistic
@@ -290,7 +304,6 @@ satellite_table_server <- function(id, init, data){
           m$view_controls_switch <- input$view_controls_switch
         }
       )
-
 
       # > View/hide controls ------------------------------------------------------------------------
       observeEvent(
@@ -433,19 +446,55 @@ satellite_table_server <- function(id, init, data){
             )
 
             # Update measure slider
-            m$measure_slider_field <- stored$measure_slider_field
-            m$is_slider_filtering <- stored$is_slider_filtering
-            m$measure_slider <- stored$measure_slider
-            m$force_slider_update <- m$force_slider_update + 1
+            slider_field <- stored$measure_slider_field
+            slider_value <- stored$measure_slider
+            slider <- slider_field %>% get_slider_params(data, init$field)
+
+            # Treat character values as date
+            treat_as_date <- any(
+              class(slider_value) == "character"
+              , class(slider$range) == "Date"
+            )
+
+            missing_value <- any(
+              is.null(slider_value)
+              , length(slider_value) == 0
+            )
+
+            tryCatch(
+              {
+                if(treat_as_date && !missing_value) slider_value <- slider_value %>% as.Date()
+              }
+              , error = function(e) browser()
+            )
+
+
+            if(missing_value) slider_value <- slider$range[2]
+
+            m$measure_slider_field <- slider_field
+            m$measure_slider_range <- slider$range
+            m$measure_slider <- slider_value
+            m$is_slider_filtering <- slider_value != slider$range[2]
+
+            updateSliderInput(
+              session = session
+              , inputId = "measure_slider"
+              , label = slider$label
+              , value = slider_value
+              , min = slider$range[1]
+              , max = slider$range[2]
+              , step = slider$step
+              , timeFormat = slider$time_format
+            )
 
             # Update measure statistic
+            m$measure_statistic_select <- stored$measure_statistic_select
+
             updateSelectizeInput(
               session = session
               , inputId = "measure_statistic_select"
               , selected = stored$measure_statistic_select
             )
-
-            m$measure_statistic_select <- stored$measure_statistic_select
 
             # Update sort
             m$sort_select = stored$sort_select
@@ -471,8 +520,8 @@ satellite_table_server <- function(id, init, data){
           , m$factor_filter_select
           , m$factor_filter_choices
           , m$measure_slider_field
+          , m$measure_slider
           , m$is_slider_filtering
-          , input$measure_slider
           , m$measure_statistic_select
           , m$sort_select
           , m$sort_order
@@ -496,8 +545,8 @@ satellite_table_server <- function(id, init, data){
               , factor_filter_choices = m$factor_filter_choices
               , factor_filter_choices_names = names(m$factor_filter_choices)
               , measure_slider_field = m$measure_slider_field
+              , measure_slider = m$measure_slider
               , is_slider_filtering = m$is_slider_filtering
-              , measure_slider = input$measure_slider
               , measure_statistic_select = m$measure_statistic_select
               , sort_select = m$sort_select
               , sort_order = m$sort_order
@@ -570,8 +619,8 @@ satellite_table_server <- function(id, init, data){
             if(is_new_choice){
               # Add to choices and reduce choices if over max
               choices_df <-  list(new_row, choices_df) %>%
-              rbindlist() %>%
-              .[1:min(init$max_factor_filter_choices, nrow(.))]
+                rbindlist() %>%
+                .[1:min(init$max_factor_filter_choices, nrow(.))]
             }
 
             # Add to currently selected
@@ -639,90 +688,51 @@ satellite_table_server <- function(id, init, data){
         }
       )
 
+      # Measure slider ----------------------------------------------------------------------------
+      get_slider_params <- function(slider_field, data, config){
 
-      # Slider UI ---------------------------------------------------------------------------------
-      observeEvent(
-          m$measure_slider_field
-        , {
-          m$measure_slider_range <- data[[m$measure_slider_field]] %>% range(na.rm = TRUE)
-        }
-      )
-
-      output$measure_slider_ui <- renderUI({
-
-        m$force_slider_update
-
-        # Get range
-        slider_step <- init$field[[m$measure_slider_field]]$slider_step
-        measure_slider_range <- m$measure_slider_range
-        slider_label <- init$field[[m$measure_slider_field]]$display_name %>%
+        slider_label <- config[[slider_field]]$display_name %>%
           paste("(range)")
 
-        range_class <- measure_slider_range[1] %>% class()
-        # It seems step is in milliseconds for time (hence large number for year step)
+        slider_step <- config[[slider_field]]$slider_step
+        decimal_count <- nchar(slider_step %% 1) - 1
+
+        # Get range
+        slider_range <- data[[slider_field]] %>% range(na.rm = TRUE)
+        range_class <- slider_range[1] %>% class()
         time_format <- if(range_class == "Date") "%Y" else NULL
-        decimal_count <- nchar(slider_step)
 
-        # Remove decimal point from decimal count
-        if(decimal_count > 1){
-          decimal_count <- decimal_count - 1
-        }
+        slider_range[2] <- slider_range[2] %>% ceiling_dec(digits = decimal_count)
 
-        value <- measure_slider_range[2]
-
-        # Update slider value if exists (i.e. from storage)
-        load_slider_value <- m$measure_slider %>% {!is.null(.) && length(.) > 0}
-        if(load_slider_value){
-          value <- m$measure_slider
-          # Convert character to date class - occurs when loading from JSON
-          if(class(value) == "character"){
-            value <- value %>% as.Date()
-          }
-        }
-
-        sliderInput(
-          inputId = ns("measure_slider")
-          , label = div(icon("filter"), slider_label)
-          , value = value
-          , min = measure_slider_range[1]
-          , max = measure_slider_range[2] %>% ceiling_dec(digits = decimal_count)
+        list(
+          label = slider_label
           , step = slider_step
-          , timeFormat = time_format
-          , ticks = FALSE
-          , sep = ","
-          , animate = TRUE
-          , width = '100%'
+          , range = slider_range
+          , time_format = time_format
+          , range_class = range_class
         )
-
-      })
-
-      outputOptions(output, "measure_slider_ui", suspendWhenHidden = FALSE)
-
+      }
 
       # > Change slider values --------------------------------------------------------------------
       observeEvent(
         input$measure_slider
         , {
 
-          slider <- input$measure_slider
+          slider_value <- input$measure_slider
 
-          m$is_slider_filtering <- if(length(slider) == 1){
-            slider < m$measure_slider_range[2]
-          } else {
-            slider != m$measure_slider_range
-          }
-
+          table_value <- slider_value
           if(init$field[[m$measure_slider_field]]$group_as == "date"){
-            slider <- slider %>% format("%Y") %>% as.numeric()
+            table_value <- slider_value %>% format("%Y") %>% as.numeric()
           }
 
-          df <- data.table(
+          m$measure_filter_df <- data.table(
             name = m$measure_slider_field
             , display = init$field[[m$measure_slider_field]]$display_name
-            , value = slider
+            , value = table_value
           )
 
-          m$measure_filter_df <- df
+          m$measure_slider <- slider_value
+          m$is_slider_filtering <- slider_value != m$measure_slider_range[2]
 
         }, ignoreInit = TRUE
       )
@@ -790,24 +800,36 @@ satellite_table_server <- function(id, init, data){
           }
 
           if(item$container %>% str_detect("measure_select")){
-            slider_field <- item$value
-            m$measure_slider_field_new <- slider_field
+
+            slider <- item$value %>% get_slider_params(data, init$field)
+            slider_value <- slider$range[2]
+
+            # Treat character values as date
+            treat_as_date <- any(
+              class(slider_value) == "character"
+              , class(slider$range) == "Date"
+            )
+
+            if(treat_as_date) slider_value <- slider_value %>% as.Date()
+
+            m$measure_slider_field <- item$value
+            m$measure_slider_range <- slider$range
+            m$measure_slider <- slider_value
+            m$is_slider_filtering <- FALSE
+
+            updateSliderInput(
+              session = session
+              , inputId = "measure_slider"
+              , label = slider$label
+              , value = slider_value
+              , min = slider$range[1]
+              , max = slider$range[2]
+              , step = slider$step
+              , timeFormat = slider$time_format
+            )
           }
         }
       )
-
-      observeEvent(
-        m$measure_slider_field_new
-        , {
-          slider_field <- m$measure_slider_field_new
-          m$measure_slider_field <- slider_field
-          m$measure_slider_range <- data[[slider_field]] %>% range(na.rm = TRUE)
-          m$measure_slider <- m$measure_slider_range[2]
-          m$is_slider_filtering <- FALSE
-          m$force_slider_update <- m$force_slider_update + 1
-        }
-      )
-
 
       # Command selections ------------------------------------------------------------------------
 
@@ -946,8 +968,8 @@ satellite_table_server <- function(id, init, data){
         col_def_summary <- k$column_definitions[names(dfc)]
         col_def_summary$count <- col_def_summary$count %>% list_modify(
           header = paste0('Count<span style = "position: absolute; right: 15px; bottom: 6px;">'
-              , count_total
-              ,'</span>'))
+                          , count_total
+                          ,'</span>'))
 
         # Add measure statistic to column headers
         if(is_selected$measure){
