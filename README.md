@@ -1,6 +1,6 @@
 # Satellites
 
-An interactive table of satellites built with [R Shiny](https://github.com/rstudio/shiny) and [reactable](https://glin.github.io/reactable/).
+An interactive table of satellites built with [R Shiny](https://github.com/rstudio/shiny), [reactable](https://glin.github.io/reactable/) and [gt](https://gt.rstudio.com/).
 
 The satellites are currently orbiting the Earth. 
 
@@ -36,5 +36,4 @@ The online version will be posted here soon.
 
 The app has a help system accessible by clicking on the moon (top right corner) - built with [rintrojs](https://github.com/carlganz/rintrojs).
 
-[User guide](https://vfridkin.github.io/satellite_table_docs)
-[video demo](https://youtu.be/ADWZs0MQkek)
+[User guide](https://vfridkin.github.io/satellite_table_docs), [video demo](https://youtu.be/ADWZs0MQkek).
