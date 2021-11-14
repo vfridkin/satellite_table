@@ -36,4 +36,5 @@ The online version will be posted here soon.
 
 The app has a help system accessible by clicking on the moon (top right corner) - built with [rintrojs](https://github.com/carlganz/rintrojs).
 
-Here's a [video demo](https://youtu.be/eA5F2t-BBwg). 
+[User guide](https://vfridkin.github.io/satellite_table_docs)
+[video demo](https://youtu.be/ADWZs0MQkek)
