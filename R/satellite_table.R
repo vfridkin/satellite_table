@@ -631,6 +631,15 @@ satellite_table_server <- function(id, init, data){
         }
       )
 
+      # > Single click background -----------------------------------------------------------------
+      observeEvent(
+        input$click_background
+        , {
+          show_info_box(session, FALSE)
+        }
+      )
+
+
       # Slider UI ---------------------------------------------------------------------------------
       observeEvent(
           m$measure_slider_field
@@ -687,16 +696,10 @@ satellite_table_server <- function(id, init, data){
 
       })
 
-      # > Change number of slider handles -----------------------------------------------------------
+      outputOptions(output, "measure_slider_ui", suspendWhenHidden = FALSE)
 
-      observeEvent(
-        rt_settings()
-        , {
-          settings <- rt_settings()
-        }
-      )
 
-      # > Change slider values ----------------------------------------------------------------------
+      # > Change slider values --------------------------------------------------------------------
       observeEvent(
         input$measure_slider
         , {
@@ -787,12 +790,24 @@ satellite_table_server <- function(id, init, data){
           }
 
           if(item$container %>% str_detect("measure_select")){
-            message("selected measure: ", item$value)
-            m$measure_slider_field <- item$value
-            m$measure_slider <- NULL
+            slider_field <- item$value
+            m$measure_slider_field_new <- slider_field
           }
         }
       )
+
+      observeEvent(
+        m$measure_slider_field_new
+        , {
+          slider_field <- m$measure_slider_field_new
+          m$measure_slider_field <- slider_field
+          m$measure_slider_range <- data[[slider_field]] %>% range(na.rm = TRUE)
+          m$measure_slider <- m$measure_slider_range[2]
+          m$is_slider_filtering <- FALSE
+          m$force_slider_update <- m$force_slider_update + 1
+        }
+      )
+
 
       # Command selections ------------------------------------------------------------------------
 
@@ -1006,7 +1021,7 @@ satellite_table_server <- function(id, init, data){
           , striped = TRUE
           , highlight = TRUE
           , minRows = 3
-          , pageSizeOptions = c(10, 12, 20, 50, 100)
+          , pageSizeOptions = c(10, 20, 50, 100)
           , showPageSizeOptions = TRUE
           , defaultPageSize = 10
           , rowClass = JS("function(rowInfo){return rowInfo}")

@@ -29,11 +29,11 @@ $(function(){
 
       const bubble_moon = event.target.closest('.bubble-moon');
       const bubble_satellite = event.target.closest('.bubble-satellite');
+      const info_box = event.target.closest(".info-box")
+      const cell = event.target.closest('.rt-td > div > div');
 
       const moon_button = event.target.closest('.moon-button');
       const satellite_button = event.target.closest('.satellite-button');
-
-      //const splash_button = event.target.closest('.splash-button');
 
       if(bubble_moon && !moon_button) return;
       if(bubble_satellite && !satellite_button) return;
@@ -73,6 +73,9 @@ $(function(){
         Shiny.setInputValue('saved-refresh_table', 1, {priority: "event"});
         return;
       }
+
+      if(info_box || cell) return;
+      Shiny.setInputValue('main-click_background', 1, {priority: "event"});
 
     }
 

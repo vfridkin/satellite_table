@@ -1,27 +1,55 @@
 # Satellite info box
 
-info_box_ui <- function(id){
+info_box_ui <- function(id, init){
 
   ns <- NS(id)
+
+  # Set up choices for selectize inputs -----------------------------------------------------------
+  all_choices <- get_choices()
+
+  exclude_choices <- "date_of_launch"
+  factor_choices <- c("year_of_launch")
+
+  choices <- all_choices$measure_select %>% .[!. %in% exclude_choices]
+  choices <- choices %>%
+    c(all_choices$factor_select %>% .[. %in% factor_choices]) %>%
+    sort()
+
+  selected <- "year_of_launch"
 
   div(
     class = "info-box"
     , fluidRow(
       column(
-        width = 12
+        width = 6
         , div(
           style = "padding: 10px;"
           , gt_output(ns("table"))
-          , div(
-            class = "info-box-controls"
-            , actionButton(
-              inputId = ns("close_button")
-              , label = "Close"
-            )
-          )
         )
       )
+      , column(
+        width = 6
+        , div(
+          class = "measure-select"
+          , selectizeInput(
+            inputId = ns("measure_select")
+            , label = div(icon("chart-bar"), "Compare with all satellites")
+            , choices = choices
+            , selected = selected
+            , multiple = FALSE
+            , width = '100%'
+          )
+        )
+        , echarts4rOutput(ns("chart"))
+      )
     )
+    # , div(
+    #   class = "info-box-controls"
+    #   , actionButton(
+    #     inputId = ns("close_button")
+    #     , label = "Close"
+    #   )
+    # )
   )
 }
 
@@ -30,19 +58,39 @@ info_box_server <- function(id, identifier_select, data, field_df){
     id
     , function(input, output, session){
 
-      m <- reactiveValues(
-        row = NULL
+      # Constants ---------------------------------------------------------------------------------
+
+      k <- list(
+        text_high = "rgba(255, 255, 255, 0.9)"
+        , text_med = "rgba(255, 255, 255, 0.7)"
+        , text_low = "rgba(255, 255, 255, 0.5)"
       )
 
+      # Reactives ---------------------------------------------------------------------------------
+
+      m <- reactiveValues(
+        row = NULL
+        , measure_select = NULL
+      )
+
+      # Get data row from identifier selected
       observeEvent(
         identifier_select()
         , {
           select <- identifier_select() %>% req()
           m$row <- data[get(select$col_name) == select$value]
+          m$measure_select <- input$measure_select
         }
       )
 
+      observeEvent(
+        input$measure_select
+        , {
+          m$measure_select <- input$measure_select
+        }
+      )
 
+      # Hold satellite data in satellite reactive
       satellite <- reactive({
 
         this_row <- m$row
@@ -54,12 +102,27 @@ info_box_server <- function(id, identifier_select, data, field_df){
         # Use the first row - in case there are more than one
         this_row <- this_row[1]
 
+        # Data for chart
+        measure_col <- m$measure_select
+        marker_value <- this_row[[measure_col]]
+        measure_values <- data[[measure_col]] %>% as.numeric()
+        marker_title <- this_row$current_official_name_of_satellite
+        series_colour <- field_df[name == measure_col]$bar_colour_left
 
         list(
           row = this_row
+          , chart = list(
+            data = data.table(value = measure_values)
+            , marker_value = marker_value
+            , measure_col = measure_col
+            , marker_title = marker_title
+            , series_colour = series_colour
+          )
         )
 
       })
+
+      # Table -------------------------------------------------------------------------------------
 
       output$table <- render_gt({
 
@@ -121,14 +184,10 @@ info_box_server <- function(id, identifier_select, data, field_df){
             paste(collapse = ", ")
         } else ""
 
-        text_high <- "rgba(255, 255, 255, 0.9)"
-        text_med <- "rgba(255, 255, 255, 0.7)"
-        text_low <- "rgba(255, 255, 255, 0.5)"
-
         gt_tbl <- gt(df_id) %>%
           tab_style(
             style = list(
-              cell_text(color = text_low)
+              cell_text(color = k$text_low)
             )
             , locations = cells_body(
               columns = this_name
@@ -136,7 +195,7 @@ info_box_server <- function(id, identifier_select, data, field_df){
           ) %>%
           tab_style(
             style = list(
-              cell_text(color = text_med)
+              cell_text(color = k$text_med)
             )
             , locations = cells_body(
               columns = this_value
@@ -146,7 +205,7 @@ info_box_server <- function(id, identifier_select, data, field_df){
 
         title_style <- list(
           cell_fill(color = "#212121")
-          , cell_text(color = text_high)
+          , cell_text(color = k$text_high)
         )
 
         gt_tbl <- gt_tbl %>%
@@ -174,7 +233,7 @@ info_box_server <- function(id, identifier_select, data, field_df){
           tab_style(
             style = cell_borders(
               sides = c("top", "bottom"),
-              color = text_low,
+              color = k$text_low,
               weight = px(1.5),
               style = "solid"
             ),
@@ -185,8 +244,8 @@ info_box_server <- function(id, identifier_select, data, field_df){
           ) %>%
           tab_options(
             column_labels.hidden = TRUE
-            # , column_labels.font.size = "smaller"
-            # , table.font.size = "smaller"
+            , column_labels.font.size = "14px"
+            , table.font.size = "14px"
           )
 
 
@@ -195,6 +254,39 @@ info_box_server <- function(id, identifier_select, data, field_df){
       })
 
       outputOptions(output, "table", suspendWhenHidden = FALSE)
+
+      # Chart -------------------------------------------------------------------------------------
+
+      output$chart <- renderEcharts4r({
+
+        this <- satellite()$chart
+
+        this$data %>%
+          e_chart() %>%
+          e_histogram(
+            value
+            , name = NULL
+            , legend = FALSE
+            , bar_width = "90%"
+            , x_index = 0
+            , y_index = 0
+            , lineStyle = list(color = this$series_colour)
+          ) %>%
+          e_mark_p(
+            type = "line"
+            , serie_index = 1
+            , data = list(xAxis = this$marker_value, label = list(formatter = this$marker_title))
+            , lineStyle = list(type = "dashed", color = "white")
+            , symbol = "none"
+            , label = list(color = k$text_high)
+            , animation = FALSE
+          ) %>%
+          e_hide_grid_lines()
+
+
+      })
+
+      # Close button ------------------------------------------------------------------------------
 
       observeEvent(
         input$close_button

@@ -180,6 +180,10 @@ div.table_controls span.pause > i {
   left: -5px;
 }
 
+.irs--shiny {
+  padding-right: 10px;
+}
+
 #main-measure_slider_ui > div {
   margin-bottom: 0;
 }
@@ -188,6 +192,7 @@ div.table_controls span.pause > i {
 .irs i {
   padding-right: 0px;
 }
+
 
 /* Measure statistic */
 div#main-measure_statistic .control-label {
