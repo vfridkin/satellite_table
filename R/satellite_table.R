@@ -1018,6 +1018,7 @@ satellite_table_server <- function(id, init, data){
           , showPageSizeOptions = TRUE
           , defaultPageSize = 10
           , rowClass = JS("function(rowInfo){return rowInfo}")
+          , defaultColDef = colDef(sortNALast = TRUE)
           , defaultSorted = defaultSorted
         )
       })

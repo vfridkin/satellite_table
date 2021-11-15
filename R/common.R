@@ -154,7 +154,6 @@ get_choices <- function(){
     factor_select = choices$factor
     , measure_select = md
     , measure_statistics = measure_statistics
-    , sort_by = md %>% c("Count" = "count")
     , bar_option = choices$measure
   )
 }
@@ -381,7 +380,7 @@ add_bars <- function(col, col_name){
       , right = field_def$bar_colour_right
     )
 
-    paste0('<div class="rt-td rt-align-right"
+        paste0('<div class="rt-td rt-align-right"
 sort-value="', sort_value,'"
 role="cell"
 style="
@@ -389,9 +388,9 @@ flex: 100 0 auto;
 background-image: linear-gradient(to right
 , ', bar_color$left, '
 , ', bar_color$right, ' '
-           , percent, '%
+, percent, '%
 , transparent '
-           , percent, '%);
+, percent, '%);
 transition: all 1s;
 background-size: 100% 75%;
 border-top: transparent;
@@ -399,7 +398,7 @@ background-repeat: no-repeat;
 background-position: center center;">
 <div class="rt-td-inner" style = "background: transparent">',value ,'</div>
 </div>'
-    ) %>% str_remove_all("\n")
+        ) %>% str_remove_all("\n")
   }
 
   # Remove commas and make numeric
@@ -407,16 +406,19 @@ background-position: center center;">
     str_remove_all(",") %>%
     as.numeric()
 
+  is_na_value <- is.na(values)
   max_val <- max(values, na.rm = TRUE)
 
   percent <- (100*values/max_val) %>% round()
-  pad_width <- nchar(col) %>% max()
+  pad_width <- nchar(col) %>% max(na.rm = TRUE)
+  if(is.na(pad_width)) pad_width <- 1
 
   # Replace NA with blanks
-  col[is.na(values)] <- ""
+  col[is_na_value] <- ""
+  bars <- bar_html(percent, col, pad_width)
 
-  bar_html(percent, col, pad_width)
-
+  bars[is_na_value] <- NA
+  bars
 }
 
 # Format column before mixing data values with HTML - the usual column
@@ -443,7 +445,7 @@ apply_column_definitions <- function(df, field_config){
         col <- col %>% format(big.mark = ",", digits = display_decimals)
       }
 
-      col[na_values] <- ""
+      col[na_values] <- NA
       df[[col_name]] <<- col
     }
   )
@@ -461,10 +463,12 @@ add_html_to_cells <- function(df, settings, selected){
     function(col_name){
 
       col <- df[[col_name]]
+      na_values <- is.na(col)
 
       fn <- if(col_name %in% bars) add_bars else add_col_name
       col <- col %>% fn(col_name)
 
+      col[na_values] <- NA
       df[[col_name]] <<- col
     }
   )

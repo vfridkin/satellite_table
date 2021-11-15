@@ -219,6 +219,7 @@ saved_info_server <- function(id){
 
       # Splash check ------------------------------------------------------------------------------
 
+      # determines if moon/satellite bubbles show at start up
       observeEvent(
         input$splash_check
         , {

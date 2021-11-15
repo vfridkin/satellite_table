@@ -264,6 +264,7 @@ Shiny.addCustomMessageHandler(
       );
 });
 
+// Show spaceman when table is empty
 Shiny.addCustomMessageHandler(
   'spaceman'
   , function(has_data){
@@ -271,6 +272,7 @@ Shiny.addCustomMessageHandler(
   }
 )
 
+// Control info box visibility
 Shiny.addCustomMessageHandler(
   'show_info_box'
   , function(is_visible){

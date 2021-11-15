@@ -107,8 +107,6 @@ help_steps <- function(){
     )
   ) %>% as.character()
 
-
-
   table_controls_select <- div(
     p(
       "These controls are visible when the 'sun' switch is on."
@@ -164,8 +162,25 @@ help_steps <- function(){
     )
   ) %>% as.character()
 
+  main_table2 <- div(
+    p(
+      "Click on an identifier table cell to view comments, sources and a comparison with
+      other satellites."
+    )
+    , p(
+      "Hover over column heading names to view their definitions.  Sort by clicking on the
+      column headings.  To avoid the hover popup, click to the blank space in the heading cell."
+    )
+    , p(
+      "Missing values are sorted last."
+    )
+  ) %>% as.character()
+
+
+
   satellite <- div(
-    p("Click the satellite for info on saved views")
+    p("Click the satellite for info on saved views, to clear saved views and to toggle the
+      moon and satellite hints on start up.")
   ) %>% as.character()
 
   data.frame(
@@ -175,7 +190,8 @@ help_steps <- function(){
               , "Select and reorder columns"
               , "Filter factors with double click"
               , "Measure filter, statistic and ...more"
-              , "Table interactions"
+              , "Table interactions (1/2)"
+              , "Table interactions (2/2)"
               , "Satellite"
     )
     , intro = c(
@@ -186,6 +202,7 @@ help_steps <- function(){
       , factor_filter_select
       , measure_and_more
       , main_table
+      , main_table2
       , satellite
     )
     , element = c(
@@ -195,6 +212,7 @@ help_steps <- function(){
       , ".table-controls-select"
       , ".factor-filter-select"
       , ".measure-and-more"
+      , ".main__table-box"
       , ".main__table-box"
       , ".body__image-box"
     )
