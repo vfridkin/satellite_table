@@ -99,11 +99,13 @@ more_settings_server <- function(id, init){
       # Process command selections and store result in reactive values
       observeEvent(
         list(
-          # input$sort_by
           input$bar_option
         )
         , {
-          if(command_select(session, "bar_option", k$choices)) return()
+          # Add count to the choices
+          choices <- list(bar_option = k$choices$bar_option %>% c("Count" = "count"))
+
+          if(command_select(session, "bar_option", choices)) return()
 
           m$bar_option <- input$bar_option
         }

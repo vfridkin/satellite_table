@@ -884,10 +884,8 @@ satellite_table_server <- function(id, init, data){
 
         # Get selected id and detail columns
         id_cols <- settings$identifier_select
-        detail_cols <- c(id_cols
-                         , selected$factor
-                         , selected$measure
-                         , m$measure_slider_field) %>% unique()
+        detail_cols <- c(id_cols, selected$factor, selected$measure)
+        # pre_filter_cols <- detail_cols %>% c(m$measure_slider_field) %>% unique()
 
         # Ensure group selection always has one element
         if(!is_selected$factor){

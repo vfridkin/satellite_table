@@ -13,24 +13,27 @@
 #
 # -= Welcome to the Satellite Table =-
 #
-# There are three main modules in the app, all in the R directory
+# There are four modules in the app, all in the R directory
 # 1 satellite_table*
 # 2 more_settings
 # 3 saved_info*
+# 4 info_box**
 #
-# *There are two tables in the app, both using reactable
+# * Using reactable
+# ** Using gt (and echarts4r for the chart)
 #
 # Summary of design
 # ~~~~~~~~~~~~~~~~~
 # Configuration is controlled from YAML and CSV files.
-# Module more_settings is called from satellite_table.
+# Modules more_settings and info_box are called from satellite_table.
 # Local storage is used to save user changes.
-# For speed, HTML is created directly with data.table
-# instead of using colDef functions or the recent reactablefmtr package
+#
+# To improve performance, HTML for table cells is created with data.table
 # Examples include
 # - cell bars
 # - cell subheadings
 # - custom tooltips for column headers
+# (Alternative approaches include using reactable::colDef or reactablefmtr package).
 #
 # At this time, getReactableState does not provide sort status of the table, so
 # custom functions were created to get and save sort state.
@@ -41,10 +44,13 @@
 # - filtering
 #
 # There are commands embedded in the selectize choices to add and remove in bulk.
+#
 # The table can be filtered by double clicking on a factor cell - the filters
 # are managed by a selectize input.
 # Filtering a measure is done with the slider.  The filtering measure in the slider
 # is selected by double clicking on a selectize measure item.
+#
+# Single click an identifier cell to view the info box, comparing with all the satellites.
 #
 # It's probably easier to go through the inbuilt help system to understand factors and
 # measures and a lot of the above :)
@@ -82,4 +88,5 @@ fluidPage(
 
   # Clicking the satellite opens up a summary of saved views
   , saved_info_ui("saved")
+  , stars()
 )
