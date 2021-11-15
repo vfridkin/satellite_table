@@ -55,11 +55,14 @@ $(function(){
       if(moon || screen_overlay || satellite_button){
         $('.screen-overlay').fadeOut(500);
         $('.bubble-moon').fadeOut(500);
-        $('.bubble-satellite').fadeOut(500);
         $('.filled_circle').hide(0);
         $('.filled_circle2').hide(0);
         $('.saved-info').fadeOut(500);
-        Shiny.setInputValue('splash_close', 1, {priority: "event"});
+
+        if($('.bubble-satellite').is(":visible")){
+          $('.bubble-satellite').fadeOut(500);
+          Shiny.setInputValue('splash_close', 1, {priority: "event"});
+        }
       };
 
       if(moon){

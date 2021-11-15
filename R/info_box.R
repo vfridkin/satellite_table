@@ -270,6 +270,8 @@ info_box_server <- function(id, identifier_select, data, field_df){
             column_labels.hidden = TRUE
             , column_labels.font.size = "14px"
             , table.font.size = "14px"
+            , table.border.right.color = k$text_low
+            , table.border.bottom.color = k$text_med
           )
 
 

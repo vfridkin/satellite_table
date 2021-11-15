@@ -3,19 +3,14 @@
 /* Constants */
 /* Colour palette from https://nasa.github.io/nasawds-site/components/colors/ */
 :root {
-  --colour-primary: #105bd8;
-  --colour-primary-darker: #0b3d91;
-  --colour-primary-darkest: #061f4a;
   --colour-base: #212121;
   --colour-inset-shadow: #101010;
   --colour-gray-dark: #383838;
+  --colour-gray-very-dark: #333333;
   --colour-gray-darkmed: #525252;
-  --colour-gray-medium: #888888;
   --colour-gray-light: #aeb0b5;
   --colour-selectize-border: #313131;
   --colour-white: #ffffff;
-  --colour-base2: #030303;
-  --colour-silver: #C0C0C0;
 
   --colour-white-rgb: 255, 255, 255;
   --colour-black-rgb: 0, 0, 0;
@@ -23,13 +18,8 @@
   --alpha-med: 0.6;
   --alpha-low: 0.38;
 
-  --colour-primary-alt: #02bfe7;
-  --colour-primary-alt-darkest: #046b99;
-  --colour-primary-alt-dark: #00a6d2;
-
   --colour-text-gradient-bottom: #38495a;
   --colour-text-sub: #475d72;
-  --colour-rocket-flame-red: #8d2d05;
   --colour-rocket-flame-orange: #d77820;
 
   --colour-rocket-flame-red-rgb: 141, 45, 5;
@@ -37,19 +27,8 @@
 
   --colour-desat-blue: #38495a;
   --colour-desat-blue-lighter: #475d72;
-  --colour-desat-blue-lightest: #56708a;
-  --colour-desat-blue-sater: #2d4965;
-  --colour-desat-blue-darker: #293542;
-
-  --colour-desat-comp: #5a4938;
-  --colour-desat-red: #5a3838;
-
-  --colour-desat-blue-sater-rgb: 45, 73, 101;
 
   --colour-sun: #f9d71c;
-
-  --colour-solar-panel: #7aa2e7;
-
 }
 
 /* Main styles */

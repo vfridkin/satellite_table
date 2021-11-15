@@ -88,5 +88,4 @@ fluidPage(
 
   # Clicking the satellite opens up a summary of saved views
   , saved_info_ui("saved")
-  , stars()
 )

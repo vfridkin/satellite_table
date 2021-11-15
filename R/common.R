@@ -488,6 +488,31 @@ show_info_box <- function(session, is_visible){
   session$sendCustomMessage("show_info_box", is_visible)
 }
 
+# Slider parameters for updating slider input
+get_slider_params <- function(slider_field, data, config){
+
+  slider_label <- config[[slider_field]]$display_name %>%
+    paste("(range)")
+
+  slider_step <- config[[slider_field]]$slider_step
+  decimal_count <- nchar(slider_step %% 1) - 1
+
+  # Get range
+  slider_range <- data[[slider_field]] %>% range(na.rm = TRUE)
+  range_class <- slider_range[1] %>% class()
+  time_format <- if(range_class == "Date") "%Y" else NULL
+
+  slider_range[2] <- slider_range[2] %>% ceiling_dec(digits = decimal_count)
+
+  list(
+    label = slider_label
+    , step = slider_step
+    , range = slider_range
+    , time_format = time_format
+    , range_class = range_class
+  )
+}
+
 # TABLE FILTERS -----------------------------------------------------------------------------------
 
 # Subset df by factor filter

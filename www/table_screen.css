@@ -292,7 +292,7 @@ div.rt-thead.-headerGroups div {
 
 #main-main_rt .rt-td {
   background-color: transparent;
-  border-top: 1px solid #333333;
+  border-top: 1px solid var(--colour-gray-very-dark);
 }
 
 #main-main_rt .rt-td:hover {

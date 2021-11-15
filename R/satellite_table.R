@@ -264,6 +264,7 @@ satellite_table_server <- function(id, init, data){
 
         # From settings dropdown
         , settings_init = NULL # input to settings module
+
       )
 
       # > Initialize ------------------------------------------------------------------------------
@@ -283,8 +284,8 @@ satellite_table_server <- function(id, init, data){
 
         m$measure_statistic_select <- init$measure_statistic_select
 
-        m$sort_select = init$sort_select
-        m$sort_order = init$sort_order
+        m$sort_select <- init$sort_select
+        m$sort_order <- init$sort_order
 
         m$run_once <- TRUE
 
@@ -461,13 +462,7 @@ satellite_table_server <- function(id, init, data){
               , length(slider_value) == 0
             )
 
-            tryCatch(
-              {
-                if(treat_as_date && !missing_value) slider_value <- slider_value %>% as.Date()
-              }
-              , error = function(e) browser()
-            )
-
+            if(treat_as_date && !missing_value) slider_value <- slider_value %>% as.Date()
 
             if(missing_value) slider_value <- slider$range[2]
 
@@ -505,6 +500,7 @@ satellite_table_server <- function(id, init, data){
               identifier_select = stored$identifier_select
               , bar_option = stored$bar_option
             )
+
           }
 
         }, ignoreNULL = FALSE, ignoreInit = TRUE
@@ -689,29 +685,6 @@ satellite_table_server <- function(id, init, data){
       )
 
       # Measure slider ----------------------------------------------------------------------------
-      get_slider_params <- function(slider_field, data, config){
-
-        slider_label <- config[[slider_field]]$display_name %>%
-          paste("(range)")
-
-        slider_step <- config[[slider_field]]$slider_step
-        decimal_count <- nchar(slider_step %% 1) - 1
-
-        # Get range
-        slider_range <- data[[slider_field]] %>% range(na.rm = TRUE)
-        range_class <- slider_range[1] %>% class()
-        time_format <- if(range_class == "Date") "%Y" else NULL
-
-        slider_range[2] <- slider_range[2] %>% ceiling_dec(digits = decimal_count)
-
-        list(
-          label = slider_label
-          , step = slider_step
-          , range = slider_range
-          , time_format = time_format
-          , range_class = range_class
-        )
-      }
 
       # > Change slider values --------------------------------------------------------------------
       observeEvent(
@@ -1040,7 +1013,7 @@ satellite_table_server <- function(id, init, data){
           , columns = columns
           , striped = TRUE
           , highlight = TRUE
-          , minRows = 3
+          , minRows = 5
           , pageSizeOptions = c(10, 20, 50, 100)
           , showPageSizeOptions = TRUE
           , defaultPageSize = 10

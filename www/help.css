@@ -100,6 +100,25 @@
   background: transparent;
 }
 
+/* Table cells */
+#saved-table .rt-td > div > div {
+  background-color: transparent;
+  color: inherit;
+}
+
+#saved-table .rt-td > div {
+  color: inherit;
+}
+
+#saved-table .rt-td {
+  background-color: transparent;
+  border-top: 1px solid var(--colour-gray-very-dark);
+}
+
+#saved-table .rt-td:hover {
+  color: rgba(var(--colour-white-rgb), var(--alpha-high));
+}
+
 /* Info box -------------------------------------------------------------------------------------*/
 
 .info-box {
@@ -108,12 +127,21 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: auto;
+  width: 800px;
   z-index: 11;
   box-shadow: inset -4px 1px 15px 0px #c0c0c0;
   border-radius: 10px;
-  padding: 20px;
+  padding: 30px 15px;
 }
+
+.info-box a {
+  color: #7aa2e7;
+}
+
+.info-box a:hover {
+  color: #90b1eb;
+}
+
 
 .info-box div {
   background: transparent;
