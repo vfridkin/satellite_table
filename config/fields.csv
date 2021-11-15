@@ -45,7 +45,7 @@ power_watts,Power (watts),measure,0,0,10,decimal,#e7897a,#53180f,"The amount of 
   The power produced typically decreases over time; a number followed by “(BOL)” or “(EOL)” refers to the level of power generated near the beginning or end, respectively, of the satellite’s planned lifetime. "
 year_of_launch,Year of Launch,factor,0,,,char,#d9e77a,#4a530f,The year of launch.
 month_of_launch,Month of Launch,factor,0,,,char,#d9e77a,#4a530f,The month of launch.
-date_of_launch,Date of Launch,date,0,,365,date,#d9e77a,#4a530f,The date of launch.
+date_of_launch,Date of Launch,date,0,,31536000000,date,#d9e77a,#4a530f,The date of launch.
 expected_lifetime_yrs,Expected Lifetime (yrs.),measure,0,2,1,decimal,#d9e77a,#4a530f,"The planned operational lifetime of the satellite, given in years. 
   This figure is reported by the satellite’s operator and may be based on the expected failure rate for the hardware and software of the satellite, the fuel capacity of the satellite and the expected requirements for maneuvering and stationkeeping (many satellites run out of fuel long before their hardware and software wear out), the planned budget for operating the satellite, and the expected availability of improved
 future generation satellites. 
