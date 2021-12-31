@@ -3,8 +3,8 @@
 Winner of the [2021 RStudio table competition](https://www.rstudio.com/blog/winners-of-the-2021-table-contest/)
 An interactive table of satellites built with [R Shiny](https://github.com/rstudio/shiny), [reactable](https://glin.github.io/reactable/) and [gt](https://gt.rstudio.com/).
 
-[Online](https://vfridkin.shinyapps.io/Satellites/)
-[User guide](https://vfridkin.github.io/satellite_table_docs)
+[Online](https://vfridkin.shinyapps.io/Satellites/) - 
+[User guide](https://vfridkin.github.io/satellite_table_docs) - 
 [video demo](https://youtu.be/ADWZs0MQkek)
 
 The satellites are currently orbiting the Earth. 
