@@ -1,6 +1,7 @@
 # Satellites
 
-Winner of the [2021 RStudio table competition](https://www.rstudio.com/blog/winners-of-the-2021-table-contest/)
+Winner of the [2021 RStudio table competition](https://www.rstudio.com/blog/winners-of-the-2021-table-contest/).
+
 An interactive table of satellites built with [R Shiny](https://github.com/rstudio/shiny), [reactable](https://glin.github.io/reactable/) and [gt](https://gt.rstudio.com/).
 
 [online](https://vfridkin.shinyapps.io/Satellites/) - 
